@@ -1,32 +1,51 @@
 package org.firstinspires.ftc.teamcode.roverruckus.minibit.machine
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.common.drivetrain.IDriveTrain
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
+import org.firstinspires.ftc.teamcode.roverruckus.minibit.HARDWARENAMES_MINIBOT
 import kotlin.reflect.KClass
 
 class MiniTankDrive() : IDriveTrain {
+
+    lateinit var motorL : DcMotor
+    lateinit var motorR : DcMotor
+
     override fun init(robot: IRobot) {
+        motorL = robot.opMode().hardwareMap.get(DcMotor::class.java, HARDWARENAMES_MINIBOT.MOTOR_LEFT.v)
+        motorR = robot.opMode().hardwareMap.get(DcMotor::class.java, HARDWARENAMES_MINIBOT.MOTOR_RIGHT.v)
 
+        motorL.direction = DcMotorSimple.Direction.REVERSE
+
+        motorL.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        motorR.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+
+        motorL.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        motorR.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
+    /**
+     * x = y_left
+     * y = y_right
+     */
     override fun move(x: Double, y: Double, r: Double, p: Double) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val left = (x) * p
+        val right = (y) * p
+        powerSet(left, right)
     }
 
-    override fun motorList(): List<DcMotor> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun motorList(): List<DcMotor> = listOf(motorL, motorR)
 
-    override fun motorMap(): Map<String, DcMotor> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun motorMap(): Map<String, DcMotor> =
+            mapOf(Pair(HARDWARENAMES_MINIBOT.MOTOR_LEFT.v, motorL), Pair(HARDWARENAMES_MINIBOT.MOTOR_RIGHT.v, motorR))
 
-    override fun driveClass(): KClass<out IDriveTrain> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun driveClass(): KClass<out IDriveTrain> = this::class
 
-    override fun stop() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun stop() = powerSet(0.0, 0.0)
+
+    fun powerSet(left : Double, right : Double) {
+        motorL.power = left
+        motorR.power = right
     }
 }
