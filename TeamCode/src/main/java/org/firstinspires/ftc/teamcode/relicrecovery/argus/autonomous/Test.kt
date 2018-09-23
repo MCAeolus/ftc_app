@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.relicrecovery.argus.autonomous
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.vuforia.TextTracker
 import org.firstinspires.ftc.teamcode.relicrecovery.argus.machine.RelicExtender
 
 /**

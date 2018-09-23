@@ -21,3 +21,8 @@ dependencies {
     compile project(':FtcRobotController')
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion '28.0.2'
+}

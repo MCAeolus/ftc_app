@@ -13,8 +13,8 @@ class CRYPTOBOX_POSITION_DATA {
         val INNER_CENTER_POSITION = 62.0
         val INNER_FAR_POSITION = 80.0
         //outside
-        val OUTSIDE_CLOSE_POSITION = 102.[[---
-        0
+        val OUTSIDE_CLOSE_POSITION = 102.0
+
         val OUTSIDE_CENTER_POSITION = 118.0
         val OUTSIDE_FAR_POSITION = 133.0
 

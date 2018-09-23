@@ -2,15 +2,12 @@ package org.firstinspires.ftc.teamcode.relicrecovery.argus.robotmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.UltrasonicSensor
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.common.drivetrain.MecanumDrive
-import org.firstinspires.ftc.teamcode.common.i2cdriver.I2CXLMS.I2CXLMSR
 import org.firstinspires.ftc.teamcode.common.robot.Robot
 import org.firstinspires.ftc.teamcode.relicrecovery.argus.autonomous.util.CRYPTOBOX_POSITION_DATA
 import org.firstinspires.ftc.teamcode.relicrecovery.argus.machine.*
 import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine.IMU
-import kotlin.concurrent.thread
 
 /**
  * Created by Nathan.Smith.19 on 1/19/2018.
