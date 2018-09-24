@@ -13,10 +13,10 @@ class MiniTankDrive() : IDriveTrain {
     lateinit var motorR : DcMotor
 
     override fun init(robot: IRobot) {
-        motorL = robot.opMode().hardwareMap.get(DcMotor::class.java, HARDWARENAMES_MINIBOT.MOTOR_LEFT.v)
-        motorR = robot.opMode().hardwareMap.get(DcMotor::class.java, HARDWARENAMES_MINIBOT.MOTOR_RIGHT.v)
+        motorL = robot.opMode().hardwareMap.get(DcMotor::class.java, HARDWARENAMES_MINIBOT.DRIVE_MOTOR_LEFT.v)
+        motorR = robot.opMode().hardwareMap.get(DcMotor::class.java, HARDWARENAMES_MINIBOT.DRIVE_MOTOR_RIGHT.v)
 
-        motorL.direction = DcMotorSimple.Direction.REVERSE
+        motorR.direction = DcMotorSimple.Direction.REVERSE
 
         motorL.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         motorR.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
@@ -26,19 +26,19 @@ class MiniTankDrive() : IDriveTrain {
     }
 
     /**
-     * x = y_left
-     * y = y_right
+     * x = none
+     * y = forwards/backwards
      */
     override fun move(x: Double, y: Double, r: Double, p: Double) {
-        val left = (x) * p
-        val right = (y) * p
+        val left = ((y) * p) + r
+        val right = ((y) * p) - r
         powerSet(left, right)
     }
 
     override fun motorList(): List<DcMotor> = listOf(motorL, motorR)
 
     override fun motorMap(): Map<String, DcMotor> =
-            mapOf(Pair(HARDWARENAMES_MINIBOT.MOTOR_LEFT.v, motorL), Pair(HARDWARENAMES_MINIBOT.MOTOR_RIGHT.v, motorR))
+            mapOf(Pair(HARDWARENAMES_MINIBOT.DRIVE_MOTOR_LEFT.v, motorL), Pair(HARDWARENAMES_MINIBOT.DRIVE_MOTOR_RIGHT.v, motorR))
 
     override fun driveClass(): KClass<out IDriveTrain> = this::class
 
