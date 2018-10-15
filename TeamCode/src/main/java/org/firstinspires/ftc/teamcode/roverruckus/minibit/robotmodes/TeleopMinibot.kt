@@ -29,14 +29,14 @@ class TeleopMinibot : Robot(MiniTankDrive(), mapOf(Pair("Lift", LiftSystem()))) 
 
         if(gamepad1.a && !a1_pressed && !x1_pressed){
             a1_pressed = true
-            LIFT_SYSTEM.setLiftPosition(LiftSystem.Position.LOWERED)
+            LIFT_SYSTEM.setLiftPosition(LiftSystem.LiftPosition.LOWERED)
         }else if(a1_pressed && !LIFT_SYSTEM.isLifting()){
             a1_pressed = false
         }
 
         if(gamepad1.x && !x1_pressed && !a1_pressed){
             x1_pressed = true
-            LIFT_SYSTEM.setLiftPosition(LiftSystem.Position.LIFTED)
+            LIFT_SYSTEM.setLiftPosition(LiftSystem.LiftPosition.LIFTED)
         }else if(x1_pressed && !LIFT_SYSTEM.isLifting()){
             x1_pressed = false
         }
