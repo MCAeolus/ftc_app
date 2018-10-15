@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine
 
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark
+import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
 import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.autonomous.AutonomousBase
 import org.firstinspires.ftc.teamcode.common.drivetrain.IDriveTrain
 import org.firstinspires.ftc.teamcode.common.drivetrain.util.EncoderAttachment

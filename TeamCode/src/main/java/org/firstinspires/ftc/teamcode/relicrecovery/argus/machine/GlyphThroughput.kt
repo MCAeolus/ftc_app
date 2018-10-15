@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.relicrecovery.argus.machine
 
-import android.webkit.DownloadListener
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
-import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine.IMachine
+import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
 
 /**
  * Created by Nathan.Smith.19 on 1/19/2018.

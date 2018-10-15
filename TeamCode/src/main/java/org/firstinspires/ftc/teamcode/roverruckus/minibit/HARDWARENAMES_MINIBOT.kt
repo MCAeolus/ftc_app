@@ -3,11 +3,17 @@ package org.firstinspires.ftc.teamcode.roverruckus.minibit
 enum class HARDWARENAMES_MINIBOT(val v : String) {
 
     //motor names
-    DRIVE_MOTOR_LEFT("dr_motor_l"),
-    DRIVE_MOTOR_RIGHT("dr_motor_r"),
+    DRIVE_MOTOR_FRONT_LEFT("dr_motor_lfront"),
+    DRIVE_MOTOR_FRONT_RIGHT("dr_motor_rfront"),
+    DRIVE_MOTOR_BACK_LEFT("dr_motor_lback"),
+    DRIVE_MOTOR_BACK_RIGHT("dr_motor_rback"),
 
-    LIFT_MOTOR_LEFT("li_motor_l"),
-    LIFT_MOTOR_RIGHT("li_motor_r")
+    LIFT_MOTOR_LEFT("li_left"),
+    LIFT_MOTOR_RIGHT("li_right"),
+
+    //servos
+    HOOK_SERVO_LEFT("ho_l"),
+    HOOK_SERVO_RIGHT("ho_r")
 
 
 }

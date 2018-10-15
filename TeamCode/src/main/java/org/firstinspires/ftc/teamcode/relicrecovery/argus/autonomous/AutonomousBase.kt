@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.common.drivetrain.MecanumDrive
 import org.firstinspires.ftc.teamcode.common.robot.LinearRobot
 import org.firstinspires.ftc.teamcode.relicrecovery.argus.machine.*
-import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine.IMU
+import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 
 /**
  * Created by Nathan.Smith.19 on 2/14/2018.

@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.relicrecovery.argus.machine
 
 import com.qualcomm.hardware.lynx.LynxI2cColorRangeSensor
-import com.qualcomm.robotcore.hardware.DistanceSensor
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
-import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine.IMachine
+import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
 
 /**
  * Created by Nathan.Smith.19 on 2/18/2018.

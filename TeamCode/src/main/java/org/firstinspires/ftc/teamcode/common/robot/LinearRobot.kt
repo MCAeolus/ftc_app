@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.common.robot
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.common.drivetrain.IDriveTrain
-import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine.IMachine
+import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
 
 /**
  * Created by Nathan.Smith.19 on 10/21/2017.

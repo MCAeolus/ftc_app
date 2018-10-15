@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.relicrecovery.argus.machine
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
-import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine.IMachine
+import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
 
 /**
  * Created by Nathan.Smith.19 on 2/12/2018.

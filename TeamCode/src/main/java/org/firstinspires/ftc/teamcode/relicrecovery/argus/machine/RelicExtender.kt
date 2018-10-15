@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.relicrecovery.argus.machine
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
-import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine.IMachine
+import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
 
 /**
  * Created by Nathan.Smith.19 on 3/1/2018.

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine
+package org.firstinspires.ftc.teamcode.common.common_machines
 
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
 

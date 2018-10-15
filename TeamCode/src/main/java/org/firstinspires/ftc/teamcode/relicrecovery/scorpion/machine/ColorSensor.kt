@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine
 
+import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
 import org.firstinspires.ftc.teamcode.common.util.RGB
 

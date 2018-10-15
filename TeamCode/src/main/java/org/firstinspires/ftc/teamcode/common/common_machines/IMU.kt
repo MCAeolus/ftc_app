@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine
+package org.firstinspires.ftc.teamcode.common.common_machines
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator

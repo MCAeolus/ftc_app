@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine
 
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
 import org.firstinspires.ftc.teamcode.common.util.LinearOnly
 

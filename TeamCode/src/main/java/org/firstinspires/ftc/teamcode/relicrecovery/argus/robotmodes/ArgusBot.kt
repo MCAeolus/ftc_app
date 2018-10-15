@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.common.drivetrain.MecanumDrive
 import org.firstinspires.ftc.teamcode.common.robot.Robot
 import org.firstinspires.ftc.teamcode.relicrecovery.argus.autonomous.util.CRYPTOBOX_POSITION_DATA
 import org.firstinspires.ftc.teamcode.relicrecovery.argus.machine.*
-import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine.IMU
+import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 
 /**
  * Created by Nathan.Smith.19 on 1/19/2018.
