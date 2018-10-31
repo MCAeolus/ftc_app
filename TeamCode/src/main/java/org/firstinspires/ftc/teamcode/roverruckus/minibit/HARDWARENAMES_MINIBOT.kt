@@ -10,6 +10,7 @@ enum class HARDWARENAMES_MINIBOT(val v : String) {
 
     LIFT_MOTOR_LEFT("li_left"),
     LIFT_MOTOR_RIGHT("li_right"),
+    INTAKE_MOTOR("intake"),
 
     //servos
     HOOK_SERVO_LEFT("ho_l"),

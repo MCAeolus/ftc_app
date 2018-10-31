@@ -20,5 +20,4 @@ interface IDriveTrain {
     fun driveClass() : KClass<out IDriveTrain>
 
     fun stop()
-
 }

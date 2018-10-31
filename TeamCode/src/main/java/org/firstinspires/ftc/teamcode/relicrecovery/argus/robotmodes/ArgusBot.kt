@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.relicrecovery.argus.robotmodes
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
@@ -13,7 +14,7 @@ import org.firstinspires.ftc.teamcode.common.common_machines.IMU
  * Created by Nathan.Smith.19 on 1/19/2018.
  */
 
-@TeleOp(name="ArgusBot")
+@TeleOp(name="ArgusBot")@Disabled
 class ArgusBot : Robot(MecanumDrive(arrayOf("FL", "FR", "BL", "BR")), //Here all motors, etc. are initialized
         mapOf(
                 Pair("Glyph Throughput", GlyphThroughput()),           //each of these has their own class

@@ -18,4 +18,5 @@ class ColorSensor : IMachine {
     override fun stop() {}
 
     fun RGB() = RGB(color_sensor.red(), color_sensor.green(), color_sensor.blue())
+
 }

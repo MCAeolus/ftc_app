@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.common.drivetrain.util
 
 import com.qualcomm.robotcore.util.ElapsedTime
 
-class PID(val P : Float, val I : Float, val D : Float) {
+class PID(var P : Float, var I : Float, var D : Float) {
 
     val TIME : ElapsedTime = ElapsedTime()
     var TIME_POST = 0.0

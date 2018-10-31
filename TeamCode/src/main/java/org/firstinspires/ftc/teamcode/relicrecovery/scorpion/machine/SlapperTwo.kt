@@ -62,4 +62,5 @@ class SlapperTwo : IMachine {
         timer.reset()
         while(timer.milliseconds() < millis){}
     }
+
 }

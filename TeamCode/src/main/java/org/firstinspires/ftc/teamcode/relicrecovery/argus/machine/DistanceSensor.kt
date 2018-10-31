@@ -22,4 +22,5 @@ class DistanceSensor : IMachine {
 
     override fun stop() {
     }
+
 }

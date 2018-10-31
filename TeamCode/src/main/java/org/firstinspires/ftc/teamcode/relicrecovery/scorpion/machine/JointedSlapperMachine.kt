@@ -80,4 +80,5 @@ class JointedSlapperMachine : IMachine {
         timer.reset()
         while(timer.milliseconds() < millis){}
     }
+
 }

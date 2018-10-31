@@ -13,4 +13,5 @@ class DummyMachine : IMachine {
 
     override fun stop() {
     }
+
 }

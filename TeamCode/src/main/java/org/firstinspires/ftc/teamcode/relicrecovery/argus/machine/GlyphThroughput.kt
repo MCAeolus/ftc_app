@@ -192,4 +192,5 @@ class GlyphThroughput : IMachine {
         timer.reset()
         while(timer.milliseconds() < millis){ }
     }
+
 }

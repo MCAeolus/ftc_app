@@ -136,4 +136,5 @@ class GlyphIntake(val motorNames : Array<String>, val servoNames: Array<String>)
     }
 
     fun isLifting() = islifting
+
 }

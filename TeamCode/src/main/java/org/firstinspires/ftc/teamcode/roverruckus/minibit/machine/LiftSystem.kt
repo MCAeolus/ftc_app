@@ -5,18 +5,19 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
 import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
+import org.firstinspires.ftc.teamcode.common.util.Trackable
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.HARDWARENAMES_MINIBOT
 
-class LiftSystem() : IMachine {
+class LiftSystem() : IMachine, Trackable{
 
     enum class LiftPosition(val pos : Int) {
         LIFTED(0),
-        LOWERED(1700)
+        LOWERED(2300)
     }
 
     enum class HookPosition(val pos : Double) {
-        HOOKED(0.5),
-        UNHOOKED(0.0)
+        HOOKED(0.0),
+        UNHOOKED(1.0)
     }
 
     lateinit var lift_motorL : DcMotor
@@ -33,6 +34,8 @@ class LiftSystem() : IMachine {
         hook_right = robot.opMode().hardwareMap.get(Servo::class.java, HARDWARENAMES_MINIBOT.HOOK_SERVO_RIGHT.v)
 
         lift_motorL.direction = DcMotorSimple.Direction.REVERSE
+
+        hook_left.direction = Servo.Direction.REVERSE
 
         lift_motorL.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         lift_motorR.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
@@ -52,15 +55,12 @@ class LiftSystem() : IMachine {
         lift_motorR.mode = DcMotor.RunMode.RUN_TO_POSITION
         when(position) {
             LiftPosition.LIFTED -> {
-                //setHookPosition(HookPosition.UNHOOKED)
                 lift_motorL.targetPosition = position.pos
                 lift_motorR.targetPosition = position.pos
                 lift_motorL.power = -speed
                 lift_motorR.power = -speed
-                //setHookPosition(HookPosition.HOOKED)
             }
             LiftPosition.LOWERED -> {
-                //setHookPosition(HookPosition.UNHOOKED)
                 lift_motorL.targetPosition = position.pos
                 lift_motorR.targetPosition = position.pos
                 lift_motorL.power = speed
@@ -88,5 +88,15 @@ class LiftSystem() : IMachine {
     fun powerSet(left : Double, right : Double){
         lift_motorL.power = left
         lift_motorR.power = right
+    }
+
+    override fun data(): Map<String, Any> {
+        return linkedMapOf(
+                "Left lift motor (encoder value): " to lift_motorL.currentPosition,
+               "Right lift motor (encoder value): " to lift_motorR.currentPosition,
+               "Left hook (position): " to hook_left.position,
+               "Right hook (position): " to hook_right.position,
+               "Is lifting (boolean): " to isLifting()
+        )
     }
 }

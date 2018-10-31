@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.relicrecovery.scorpion.robotmodes
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine.*
  * Created by Nathan.Smith.19 on 10/19/2017.
  */
 
-@TeleOp(name="ScorpionBot")
+@TeleOp(name="ScorpionBot")@Disabled
 class MecanumRobot : LinearRobot(MecanumDrive(arrayOf("FL", "FR", "BL", "BR")), //drive train
                            mapOf(Pair("GlyphThroughput",
                                       GlyphIntake(arrayOf("CON_L", "CON_R", "L", "L2"),

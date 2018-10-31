@@ -4,10 +4,11 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.common.drivetrain.IDriveTrain
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
+import org.firstinspires.ftc.teamcode.common.util.Trackable
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.HARDWARENAMES_MINIBOT
 import kotlin.reflect.KClass
 
-class MiniTankDrive() : IDriveTrain {
+class MiniTankDrive() : IDriveTrain, Trackable {
 
     lateinit var fr_motorL : DcMotor
     lateinit var fr_motorR : DcMotor
@@ -21,8 +22,8 @@ class MiniTankDrive() : IDriveTrain {
         fr_motorR = robot.opMode().hardwareMap.get(DcMotor::class.java, HARDWARENAMES_MINIBOT.DRIVE_MOTOR_FRONT_RIGHT.v)
         bk_motorR = robot.opMode().hardwareMap.get(DcMotor::class.java, HARDWARENAMES_MINIBOT.DRIVE_MOTOR_BACK_RIGHT.v)
 
-        fr_motorR.direction = DcMotorSimple.Direction.REVERSE
-        bk_motorR.direction = DcMotorSimple.Direction.REVERSE
+        fr_motorL.direction = DcMotorSimple.Direction.REVERSE
+        bk_motorL.direction = DcMotorSimple.Direction.REVERSE
 
         fr_motorL.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         bk_motorL.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
@@ -61,5 +62,14 @@ class MiniTankDrive() : IDriveTrain {
         bk_motorL.power = left
         fr_motorR.power = right
         bk_motorR.power = right
+    }
+
+    override fun data() : Map<String, Any> {
+        return linkedMapOf(
+                "Front left motor encoder" to fr_motorL.currentPosition,
+                "Front right motor encoder" to fr_motorR.currentPosition,
+                "Back left motor encoder" to bk_motorL.currentPosition,
+                "Back right motor encoder" to bk_motorR.currentPosition
+        )
     }
 }

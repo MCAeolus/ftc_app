@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.relicrecovery.argus.autonomous.runmodes.backu
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark
 import org.firstinspires.ftc.teamcode.relicrecovery.argus.autonomous.AutonomousBase
 import org.firstinspires.ftc.teamcode.relicrecovery.argus.autonomous.util.CRYPTOBOX_POSITION_DATA
 import org.firstinspires.ftc.teamcode.relicrecovery.argus.machine.UltrasonicSensorSet
 
-
+@Disabled
 @Autonomous(name="BLUE-INNER-BACKUP")
 class AutonomousBLUEINNER_BACKUP : AutonomousBase() {
 

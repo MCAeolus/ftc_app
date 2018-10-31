@@ -1,14 +1,27 @@
 package org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous
 
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.config.Config
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.common.drivetrain.util.PID
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.HARDWARENAMES_MINIBOT
+import org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous.PIDTest.PIDTesting.distance_forward
+import org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous.PIDTest.PIDTesting.distance_rotation
+import org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous.PIDTest.PIDTesting.moveD
+import org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous.PIDTest.PIDTesting.moveI
+import org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous.PIDTest.PIDTesting.moveK
+import org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous.PIDTest.PIDTesting.rotD
+import org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous.PIDTest.PIDTesting.rotI
+import org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous.PIDTest.PIDTesting.rotK
 import kotlin.math.PI
 import kotlin.math.pow
 
 @Autonomous(name="PID TEST")
-class PIDTest : AutonomousBase() {
+class PIDTest : AutonomousBase(true) {
+
+
+    val move_controllerPID = PID(1F, 0.5F, 1F)
 
     val ENCODER_TICKS = 1120
     val WHEEL_IN_DIAM = 4
@@ -16,29 +29,42 @@ class PIDTest : AutonomousBase() {
 
     val TICKS_IN = ENCODER_TICKS / (WHEEL_IN_DIAM * PI)
 
-    val move_controllerPID = PID(1F, 0.5F, 1F)
-    val rot_controllerPID = PID(1F, 0.5F, 1F)
+    @Config
+    object PIDTesting
+    {
+        @JvmField var distance_forward = 2.0
+        @JvmField var distance_rotation = 90.0
+
+        @JvmField var rotK = 0.7
+        @JvmField var rotI = 0.5
+        @JvmField var rotD = 0.2
+
+        @JvmField var moveK = 1.0
+        @JvmField var moveI = 0.5
+        @JvmField var moveD = 1.0
+    }
 
 
     override fun runOpMode() {
         super.runOpMode()
         initial_angle = IMU.getZ360()
         waitForStart()
+}
 
-        PID_rot(90.0 + initial_angle)
-    }
-
-    fun PID_drive(x : Double, y : Double) {
+    fun PID_drive(dist : Float) {
         move_controllerPID.stop()
-        val angle = Math.toDegrees(Math.atan2(y, x))
-        val dist = Math.hypot(x, y)
 
         val dist_enc = TICKS_IN * dist + DRIVETRAIN.motorList()[0].currentPosition
 
-        PID_rot(angle)
-
         while(Math.abs(dist_enc - DRIVETRAIN.motorList()[0].currentPosition) > 2){
             val pid_calc = move_controllerPID.calculate(dist_enc.toFloat(), DRIVETRAIN.motorList()[0].currentPosition.toFloat())
+            telemetryUpdate(mapOf(
+                    "Calculated Error (val)" to move_controllerPID.ERROR_POST,
+                    "Calculated Rotation PID (val)" to pid_calc,
+                    "Desired Encoder Position (val)" to dist_enc,
+                    "Current Encoder Position (val)" to DRIVETRAIN.motorList()[0].currentPosition,
+                    "Current Time (seconds)" to move_controllerPID.TIME.seconds()
+            ))
             DRIVETRAIN.move(0.0, pid_calc, 0.0)
         }
         DRIVETRAIN.stop()
@@ -84,25 +110,10 @@ class PIDTest : AutonomousBase() {
         DRIVETRAIN.stop()
     }
 
-    fun PID_rot(angle : Double) {
-        rot_controllerPID.stop()
-        val const = 0.0
-
-        while(Math.abs(angle - IMU.getZ360()) > 3){
-            val pow = rot_controllerPID.calculate(angle.toFloat(), IMU.getZ360())
-            telemetry.addData("pid", pow)
-            telemetry.addData("pid err", rot_controllerPID.ERROR_POST)
-            telemetry.update()
-            DRIVETRAIN.move(0.0, const, pow)
-        }
-        DRIVETRAIN.stop()
-    }
-
-    fun resetDriveTrainEncoders(final_mode : DcMotor.RunMode){
+fun resetDriveTrainEncoders(final_mode : DcMotor.RunMode){
         for(m in DRIVETRAIN.motorList()){
             m.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             m.mode = final_mode
         }
     }
-
 }

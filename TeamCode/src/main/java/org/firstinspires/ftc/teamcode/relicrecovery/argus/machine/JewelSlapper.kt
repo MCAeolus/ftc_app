@@ -72,4 +72,5 @@ class JewelSlapper : IMachine {
         timer.reset()
         while(timer.milliseconds() < millis){}
     }
+
 }

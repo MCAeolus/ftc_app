@@ -6,11 +6,12 @@ import com.qualcomm.robotcore.hardware.VoltageSensor
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
+import org.firstinspires.ftc.teamcode.common.util.Trackable
 
 /**
  * Created by Nathan.Smith.19 on 11/20/2017.
  */
-class IMU : IMachine {
+class IMU : IMachine, Trackable {
 
     lateinit var initialOrientation : Orientation
     lateinit var VS : VoltageSensor
@@ -25,7 +26,7 @@ class IMU : IMachine {
         IMU_PAR.loggingTag = "IMU"
         IMU_PAR.accelerationIntegrationAlgorithm = JustLoggingAccelerationIntegrator()
 
-        IMU = robot.opMode().hardwareMap.get(com.qualcomm.hardware.bosch.BNO055IMU::class.java, "imu")
+        IMU = robot.opMode().hardwareMap.get(com.qualcomm.hardware.bosch.BNO055IMU::class.java, "imu 1")
         IMU.initialize(IMU_PAR)
 
         VS = robot.opMode().hardwareMap.voltageSensor.iterator().next()
@@ -57,6 +58,14 @@ class IMU : IMachine {
     fun XYZ() =
         IMU.angularOrientation.toAxesOrder(AxesOrder.XYZ)
 
+    override fun data() : Map<String, Any> {
+        return linkedMapOf(
+                "Z-Axis (degrees 360): " to getZ360(),
+                "Z-Axis (degrees 180): " to XYZ().thirdAngle,
+                "Voltage Sensor (volts): " to VS.voltage
+        )
+
+    }
 
     override fun stop() {}
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.relicrecovery.argus.autonomous.runmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark
 import org.firstinspires.ftc.teamcode.relicrecovery.argus.autonomous.AutonomousBase
@@ -10,7 +11,7 @@ import org.firstinspires.ftc.teamcode.relicrecovery.argus.machine.UltrasonicSens
 /**
  * Created by Nathan.Smith.19 on 2/17/2018.
  */
-
+@Disabled
 @Autonomous(name="BLUE-INNER")
 class AutonomousBLUEINNER : AutonomousBase() {
 
