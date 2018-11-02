@@ -5,10 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.common.util.SmidaTelemetry
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.machine.LiftSystem
+import org.tensorflow.lite.TensorFlowLite
 
 
 @Autonomous(name="Lift Test")
-class LiftTest : AutonomousBase(true) {
+class LiftTest : AutonomousBase(true, false) {
 
     override fun runOpMode() {
         super.runOpMode()
@@ -21,6 +22,8 @@ class LiftTest : AutonomousBase(true) {
         }
 
         waitForStart()
+
+
 
         LIFT.manual_run(-1.0)
         hold(500)
@@ -44,5 +47,6 @@ class LiftTest : AutonomousBase(true) {
         hold(1500)
 
         DRIVETRAIN.stop()
+
     }
 }

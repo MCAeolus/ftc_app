@@ -21,7 +21,7 @@ apply plugin: 'com.android.application'
 
 android {
 
-    compileSdkVersion 24
+    compileSdkVersion 23
 
     signingConfigs {
         debug {

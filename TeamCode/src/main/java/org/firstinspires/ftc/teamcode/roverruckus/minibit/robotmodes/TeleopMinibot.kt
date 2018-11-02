@@ -46,13 +46,13 @@ class TeleopMinibot : Robot(MiniTankDrive(), mapOf("Lift" to LiftSystem(), "IMU"
             LIFT_SYSTEM.manual_run(0.0)
         }
 
-        if(gamepad1.left_bumper && !gamepad1.right_bumper) {
-            INTAKE.intake_motor.power = -0.5
-        }else if(gamepad1.right_bumper && !gamepad1.left_bumper) {
-            INTAKE.intake_motor.power = 0.5
-        } else {
-            INTAKE.intake_motor.power = 0.0
-        }
+        if(gamepad1.left_bumper && !gamepad1.right_bumper)
+            INTAKE.runMotors(true)
+        else if(gamepad1.right_bumper && !gamepad1.left_bumper)
+            INTAKE.runMotors(false)
+        else
+            INTAKE.stop()
+
 
         if(gamepad1.b && !b1_pressed) {
             b1_pressed = true

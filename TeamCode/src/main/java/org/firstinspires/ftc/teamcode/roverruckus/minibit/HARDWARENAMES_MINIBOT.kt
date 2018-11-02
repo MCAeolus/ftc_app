@@ -10,11 +10,15 @@ enum class HARDWARENAMES_MINIBOT(val v : String) {
 
     LIFT_MOTOR_LEFT("li_left"),
     LIFT_MOTOR_RIGHT("li_right"),
-    INTAKE_MOTOR("intake"),
+
+    INTAKE_MOTOR_LEFT("intake_l"),
+    INTAKE_MOTOR_RIGHT("intake_r"),
 
     //servos
     HOOK_SERVO_LEFT("ho_l"),
-    HOOK_SERVO_RIGHT("ho_r")
+    HOOK_SERVO_RIGHT("ho_r"),
 
+    VUFORIA_KEY("AX+gX5z/////AAAAGemESFRCSEr9mlgYKyJlg7QkunLknhP5uXkpeqYVGio+FNmaVefvE0yC0ueWXyecPzSipBsPHsGK1aduCXc87+J6jRilxDjmP8aSmRGOopchZ7KhKbpKRLtcP+i408NrfCRzT1CVhaQ9YI3ObQApDcyNxoiz5G8TVCh7SIr1qL0NXHW1QEuCgGP2BhSJDhUomuotPTd11WcfoMyFqBg2FUb3iC1Msv4iIzUirCRkQU3boFywhIVSZ3cvM+1IWDh/AjMgNZ1Fy/jueNKirAQqQVDqC5cYn9aAvEpewgJAwMjYlaYaXSjb+hLkyh1+ZY2MLsZAbed3pUGJ8eI65QgI3NDGtJs3XL7r8rXoIVvnoezg\n"),
 
+    TFOD_ASSET("RoverRuckus.tflite")
 }

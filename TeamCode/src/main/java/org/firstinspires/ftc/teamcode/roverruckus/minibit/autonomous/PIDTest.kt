@@ -18,7 +18,7 @@ import kotlin.math.PI
 import kotlin.math.pow
 
 @Autonomous(name="PID TEST")
-class PIDTest : AutonomousBase(true) {
+class PIDTest : AutonomousBase(true, false) {
 
 
     val move_controllerPID = PID(1F, 0.5F, 1F)
