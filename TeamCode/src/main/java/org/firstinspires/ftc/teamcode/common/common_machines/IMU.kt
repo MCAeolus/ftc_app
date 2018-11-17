@@ -29,6 +29,7 @@ class IMU : IMachine, Trackable {
         IMU = robot.opMode().hardwareMap.get(com.qualcomm.hardware.bosch.BNO055IMU::class.java, "imu 1")
         IMU.initialize(IMU_PAR)
 
+
         VS = robot.opMode().hardwareMap.voltageSensor.iterator().next()
 
         initialOrientation = IMU.angularOrientation.toAxesOrder(AxesOrder.XYZ)

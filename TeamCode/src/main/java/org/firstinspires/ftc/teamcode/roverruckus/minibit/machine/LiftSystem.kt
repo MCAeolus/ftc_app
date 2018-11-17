@@ -11,13 +11,14 @@ import org.firstinspires.ftc.teamcode.roverruckus.minibit.HARDWARENAMES_MINIBOT
 class LiftSystem() : IMachine, Trackable{
 
     enum class LiftPosition(val pos : Int) {
-        LIFTED(0),
-        LOWERED(2300)
+        LIFTED(100),
+        LOWERED(2300),
+        CAMERA(1500)
     }
 
     enum class HookPosition(val pos : Double) {
-        HOOKED(0.0),
-        UNHOOKED(1.0)
+        HOOKED(0.45),
+        UNHOOKED(0.0)
     }
 
     lateinit var lift_motorL : DcMotor
@@ -33,9 +34,9 @@ class LiftSystem() : IMachine, Trackable{
         hook_left = robot.opMode().hardwareMap.get(Servo::class.java, HARDWARENAMES_MINIBOT.HOOK_SERVO_LEFT.v)
         hook_right = robot.opMode().hardwareMap.get(Servo::class.java, HARDWARENAMES_MINIBOT.HOOK_SERVO_RIGHT.v)
 
-        lift_motorL.direction = DcMotorSimple.Direction.REVERSE
+        lift_motorR.direction = DcMotorSimple.Direction.REVERSE
 
-        hook_left.direction = Servo.Direction.REVERSE
+        hook_right.direction = Servo.Direction.REVERSE
 
         lift_motorL.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         lift_motorR.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
@@ -66,6 +67,12 @@ class LiftSystem() : IMachine, Trackable{
                 lift_motorL.power = speed
                 lift_motorR.power = speed
             }
+            LiftPosition.CAMERA -> {
+                lift_motorL.targetPosition = position.pos
+                lift_motorR.targetPosition = position.pos
+                lift_motorL.power = -speed
+                lift_motorR.power = -speed
+            }
         }
 
     }
@@ -73,6 +80,11 @@ class LiftSystem() : IMachine, Trackable{
     fun setHookPosition(position : HookPosition) {
         hook_left.position = position.pos
         hook_right.position = position.pos
+    }
+
+    fun manualHook(pos : Double) {
+        hook_left.position = pos
+        hook_right.position = pos
     }
 
     fun manual_run(power : Double){

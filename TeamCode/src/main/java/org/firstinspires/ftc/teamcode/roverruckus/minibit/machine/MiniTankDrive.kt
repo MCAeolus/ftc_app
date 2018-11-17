@@ -43,8 +43,8 @@ class MiniTankDrive() : IDriveTrain, Trackable {
      * y = forwards/backwards
      */
     override fun move(x: Double, y: Double, r: Double, p: Double) {
-        val left = ((y) * p) - r
-        val right = ((y) * p) + r
+        val left = ((y) * p) - (r * p)
+        val right = ((y) * p) + (r * p)
         powerSet(left, right)
     }
 

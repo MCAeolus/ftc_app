@@ -25,9 +25,6 @@ class TelemetryOp : Robot(MiniTankDrive(), mapOf(Pair("Lift", LiftSystem()), Pai
         for (m in DRIVETRAIN.motorList())
             m.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
 
-        resetenc(DcMotor.RunMode.RUN_USING_ENCODER, LIFT_SYSTEM.lift_motorL)
-        resetenc(DcMotor.RunMode.RUN_USING_ENCODER, LIFT_SYSTEM.lift_motorR)
-
         LIFT_SYSTEM.lift_motorL.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
         LIFT_SYSTEM.lift_motorR.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
 
@@ -38,6 +35,11 @@ class TelemetryOp : Robot(MiniTankDrive(), mapOf(Pair("Lift", LiftSystem()), Pai
     override fun loop() {
         //telemetry()
         SMIDA_TELE.update()
+
+        if(gamepad1.b){
+            resetenc(DcMotor.RunMode.RUN_USING_ENCODER, LIFT_SYSTEM.lift_motorL)
+            resetenc(DcMotor.RunMode.RUN_USING_ENCODER, LIFT_SYSTEM.lift_motorR)
+        }
 
     }
 
