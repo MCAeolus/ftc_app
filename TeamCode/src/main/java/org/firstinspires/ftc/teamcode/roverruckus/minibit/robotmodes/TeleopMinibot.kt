@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.roverruckus.minibit.robotmodes
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.roverruckus.minibit.machine.LiftSystem
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.machine.MiniTankDrive
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.machine.TotemDropper
 
-@TeleOp(name = "Minibot-Teleop")
+@TeleOp(name = "Minibot-Teleop")@Disabled
 class TeleopMinibot : Robot(MiniTankDrive(), mapOf("Lift" to LiftSystem(), "IMU" to IMU(), "Intake" to IntakeSystem(), "Drop" to TotemDropper())) {
 
     lateinit var LIFT_SYSTEM : LiftSystem
@@ -50,22 +51,41 @@ class TeleopMinibot : Robot(MiniTankDrive(), mapOf("Lift" to LiftSystem(), "IMU"
         telemetry.addData("gamepad l y", gamepad1.left_stick_y)
         telemetry.addData("gamepad 1 r", gamepad1.right_stick_x)
 
-        DRIVETRAIN.move(0.0, -gamepad1.left_stick_y.toDouble(), -gamepad1.right_stick_x.toDouble(), if(slow_drivetrain)0.5 else 1.0)
+        DRIVETRAIN.move(0.0, gamepad1.left_stick_y.toDouble(), -gamepad1.right_stick_x.toDouble(), if(slow_drivetrain)0.5 else 1.0)
 
+        /**
         if(gamepad1.left_trigger > 0 && !(gamepad1.right_trigger > 0)){
             LIFT_SYSTEM.manual_run(-gamepad1.left_trigger.toDouble() * if(slow_arm)0.5 else 1.0)
         }else if(!(gamepad1.left_trigger > 0) && gamepad1.right_trigger > 0){
             LIFT_SYSTEM.manual_run(gamepad1.right_trigger.toDouble() * if(slow_arm) 0.5 else 1.0)
-        }else if (!x1_pressed && !a1_pressed){
+        }else {
             LIFT_SYSTEM.manual_run(0.0)
         }
+        **/
 
+        if(gamepad1.left_trigger > 0 && !(gamepad1.left_bumper)) {
+            LIFT_SYSTEM.manual_run(-gamepad1.left_trigger.toDouble() * if(slow_arm)0.5 else 1.0)
+        }else if(gamepad1.left_bumper && !(gamepad1.left_trigger > 0)) {
+            LIFT_SYSTEM.manual_run(1.0 * if(slow_arm)0.5 else 1.0)
+        } else
+            LIFT_SYSTEM.manual_run(0.0)
+
+        if(gamepad1.right_bumper && !(gamepad1.right_trigger > 0)) {
+            INTAKE.runMotors(true)
+        }else if(gamepad1.right_trigger > 0 && !gamepad1.right_bumper)
+            INTAKE.runMotors(false)
+        else
+            INTAKE.stop()
+
+
+        /**
         if(gamepad1.left_bumper && !gamepad1.right_bumper)
             INTAKE.runMotors(true)
         else if(gamepad1.right_bumper && !gamepad1.left_bumper)
             INTAKE.runMotors(false)
         else
             INTAKE.stop()
+        **/
 
         if(gamepad1.b && !b1_pressed) {
             b1_pressed = true

@@ -2,32 +2,33 @@ package org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
-import com.vuforia.Vuforia
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
+import org.firstinspires.ftc.teamcode.common.common_machines.ControlledMotor
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import org.firstinspires.ftc.teamcode.common.drivetrain.util.PID
 import org.firstinspires.ftc.teamcode.common.robot.LinearRobot
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.HARDWARENAMES_MINIBOT
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.machine.LiftSystem
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.machine.MiniTankDrive
+import org.firstinspires.ftc.teamcode.roverruckus.minibit.machine.TotemDropper
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
-open class AutonomousBase(val autoClearTelemtry : Boolean, val useTF : Boolean) : LinearRobot(MiniTankDrive(), mapOf(Pair("LIFT", LiftSystem()), Pair("IMU", IMU()))) {
+open class AutonomousBase(val autoClearTelemtry : Boolean, val useTF : Boolean) : LinearRobot(MiniTankDrive(), mapOf(Pair("LIFT", LiftSystem()), Pair("IMU", IMU()), Pair("Totem", TotemDropper()))) {
 
     val TF_GOLD_LABEL = "Gold Mineral"
     val TF_SILVER_LABEL = "Silver Mineral"
 
     lateinit var LIFT : LiftSystem
     lateinit var IMU : IMU
+    lateinit var TOTEM : TotemDropper
 
     lateinit var VUFORIA : VuforiaLocalizer
     lateinit var TFOD : TFObjectDetector
@@ -51,7 +52,7 @@ open class AutonomousBase(val autoClearTelemtry : Boolean, val useTF : Boolean) 
 
     val DRIVE_SPEED = 1.0 //default drive speed
     val TURN_SPEED = 0.6 //default turn speed
-    val HEADING_THRESHOLD = 1.0 //can be smaller
+    val HEADING_THRESHOLD = 1.5 //can be smaller
 
     val P_TURN = 0.1
     val P_DRIVE = 0.15
@@ -64,14 +65,23 @@ open class AutonomousBase(val autoClearTelemtry : Boolean, val useTF : Boolean) 
 
         LIFT = COMPONENTS["LIFT"] as LiftSystem
         IMU = COMPONENTS["IMU"] as IMU
+        TOTEM = COMPONENTS["Totem"] as TotemDropper
 
         if(useTF && ClassFactory.getInstance().canCreateTFObjectDetector()) {
             useVuforia()
             useTFOD()
         }
 
-        telemetry.addData("autonomous base finished.", "")
+        telemetry.addData("Status", "autonomous base completed loading.")
         telemetry.update()
+    }
+
+    fun waitingForStart() {
+        while(!isStarted) {
+            telemetry.addData("Status", "waiting for start.")
+            telemetry.addData("Current Direction", IMU.XYZ().thirdAngle)
+            telemetry.update()
+        }
     }
 
     fun resetenc(final_mode : DcMotor.RunMode, motor : DcMotor){
@@ -238,25 +248,6 @@ open class AutonomousBase(val autoClearTelemtry : Boolean, val useTF : Boolean) 
         else return SampleFace.CENTER
     }
 
-    fun rot_noPID(angle : Double, type : RotationType) {
-
-
-        var ang = angle
-
-        val isOneEighty = type == RotationType.ONE_EIGHTY
-
-        if(ang < 0 && !isOneEighty) ang+= 360
-
-        val timerrot = ElapsedTime()
-        timerrot.reset()
-        while(timerrot.time() < 5 && Math.abs(ang - (if(!isOneEighty) IMU.getZ360() else IMU.XYZ().thirdAngle)) > 4 && opModeIsActive()){
-            val pow = if(Math.abs(ang - (if(!isOneEighty) IMU.getZ360() else IMU.XYZ().thirdAngle)) > 9) 0.7 else 0.2
-            val dir = ang - (if(!isOneEighty) IMU.getZ360() else IMU.XYZ().thirdAngle)
-            DRIVETRAIN.move(0.0, 0.0, pow * (if(dir > 0) 1.0 else -1.0))
-        }
-        DRIVETRAIN.stop()
-    }
-
     fun drive(speed : Double = DRIVE_SPEED, distance : Double) {
         val frontCounts = distance * FRONT_ENCODER_INCH
         val backCounts = distance * BACK_ENCODER_INCH
@@ -265,28 +256,37 @@ open class AutonomousBase(val autoClearTelemtry : Boolean, val useTF : Boolean) 
 
         val keepAngle = IMU.XYZ().thirdAngle.toDouble()
 
+        val controlled_motors = ArrayList<ControlledMotor>()
         for(pair in DRIVETRAIN.motorMap()) {
-            when(pair.key) {
-                HARDWARENAMES_MINIBOT.DRIVE_MOTOR_FRONT_LEFT.v,
-                HARDWARENAMES_MINIBOT.DRIVE_MOTOR_FRONT_RIGHT.v -> pair.value.targetPosition = pair.value.currentPosition + frontCounts.toInt()
-                HARDWARENAMES_MINIBOT.DRIVE_MOTOR_BACK_LEFT.v,
-                HARDWARENAMES_MINIBOT.DRIVE_MOTOR_BACK_RIGHT.v -> pair.value.targetPosition = pair.value.currentPosition + backCounts.toInt()
-            }
-        }
 
-        DRIVETRAIN.motorList().forEach { it.mode = DcMotor.RunMode.RUN_TO_POSITION }
+            val targ = when(pair.key) {
+                HARDWARENAMES_MINIBOT.DRIVE_MOTOR_FRONT_LEFT.v,
+                HARDWARENAMES_MINIBOT.DRIVE_MOTOR_FRONT_RIGHT.v -> pair.value.currentPosition + frontCounts.toInt()
+                else -> pair.value.currentPosition + backCounts.toInt()
+            }
+
+            pair.value.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
+            val mc = ControlledMotor(pair.value, targ,
+                    (targ - pair.value.currentPosition) >= 0)
+            controlled_motors.add(mc)
+
+        }
 
         val run_speed  = Range.clip(speed.absoluteValue, 0.0, 1.0)
         DRIVETRAIN.powerSet(run_speed, run_speed)
 
-        while(opModeIsActive() && motorsAreBusy()) {
+        while(opModeIsActive() && motorsAreBusy(controlled_motors)) {
             val error = getError(keepAngle)
             var steer = getSteer(error, P_DRIVE)
 
             steer *= if(distance < 0) -1.0 else 1.0
 
-            var leftSpeed = speed - steer
-            var rightSpeed = speed + steer
+            var leftSpeed = run_speed - steer
+            var rightSpeed = run_speed + steer
+
+            leftSpeed *= if(distance < 0) -1 else 1
+            rightSpeed *= if(distance < 0) -1 else 1
 
             val max = Math.max(leftSpeed, rightSpeed)
 
@@ -298,7 +298,6 @@ open class AutonomousBase(val autoClearTelemtry : Boolean, val useTF : Boolean) 
             DRIVETRAIN.powerSet(leftSpeed, rightSpeed)
         }
 
-        DRIVETRAIN.motorList().forEach { it.mode = DcMotor.RunMode.RUN_USING_ENCODER }
         DRIVETRAIN.stop()
     }
 
@@ -309,8 +308,10 @@ open class AutonomousBase(val autoClearTelemtry : Boolean, val useTF : Boolean) 
         }
     }
 
-    fun motorsAreBusy() : Boolean {
-        DRIVETRAIN.motorList().forEach { if(it.isBusy) return true }
+    fun motorsAreBusy(controlled_motors : List<ControlledMotor>) : Boolean {
+        controlled_motors.forEach {
+            if(it.isBusy()) return true
+        }
         return false
     }
 

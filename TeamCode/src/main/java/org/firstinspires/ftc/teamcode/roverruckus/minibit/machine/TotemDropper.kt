@@ -11,10 +11,11 @@ class TotemDropper() : IMachine, Trackable {
 
     override fun init(robot: IRobot) {
         totem_servo = robot.opMode().hardwareMap.get(Servo::class.java, "totem_servo")
+        reset()
     }
 
     fun dump() {
-        totem_servo.position = 0.5
+        totem_servo.position = 0.0
     }
 
     fun reset() {

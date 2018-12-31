@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 
-@Autonomous(name="tf test")
+@Autonomous(name="tf test")@Disabled
 class TFTest : AutonomousBase(false, true) {
 
     val TIMER_TF = ElapsedTime()

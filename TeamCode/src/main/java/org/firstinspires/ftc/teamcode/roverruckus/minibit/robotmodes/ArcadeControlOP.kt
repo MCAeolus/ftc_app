@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.roverruckus.minibit.robotmodes
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import org.firstinspires.ftc.teamcode.common.robot.Robot
@@ -7,7 +8,7 @@ import org.firstinspires.ftc.teamcode.common.util.SmidaTelemetry
 import org.firstinspires.ftc.teamcode.common.util.TelemetryField
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.machine.MiniTankDrive
 
-@TeleOp(name="Arcade Test")
+@TeleOp(name="Arcade Test")@Disabled
 class ArcadeControlOP : Robot(MiniTankDrive(), mapOf("IMU" to IMU())) {
 
     @TelemetryField

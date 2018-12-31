@@ -1,19 +1,13 @@
 package org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous
 
-import android.drm.DrmInfoEvent
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition
-import org.firstinspires.ftc.teamcode.common.util.SmidaTelemetry
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.machine.LiftSystem
-import org.tensorflow.lite.TensorFlowLite
-import java.util.concurrent.ThreadPoolExecutor
 
-
-@Autonomous(name="Autonomous TF- tot & samp")@Disabled
-class AutonomousBasicMiniTF : AutonomousBase(true, true) {
+@Autonomous(name = "Autonomous TF - 1 sample")@Disabled
+class AutonomousTFOneSample : AutonomousBase(true, true) {
 
     val timer_it = ElapsedTime()
 
@@ -58,53 +52,27 @@ class AutonomousBasicMiniTF : AutonomousBase(true, true) {
 
         hold(500)
 
-        if(sample_position != SamplePosition.LEFT)turn(angle = 0.0)
+        turn(angle = 0.0)
         hold(500)
-
-        var turn_sample_angle = 0.0
-        var move_sample_dist = 0.0
-        var move_post = 0.0
 
         when(sample_position) {
             SamplePosition.LEFT -> {
-                turn_sample_angle = 40.0
-                move_sample_dist = 22.0
-                move_post = 26.0
+                turn(angle = 40.0)
+                drive(distance = 22.0)
             }
             SamplePosition.N_A,
             SamplePosition.CENTER -> {
-                move_sample_dist = 20.0
-                move_post = 42.0
+                drive(distance = 20.0)
             }
             SamplePosition.RIGHT -> {
-                turn_sample_angle = -40.0
-                move_sample_dist = 22.0
-                move_post = 50.0
+                turn(angle = -40.0)
+                drive(distance = 22.0)
             }
         }
 
-        turn(angle = turn_sample_angle)
-        drive(distance = move_sample_dist)
-
         turn(angle = 0.0)
 
-        drive(distance = 8.0)
-        hold(50)
-        drive(distance = -15.0)
-
-        turn(angle = 90.0)
-
-        drive(distance = move_post)
-        turn(angle = 320.0)
-
-        drive(distance = -30.0)
-
-        TOTEM.dump()
-        hold(1000)
-        TOTEM.reset()
-
-        drive(distance = 60.0)
-
+        drive(distance = 9.0)
         DRIVETRAIN.stop()
     }
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.HARDWARENAMES_MINIBOT
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.teamcode.roverruckus.minibit.machine.MiniTankDrive
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
-@Autonomous(name = "enc test")
+@Autonomous(name = "enc test")@Disabled
 class TESTROTCLASS : AutonomousBase(true, false) {
 
 

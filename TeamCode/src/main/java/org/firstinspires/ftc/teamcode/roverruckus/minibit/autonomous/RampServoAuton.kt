@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 
-@Autonomous(name="ramp up")
+@Autonomous(name="ramp up")@Disabled
 class RampServoAuton : AutonomousBase(true, false) {
 
     override fun runOpMode() {
@@ -10,7 +11,7 @@ class RampServoAuton : AutonomousBase(true, false) {
 
         LIFT.manualHook(0.0)
 
-        waitForStart()
+        waitingForStart()
 
         var rampUp = true
         val increment = 0.05

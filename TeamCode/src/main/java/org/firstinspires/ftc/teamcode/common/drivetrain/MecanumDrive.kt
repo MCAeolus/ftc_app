@@ -37,7 +37,8 @@ class MecanumDrive(val motorsNames : Array<String>) : IDriveTrain { //Diamond-Ba
         FL_MOTOR.mode = DcMotor.RunMode.RUN_USING_ENCODER
         FR_MOTOR.mode = DcMotor.RunMode.RUN_USING_ENCODER
         BL_MOTOR.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        BR_MOTOR.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        BR_MOTOR.mode = DcMotor
+                .RunMode.RUN_USING_ENCODER
 
         F_SIDE = arrayOf(FR_MOTOR, BL_MOTOR)
         G_SIDE = arrayOf(FL_MOTOR, BR_MOTOR)
