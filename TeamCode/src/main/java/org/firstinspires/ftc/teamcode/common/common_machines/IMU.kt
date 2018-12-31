@@ -17,6 +17,8 @@ class IMU : IMachine, Trackable {
     lateinit var VS : VoltageSensor
     lateinit var IMU : BNO055IMU
 
+    val DEVICE_NAME = "imu 1"
+
 
     override fun init(robot: IRobot) {
         val IMU_PAR = BNO055IMU.Parameters()
@@ -26,7 +28,7 @@ class IMU : IMachine, Trackable {
         IMU_PAR.loggingTag = "IMU"
         IMU_PAR.accelerationIntegrationAlgorithm = JustLoggingAccelerationIntegrator()
 
-        IMU = robot.opMode().hardwareMap.get(com.qualcomm.hardware.bosch.BNO055IMU::class.java, "imu 1")
+        IMU = robot.opMode().hardwareMap.get(com.qualcomm.hardware.bosch.BNO055IMU::class.java, DEVICE_NAME)
         IMU.initialize(IMU_PAR)
 
 

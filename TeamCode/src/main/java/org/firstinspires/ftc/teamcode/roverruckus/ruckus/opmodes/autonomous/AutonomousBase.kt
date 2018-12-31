@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.relicrecovery.scorpion.machine.DummyMachin
 import org.firstinspires.ftc.teamcode.roverruckus.minibit.HARDWARENAMES_MINIBOT
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 
-class AutonomousBase(val useTF : Boolean = false) : LinearRobot(MecanumDriveTrain(), mapOf("IMU" to IMU())) {
+open class AutonomousBase(val useTF : Boolean = false) : LinearRobot(MecanumDriveTrain(), mapOf("IMU" to IMU())) {
 
     val TF_GOLD_LABEL = "Gold Mineral"
     val TF_SILVER_LABEL = "Silver Mineral"

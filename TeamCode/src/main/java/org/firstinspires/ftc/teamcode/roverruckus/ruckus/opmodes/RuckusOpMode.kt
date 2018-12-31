@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.common.robot.Robot
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 @TeleOp(name="Ruckus")
-class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf()){
+open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf()){
 
     override fun start() {
     }
