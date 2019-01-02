@@ -27,6 +27,7 @@ class RecordingTeleOp : RuckusOpMode() {
         super.init_loop()
 
         telemetry.addData("File Name", RecordingFileFromFTCDashboard.FILE_NAME_TO_RECORD)
+        telemetry.addData("Trim statrus", RecordingFileFromFTCDashboard.WILL_FILE_TRIM)
 
         if(RecordingFileFromFTCDashboard.FILE_NAME_TO_RECORD == "") telemetry.addData("Status", "waiting for file name to be updated.")
         else telemetry.addData("Status", "ready to start.")
@@ -49,7 +50,7 @@ class RecordingTeleOp : RuckusOpMode() {
 
     override fun loop() {
         super.loop()
-        if(startTime == -1.0) startTime = time
+        if (startTime == -1.0) startTime = time
 
         val elapsed = time - startTime
         telemetry.addData("File", RecordingFileFromFTCDashboard.FILE_NAME_TO_RECORD)
@@ -57,12 +58,17 @@ class RecordingTeleOp : RuckusOpMode() {
 
 
         //UPDATE GIVEN ADDED MACHINES
-        DRIVETRAIN.motorList().forEach{ recorder.record(it.deviceName, elapsed)}
-        recorder.record(IMU.DEVICE_NAME, elapsed)
+        DRIVETRAIN.motorList().forEach{ recorder.queue(it.deviceName, elapsed)}
+        recorder.queue(IMU.DEVICE_NAME, elapsed)
     }
 
     override fun stop() {
         super.stop()
+
+        if(RecordingFileFromFTCDashboard.WILL_FILE_TRIM) trim()
+
+        recorder.recordQueue()
+
 
         try {
             output.close()
@@ -71,8 +77,55 @@ class RecordingTeleOp : RuckusOpMode() {
         }
     }
 
+    private fun trim() {
+        var differenceIndexBeginning = -1
+        var differenceIndexEnd = -1
+
+        for(i in 0 until recorder.imuQueue.size) {
+            if(differenceIndexBeginning == -1 && (nextIsSame(i, recorder.imuQueue) != true || nextIsSame(i, recorder.dcQueue) != true || nextIsSame(i, recorder.servoQueue) != true))
+                differenceIndexBeginning = i
+
+            val revIndex = recorder.imuQueue.lastIndex - i
+            if(differenceIndexEnd == -1 && (lastIsSame(revIndex, recorder.imuQueue) != true || lastIsSame(revIndex, recorder.dcQueue) != true || lastIsSame(revIndex, recorder.servoQueue) != true))
+                differenceIndexEnd = revIndex
+
+            if(differenceIndexBeginning != -1 && differenceIndexEnd != -1) break
+        }
+
+        if(differenceIndexEnd <= differenceIndexBeginning) differenceIndexEnd = recorder.imuQueue.lastIndex
+
+        if(differenceIndexBeginning > -1) {
+            val newListIMU = ArrayList<TimeStampedDataStream.Data>()
+            val newListDC = ArrayList<TimeStampedDataStream.Data>()
+            val newListSERVO = ArrayList<TimeStampedDataStream.Data>()
+
+            var time_t = 0.0
+
+            for(i in differenceIndexBeginning..differenceIndexEnd) {
+                val old_d_imu = recorder.imuQueue[i]
+                val old_d_dc = recorder.dcQueue[i]
+                val old_d_servo = recorder.servoQueue[i]
+
+                time_t+=old_d_imu.timeDelta
+
+                newListIMU.add(TimeStampedDataStream.Data(old_d_imu.name, time_t, old_d_imu.data, old_d_imu.timeDelta))
+                newListDC.add(TimeStampedDataStream.Data(old_d_dc.name, time_t, old_d_dc.data, old_d_dc.timeDelta))
+                newListSERVO.add(TimeStampedDataStream.Data(old_d_servo.name, time_t, old_d_servo.data, old_d_servo.timeDelta))
+
+            }
+
+            recorder.imuQueue = newListIMU
+            recorder.dcQueue = newListDC
+            recorder.servoQueue = newListSERVO
+        }
+    }
+
+    private fun nextIsSame(i : Int, l : List<TimeStampedDataStream.Data>) : Boolean? = if((l.lastIndex) >= (i + 1)) l[i].data.contentEquals(l[i + 1].data) else true
+    private fun lastIsSame(i : Int, l : List<TimeStampedDataStream.Data>) : Boolean? = if((i - 1) >= 0) l[i].data.contentEquals(l[i - 1].data) else true
+
     @Config
     object RecordingFileFromFTCDashboard {
         @JvmField var FILE_NAME_TO_RECORD = ""
+        @JvmField var WILL_FILE_TRIM = true
     }
 }

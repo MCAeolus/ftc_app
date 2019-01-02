@@ -7,7 +7,7 @@ import java.util.*
 class TimeStampedDataStream {
 
 
-    class Data(val name : String, val timestamp : Double, val data : Array<Double>) : Serializable
+    class Data(val name : String, val timestamp : Double, val data : Array<Double>, val timeDelta : Double) : Serializable
 
     class Writer(output : OutputStream) {
         private var outputStream = ObjectOutputStream(output)
