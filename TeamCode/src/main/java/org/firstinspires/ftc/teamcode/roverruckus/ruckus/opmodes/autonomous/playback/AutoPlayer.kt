@@ -21,6 +21,8 @@ class AutoPlayer : AutonomousBase() {
             telemetry.update()
         }
 
+        //reset encoders first
+
         if(RecordingFileFromFTCDashboard.FILE_NAME_TO_PLAY == "")requestOpModeStop()
         else {
             val input = hardwareMap.appContext.openFileInput(RecordingFileFromFTCDashboard.FILE_NAME_TO_PLAY)

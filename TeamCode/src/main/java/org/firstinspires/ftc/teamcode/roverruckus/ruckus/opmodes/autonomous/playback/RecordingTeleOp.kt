@@ -39,6 +39,9 @@ class RecordingTeleOp : RuckusOpMode() {
 
         if(RecordingFileFromFTCDashboard.FILE_NAME_TO_RECORD == "") requestOpModeStop()
 
+        //reset all encoders here
+
+
         try {
             output = hardwareMap.appContext.openFileOutput(RecordingFileFromFTCDashboard.FILE_NAME_TO_RECORD, Context.MODE_PRIVATE)
             recorder = Recording.Record(hardwareMap, output)
