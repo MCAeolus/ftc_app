@@ -25,26 +25,28 @@ class Recording {
                 is DcMotor -> {
                     val toRecord = TimeStampedDataStream.Data(deviceName, time, arrayOf(device.power, device.currentPosition.toDouble()), getTimeDelta(time, dcQueue))
                     dcQueue.add(toRecord)
+                    writer.write(toRecord)
                 }
                 is Servo -> {
                     val toRecord = TimeStampedDataStream.Data(deviceName, time, arrayOf(device.position), getTimeDelta(time, servoQueue))
                     servoQueue.add(toRecord)
+                    writer.write(toRecord)
                 }
                 is BNO055IMU -> {
                     val toRecord = TimeStampedDataStream.Data(deviceName, time, arrayOf(device.angularOrientation.toAxesOrder(AxesOrder.XYZ).thirdAngle.toDouble()), getTimeDelta(time, imuQueue))
                     imuQueue.add(toRecord)
+                    writer.write(toRecord)
                 }
             }
+
         }
 
         private fun getTimeDelta(time : Double, l : List<TimeStampedDataStream.Data>) = if(l.lastOrNull() == null) 0.0 else time - (l.lastOrNull() as TimeStampedDataStream.Data).timestamp
 
         fun recordQueue() {
-            for(i in 0 until imuQueue.size) {
-                writer.write(imuQueue[i])
-                writer.write(dcQueue[i])
-                writer.write(servoQueue[i])
-            }
+            imuQueue.forEach { writer.write(it) }
+            dcQueue.forEach { writer.write(it) }
+            servoQueue.forEach{ writer.write(it) }
         }
     }
 
@@ -73,7 +75,7 @@ class Recording {
             return reader.fileDone()
         }
 
-        fun playback_data(time : Double) : Pair<Array<TimeStampedDataStream.Data>, Boolean> {
+        fun playback_data(time : Double) : Pair<List<TimeStampedDataStream.Data>, Boolean> {
             return Pair(reader.readUntil(time), reader.fileDone())
         }
 

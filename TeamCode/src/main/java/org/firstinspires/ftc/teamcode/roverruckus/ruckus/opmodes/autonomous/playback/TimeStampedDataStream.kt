@@ -14,7 +14,7 @@ class TimeStampedDataStream {
         private var pTimestamp = 0.0
 
         fun write(point : Data) {
-            if(point.timestamp < pTimestamp) throw IllegalArgumentException("Time went backwards!")
+            if(point.timestamp < pTimestamp) throw IllegalArgumentException("Time went backwards!") as Throwable
 
             outputStream.writeObject(point)
             pTimestamp = point.timestamp
@@ -41,15 +41,15 @@ class TimeStampedDataStream {
             }
         }
 
-        fun readUntil(time : Double) : Array<Data> {
+        fun readUntil(time : Double) : List<Data> {
             val dataList = ArrayList<Data>()
 
             while(true){
-                val d = read() ?: return dataList.toArray() as Array<Data>
+                val d = read() ?: return dataList
                 if(d.timestamp < time) dataList.add(d)
                 else {
                     nextPoint = d
-                    return dataList.toArray() as Array<Data>
+                    return dataList
                 }
             }
         }

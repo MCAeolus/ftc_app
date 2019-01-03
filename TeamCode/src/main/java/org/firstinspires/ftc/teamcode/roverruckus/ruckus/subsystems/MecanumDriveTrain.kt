@@ -71,6 +71,13 @@ class MecanumDriveTrain : IDriveTrain, Trackable {
         motorBR.power = br
     }
 
+    fun resetEncoders() {
+        for(m in motorList()) {
+            m.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            m.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        }
+    }
+
     override fun data(): Map<String, Any> = linkedMapOf()
 
 }

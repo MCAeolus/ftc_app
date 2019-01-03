@@ -6,6 +6,7 @@ public class HNAMES_RUCKUS {
             DRIVE_MOTORFL = "driveFL",
             DRIVE_MOTORFR = "driveFR",
             DRIVE_MOTORBL = "driveBL",
-            DRIVE_MOTORBR = "driveBR";
+            DRIVE_MOTORBR = "driveBR",
+            SERVO_DUMMY   = "DummyServo";
 
 }

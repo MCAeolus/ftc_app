@@ -4,7 +4,9 @@ import android.content.Context
 import com.acmerobotics.dashboard.config.Config
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 import java.io.FileOutputStream
 
 
@@ -27,10 +29,11 @@ class RecordingTeleOp : RuckusOpMode() {
         super.init_loop()
 
         telemetry.addData("File Name", RecordingFileFromFTCDashboard.FILE_NAME_TO_RECORD)
-        telemetry.addData("Trim statrus", RecordingFileFromFTCDashboard.WILL_FILE_TRIM)
+        telemetry.addData("Trim status", RecordingFileFromFTCDashboard.WILL_FILE_TRIM)
 
         if(RecordingFileFromFTCDashboard.FILE_NAME_TO_RECORD == "") telemetry.addData("Status", "waiting for file name to be updated.")
         else telemetry.addData("Status", "ready to start.")
+
 
     }
 
@@ -39,6 +42,7 @@ class RecordingTeleOp : RuckusOpMode() {
 
         if(RecordingFileFromFTCDashboard.FILE_NAME_TO_RECORD == "") requestOpModeStop()
 
+        (DRIVETRAIN as MecanumDriveTrain).resetEncoders()
         //reset all encoders here
 
 
@@ -61,17 +65,16 @@ class RecordingTeleOp : RuckusOpMode() {
 
 
         //UPDATE GIVEN ADDED MACHINES
-        DRIVETRAIN.motorList().forEach{ recorder.queue(it.deviceName, elapsed)}
+        DRIVETRAIN.motorMap().forEach{ recorder.queue(it.key, elapsed)}
         recorder.queue(IMU.DEVICE_NAME, elapsed)
+        //recorder.queue(HNAMES_RUCKUS.SERVO_DUMMY, elapsed)
     }
 
     override fun stop() {
         super.stop()
 
-        if(RecordingFileFromFTCDashboard.WILL_FILE_TRIM) trim()
-
-        recorder.recordQueue()
-
+        //if(RecordingFileFromFTCDashboard.WILL_FILE_TRIM) trim()
+        //recorder.recordQueue()
 
         try {
             output.close()

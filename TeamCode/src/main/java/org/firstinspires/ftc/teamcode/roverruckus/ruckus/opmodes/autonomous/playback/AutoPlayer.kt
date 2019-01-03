@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.AutonomousBase
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 
 
 @Autonomous(name="Auto Player")
@@ -17,15 +18,17 @@ class AutoPlayer : AutonomousBase() {
         super.runOpMode()
 
         while(!isStarted) {
-            telemetry.addData("Status", "file is ${RecordingFileFromFTCDashboard.FILE_NAME_TO_PLAY}")
+            telemetry.addData("Status", "file is ${RecordingFileFromFTCDashboardAUTO.FILE_NAME_TO_PLAY}")
             telemetry.update()
         }
 
+        (DRIVETRAIN as MecanumDriveTrain).resetEncoders()
+
         //reset encoders first
 
-        if(RecordingFileFromFTCDashboard.FILE_NAME_TO_PLAY == "")requestOpModeStop()
+        if(RecordingFileFromFTCDashboardAUTO.FILE_NAME_TO_PLAY == "")requestOpModeStop()
         else {
-            val input = hardwareMap.appContext.openFileInput(RecordingFileFromFTCDashboard.FILE_NAME_TO_PLAY)
+            val input = hardwareMap.appContext.openFileInput(RecordingFileFromFTCDashboardAUTO.FILE_NAME_TO_PLAY)
             val playback = Recording.Play(input, hardwareMap)
 
             val timer = ElapsedTime()
@@ -68,7 +71,7 @@ class AutoPlayer : AutonomousBase() {
 
 
     @Config
-    object RecordingFileFromFTCDashboard {
+    object RecordingFileFromFTCDashboardAUTO {
         @JvmField var FILE_NAME_TO_PLAY = ""
     }
 
