@@ -4,6 +4,7 @@ import android.icu.text.AlphabeticIndex
 import com.acmerobotics.dashboard.config.Config
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.Auto
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 
 
-@Autonomous(name="Auto Player")
+@Autonomous(name="Auto Player")@Disabled
 class AutoPlayer : AutonomousBase() {
 
     override fun runOpMode() {
@@ -70,7 +71,7 @@ class AutoPlayer : AutonomousBase() {
     }
 
 
-    @Config
+    //@Config
     object RecordingFileFromFTCDashboardAUTO {
         @JvmField var FILE_NAME_TO_PLAY = ""
     }

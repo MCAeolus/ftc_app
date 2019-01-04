@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.pla
 import android.content.Context
 import com.acmerobotics.dashboard.config.Config
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
@@ -10,7 +11,7 @@ import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDrive
 import java.io.FileOutputStream
 
 
-@Autonomous(name = "Teleop Recorder")
+@Autonomous(name = "Teleop Recorder")@Disabled
 class RecordingTeleOp : RuckusOpMode() {
 
     private var startTime = -1.0
@@ -129,7 +130,7 @@ class RecordingTeleOp : RuckusOpMode() {
     private fun nextIsSame(i : Int, l : List<TimeStampedDataStream.Data>) : Boolean? = if((l.lastIndex) >= (i + 1)) l[i].data.contentEquals(l[i + 1].data) else true
     private fun lastIsSame(i : Int, l : List<TimeStampedDataStream.Data>) : Boolean? = if((i - 1) >= 0) l[i].data.contentEquals(l[i - 1].data) else true
 
-    @Config
+    //@Config
     object RecordingFileFromFTCDashboard {
         @JvmField var FILE_NAME_TO_RECORD = ""
         @JvmField var WILL_FILE_TRIM = true
