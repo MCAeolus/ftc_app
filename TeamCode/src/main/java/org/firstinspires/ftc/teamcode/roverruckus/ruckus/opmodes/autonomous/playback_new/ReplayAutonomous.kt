@@ -22,7 +22,14 @@ class ReplayAutonomous : AutonomousBase() {
         if(RecordingConfig.FILE_NAME == "")requestOpModeStop()
         val RECORD = TimeStampedData.DataStream(RecordingConfig.FILE_NAME, hardwareMap)
 
+        if(!hardwareMap.appContext.fileList().contains(RECORD.realFileName)) {
+            telemetry.addData("FILE DOES NOT EXIST.", "")
+            telemetry.update()
+            holdToShutdown()
+        }
+
         RECORD.load()
+        if(RecordingConfig.SHOULD_TRIM == "1") RECORD.trim()
         RECORD.prepare()
 
         (DRIVETRAIN as MecanumDriveTrain).resetEncoders()
@@ -30,6 +37,9 @@ class ReplayAutonomous : AutonomousBase() {
         val STARTTIME = time
         while(opModeIsActive()) {
             val elapsed = time - STARTTIME
+
+            telemetry.addData("elapsed time", elapsed)
+            telemetry.update()
 
             val data = RECORD.pointsUntil(elapsed)
             var targetRotation = 0.0
@@ -39,18 +49,24 @@ class ReplayAutonomous : AutonomousBase() {
 
                     when(device) {
                         is DcMotor -> {
+                            device.mode = DcMotor.RunMode.RUN_USING_ENCODER
                             device.power = it.data[0]
                             device.targetPosition = it.data[1].toInt()
                         }
                         is Servo -> device.position = it.data[0]
 
                         is BNO055IMU -> targetRotation = it.data[0]
-
                     }
                 }
             }
+
+
+
+
             if(data.second)break
         }
+        DRIVETRAIN.stop()
+
     }
 
 }

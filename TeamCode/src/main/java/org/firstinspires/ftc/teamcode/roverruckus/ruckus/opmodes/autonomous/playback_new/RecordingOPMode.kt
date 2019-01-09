@@ -34,9 +34,10 @@ class RecordingOPMode : RuckusOpMode() {
     override fun start() {
         super.start()
 
-        if(RecordingConfig.FILE_NAME == "")requestOpModeStop()
 
         RECORD = TimeStampedData.DataStream(RecordingConfig.FILE_NAME, hardwareMap)
+
+        if(RecordingConfig.FILE_NAME == "")requestOpModeStop()
 
         (DRIVETRAIN as MecanumDriveTrain).resetEncoders()
     }
@@ -59,8 +60,7 @@ class RecordingOPMode : RuckusOpMode() {
     }
 
     override fun stop() {
-        this.stop()
-
+        if(RecordingConfig.SHOULD_TRIM == "1") RECORD.trim()
         RECORD.write()
     }
 

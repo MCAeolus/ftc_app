@@ -6,27 +6,37 @@ import java.io.*
 import java.util.*
 
 class TimeStampedData {
+    companion object {
+        val FILE_PREFIX = "_REPLAY_"
+    }
 
-    class DataStream(val fileName : String, val hardware : HardwareMap) {
+    class DataStream(val rawFileName : String, val hardware : HardwareMap) {
 
+        val fileName : String
+        val realFileName : String
         private val data = ArrayList<DataPoint>()
         private var iterableData: Iterator<DataPoint>? = null
         private var pointBuffer : DataPoint? = null
 
+        init {
+            fileName = rawFileName.replace(FILE_PREFIX, "")
+            realFileName = "${TimeStampedData.FILE_PREFIX}$fileName"
+        }
+
         fun load() {
-            val datastream = ObjectInputStream(hardware.appContext.openFileInput(fileName))
+            val datastream = ObjectInputStream(hardware.appContext.openFileInput(realFileName))
 
             do {
                 try {
                     data.add(datastream.readObject() as DataPoint)
-                } catch ( e : EOFException ) { break }
+                } catch ( e : Exception ) { break }
             }while(true)
 
             datastream.close()
         }
 
         fun write() {
-            val datastream = ObjectOutputStream(hardware.appContext.openFileOutput(fileName, Context.MODE_PRIVATE))
+            val datastream = ObjectOutputStream(hardware.appContext.openFileOutput(realFileName, Context.MODE_PRIVATE))
 
             data.forEach { datastream.writeObject(it) }
 
@@ -39,10 +49,14 @@ class TimeStampedData {
 
         fun nextPoint() : DataPoint? {
             if(iterableData == null && data.isNotEmpty()) prepare()
-            else return null
+            else if(iterableData == null) return null
 
-            return if(pointBuffer != null) pointBuffer
-            else iterableData?.next()
+            if(pointBuffer != null) {
+                val pb = pointBuffer
+                pointBuffer = null
+                return pb
+            }
+            else return if(iterableData!!.hasNext()) iterableData?.next() else null
         }
 
         fun pointsUntil(time : Double) : Pair<List<DataPoint>, Boolean> {
@@ -96,11 +110,11 @@ class TimeStampedData {
                 }
             }
             if (trimPointStart > 0)
-                newData = newData.subList(trimPointStart, newData.lastIndex)
+                newData = newData.subList(trimPointStart, newData.size)
 
-            for (i in newData.lastIndex..1) {
-                val current = data[i]
-                val last = data[i - 1]
+            for (i in newData.lastIndex downTo 1) {
+                val current = newData[i]
+                val last = newData[i - 1]
 
                 if (!current.isSimilar(last)) {
                     trimPointEnd = i
@@ -109,7 +123,7 @@ class TimeStampedData {
             }
 
             if (trimPointEnd > 0)
-                newData.subList(0, trimPointEnd)
+                newData = newData.subList(0, trimPointEnd+1)
 
             data.clear()
             var timeT = 0.0
