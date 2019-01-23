@@ -10,7 +10,7 @@ class BrowserOPMode : LinearOpMode() {
     override fun runOpMode() {
 
         var selectorLoc = 0
-        val timeoutDelta = .150
+        val timeoutDelta = .25
         var b_press = 0
         var b_press_selector_focus = -1
         var pressTimeout = -1.0
@@ -19,7 +19,7 @@ class BrowserOPMode : LinearOpMode() {
             val fileList = hardwareMap.appContext.fileList().filter { it.startsWith(TimeStampedData.FILE_PREFIX) }
             telemetry.captionValueSeparator = ""
             telemetry.addData("Use the up and down arrow on the controller to select the files below.","")
-            telemetry.addData("Press 'B' TWICE (currently $b_press/2) to delete the selected file, or 'A' to mark the selected file for usage in Auto Player. Press 'X' to exit the selector. Press 'Y' to trim the file.", "")
+            telemetry.addData("Press 'B' THRICE (currently $b_press/3) to delete the selected file, or 'A' to mark the selected file for usage in Auto Player. Press 'X' to exit the selector. Press 'Y' to trim the file.", "")
             telemetry.addData("All existing files shown below(${fileList.size}):", "")
 
             if(!inTimeout(timeoutDelta, pressTimeout)) {
@@ -35,14 +35,11 @@ class BrowserOPMode : LinearOpMode() {
                     pressTimeout = time
                     b_press++
                     if(b_press_selector_focus == -1) b_press_selector_focus = selectorLoc
-                    if(b_press > 1 && b_press_selector_focus == selectorLoc) {
+                    if(b_press > 2 && b_press_selector_focus == selectorLoc) {
                         b_press = 0
                         b_press_selector_focus = -1
                         hardwareMap.appContext.deleteFile(fileList[selectorLoc])
                         selectorLoc = if (selectorLoc > 0) selectorLoc - 1 else 0
-                    }else if(b_press_selector_focus != selectorLoc && b_press > 0) {
-                        b_press_selector_focus = -1
-                        b_press = 0
                     }
                 }
                 else if(gamepad1.a) {
@@ -50,11 +47,16 @@ class BrowserOPMode : LinearOpMode() {
                     pressTimeout = time
                 }
                 else if(gamepad1.y) {
+                    pressTimeout = time
                     val RECORD = TimeStampedData.DataStream(fileList[selectorLoc], hardwareMap)
                     RECORD.load()
                     RECORD.trim()
                     RECORD.write()
-                    pressTimeout = time
+                }
+
+                if(b_press > 0 && b_press_selector_focus != selectorLoc) {
+                    b_press_selector_focus = -1
+                    b_press = 0
                 }
             }
 

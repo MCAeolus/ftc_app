@@ -17,8 +17,9 @@ class IMU : IMachine, Trackable {
     lateinit var VS : VoltageSensor
     lateinit var IMU : BNO055IMU
 
-    val DEVICE_NAME = "imu 1"
-
+    object Config {
+        val DEVICE_NAME = "imu"
+    }
 
     override fun init(robot: IRobot) {
         val IMU_PAR = BNO055IMU.Parameters()
@@ -28,7 +29,7 @@ class IMU : IMachine, Trackable {
         IMU_PAR.loggingTag = "IMU"
         IMU_PAR.accelerationIntegrationAlgorithm = JustLoggingAccelerationIntegrator()
 
-        IMU = robot.opMode().hardwareMap.get(com.qualcomm.hardware.bosch.BNO055IMU::class.java, DEVICE_NAME)
+        IMU = robot.opMode().hardwareMap.get(com.qualcomm.hardware.bosch.BNO055IMU::class.java, Config.DEVICE_NAME)
         IMU.initialize(IMU_PAR)
 
 
@@ -65,6 +66,10 @@ class IMU : IMachine, Trackable {
         return linkedMapOf(
                 "Z-Axis (degrees 360): " to getZ360(),
                 "Z-Axis (degrees 180): " to XYZ().thirdAngle,
+                "Y-Axis (degrees 360): " to getY360(),
+                "Y-Axis (degrees 180): " to XYZ().secondAngle,
+                "X-Axis (degrees 360): " to getX360(),
+                "X-Axis (degrees 180): " to XYZ().firstAngle,
                 "Voltage Sensor (volts): " to VS.voltage
         )
 

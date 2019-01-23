@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.pla
 import android.media.tv.TvInputManager
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 import java.util.concurrent.TimeoutException
@@ -12,15 +13,15 @@ import kotlin.reflect.jvm.internal.impl.types.checker.TypeIntersector
 @Autonomous(name="Recording Mode")
 class RecordingOPMode : RuckusOpMode() {
 
-    lateinit var IMU : IMU
+    lateinit var IMU_ : IMU
     lateinit var RECORD : TimeStampedData.DataStream
     var STARTTIME = -1.0
 
     override fun init() {
         super.init()
 
-        IMU = IMU()
-        IMU.init(this)
+        IMU_ = IMU()
+        IMU_.init(this)
     }
 
     override fun init_loop() {
@@ -56,7 +57,7 @@ class RecordingOPMode : RuckusOpMode() {
         val point = RECORD.newPoint(elapsed)
 
         DRIVETRAIN.motorMap().forEach{ point.addByte(TimeStampedData.DataByte(it.key, listOf(it.value.power, it.value.currentPosition.toDouble()))) }
-        point.addByte(TimeStampedData.DataByte(IMU.DEVICE_NAME, listOf(IMU.XYZ().thirdAngle.toDouble())))
+        point.addByte(TimeStampedData.DataByte(IMU.Config.DEVICE_NAME, listOf(IMU_.XYZ().thirdAngle.toDouble())))
     }
 
     override fun stop() {

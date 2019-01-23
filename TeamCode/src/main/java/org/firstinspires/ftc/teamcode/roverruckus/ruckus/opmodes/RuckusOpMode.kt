@@ -2,16 +2,48 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.common.robot.Robot
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.IntakeMachine
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.LinearSlideMachine
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 @TeleOp(name="Ruckus")
-open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf()){
+open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to LinearSlideMachine(), "Intake" to IntakeMachine())){
+
+    lateinit var LINEAR_SLIDES : LinearSlideMachine
+    lateinit var INTAKE : IntakeMachine
+
+    private var toggleRotationSlow = false
+    private var toggleMovementSlow = false
+
+    private var gamepad1_lStickWasPressed = false
+    private var gamepad1_rStickWasPressed = false
 
     override fun start() {
+        LINEAR_SLIDES = COMPONENTS["LinearSlide"] as LinearSlideMachine
+        INTAKE = COMPONENTS["Intake"] as IntakeMachine
     }
 
-
     override fun loop() {
-        DRIVETRAIN.move(-gamepad1.left_stick_x.toDouble(), gamepad1.left_stick_y.toDouble(), -gamepad1.right_stick_x.toDouble())
+        if(gamepad1.left_stick_button && !gamepad1_lStickWasPressed) {
+            gamepad1_lStickWasPressed = true
+            toggleMovementSlow = !toggleMovementSlow
+            toggleRotationSlow = toggleMovementSlow
+        }else if(!gamepad1.left_stick_button && gamepad1_lStickWasPressed) gamepad1_lStickWasPressed = false
 
+        if(gamepad1.right_stick_button && !gamepad1_rStickWasPressed && !toggleMovementSlow) {
+            gamepad1_rStickWasPressed = true
+            toggleRotationSlow = !toggleRotationSlow
+        }else if(!gamepad1.right_stick_button && gamepad1_rStickWasPressed) gamepad1_rStickWasPressed = false
+
+        DRIVETRAIN.move(-gamepad1.left_stick_x.toDouble(), gamepad1.left_stick_y.toDouble(), -gamepad1.right_stick_x.toDouble() * if(toggleRotationSlow || toggleMovementSlow) 0.5 else 1.0, if(toggleMovementSlow) 0.5 else 1.0)
+
+        if(gamepad1.left_trigger > 0 && !(gamepad1.right_trigger > 0)) LINEAR_SLIDES.runSlides(gamepad1.left_trigger)
+        else if(gamepad1.right_trigger > 0 && !(gamepad1.left_trigger > 0)) LINEAR_SLIDES.runSlides(-gamepad1.right_trigger)
+        else LINEAR_SLIDES.runSlides(0F)
+
+        if(gamepad1.x) INTAKE.runIntake(IntakeMachine.Direction.INTAKE)
+        else INTAKE.runIntake(IntakeMachine.Direction.OFF)
+
+        telemetry.addData("RUCKUS", "opmode is running ${time}")
+        telemetry.addData("STATS", "movement toggle $toggleMovementSlow, rotation toggle $toggleRotationSlow")
     }
 }

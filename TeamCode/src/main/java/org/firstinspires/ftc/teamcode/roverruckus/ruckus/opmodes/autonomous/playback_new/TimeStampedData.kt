@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.pla
 
 import android.content.Context
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import java.io.*
 import java.util.*
 
@@ -104,7 +105,7 @@ class TimeStampedData {
                 val current = data[i]
                 val next = data[i + 1]
 
-                if (!current.isSimilar(next)) {
+                if (!current.isSimilar(next, IMU.Config.DEVICE_NAME)) {
                     trimPointStart = i //we will trim to this point NOT INCLUSIVE
                     break
                 }
@@ -116,7 +117,7 @@ class TimeStampedData {
                 val current = newData[i]
                 val last = newData[i - 1]
 
-                if (!current.isSimilar(last)) {
+                if (!current.isSimilar(last, IMU.Config.DEVICE_NAME)) {
                     trimPointEnd = i
                     break
                 }
@@ -129,7 +130,7 @@ class TimeStampedData {
             var timeT = 0.0
             for(d in newData) {
                 data.add(DataPoint(timeT, d.timeDelta, d.bytes))
-                timeT += d.time
+                timeT += d.timeDelta
 
             }
         }
@@ -143,6 +144,11 @@ class TimeStampedData {
 
         fun isSimilar(point : DataPoint) : Boolean {
             bytes.forEach { if(!point.bytes.contains(it)) return false }
+            return true
+        }
+
+        fun isSimilar(point : DataPoint, vararg ignore : String) : Boolean {
+            bytes.forEach { if(!point.bytes.contains(it) && !ignore.contains(it.name)) return false }
             return true
         }
     }

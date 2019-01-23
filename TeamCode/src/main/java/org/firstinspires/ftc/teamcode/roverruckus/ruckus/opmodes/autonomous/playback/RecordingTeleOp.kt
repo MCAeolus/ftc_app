@@ -67,7 +67,7 @@ class RecordingTeleOp : RuckusOpMode() {
 
         //UPDATE GIVEN ADDED MACHINES
         DRIVETRAIN.motorMap().forEach{ recorder.queue(it.key, elapsed)}
-        recorder.queue(IMU.DEVICE_NAME, elapsed)
+        recorder.queue(org.firstinspires.ftc.teamcode.common.common_machines.IMU.Config.DEVICE_NAME, elapsed)
         //recorder.queue(HNAMES_RUCKUS.SERVO_DUMMY, elapsed)
     }
 
