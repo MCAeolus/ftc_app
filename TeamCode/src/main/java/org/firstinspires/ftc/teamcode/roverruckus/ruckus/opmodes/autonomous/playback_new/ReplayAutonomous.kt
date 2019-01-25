@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.pla
 import android.icu.text.AlphabeticIndex
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.AutonomousBase
@@ -53,6 +54,8 @@ class ReplayAutonomous : AutonomousBase() {
                             device.power = it.data[0]
                             device.targetPosition = it.data[1].toInt()
                         }
+                        is CRServo -> device.power = it.data[0]
+
                         is Servo -> device.position = it.data[0]
 
                         is BNO055IMU -> targetRotation = it.data[0]

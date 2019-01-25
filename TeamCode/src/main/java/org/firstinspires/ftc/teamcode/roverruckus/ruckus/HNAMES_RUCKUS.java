@@ -10,6 +10,8 @@ public class HNAMES_RUCKUS {
             LEFT_SLIDE_MOTOR = "slideML",
             RIGHT_SLIDE_MOTOR = "slideMR",
             VEX_INTAKE = "vIntake",
+            DC_ARM = "armM",
+            LIFT_MOTOR = "liftM",
             JEOPARDY_NAME = "jeopardy",
             SERVO_DUMMY   = "DummyServo";
 

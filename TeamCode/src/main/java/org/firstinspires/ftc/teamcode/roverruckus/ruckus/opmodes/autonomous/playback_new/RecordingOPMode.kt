@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.LiftMachine
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 import java.util.concurrent.TimeoutException
 import kotlin.reflect.jvm.internal.impl.types.checker.TypeIntersector
@@ -56,8 +57,17 @@ class RecordingOPMode : RuckusOpMode() {
 
         val point = RECORD.newPoint(elapsed)
 
+        //DRIVETRAIN
         DRIVETRAIN.motorMap().forEach{ point.addByte(TimeStampedData.DataByte(it.key, listOf(it.value.power, it.value.currentPosition.toDouble()))) }
+        //IMU
         point.addByte(TimeStampedData.DataByte(IMU.Config.DEVICE_NAME, listOf(IMU_.XYZ().thirdAngle.toDouble())))
+        //LIFT
+        point.addByte(TimeStampedData.DataByte(HNAMES_RUCKUS.LIFT_MOTOR, listOf(LIFT.liftMotor.power, LIFT.liftMotor.currentPosition.toDouble())))
+        //LINEAR SLIDES
+        LINEAR_SLIDES.motorMap().forEach{ point.addByte(TimeStampedData.DataByte(it.key, listOf(it.value.power, it.value.currentPosition.toDouble()))) }
+        //INTAKE
+        point.addByte(TimeStampedData.DataByte(HNAMES_RUCKUS.DC_ARM, listOf(INTAKE.armMotor.power, INTAKE.armMotor.currentPosition.toDouble())))
+        point.addByte(TimeStampedData.DataByte(HNAMES_RUCKUS.VEX_INTAKE, listOf(INTAKE.intakerMotor.power)))
     }
 
     override fun stop() {

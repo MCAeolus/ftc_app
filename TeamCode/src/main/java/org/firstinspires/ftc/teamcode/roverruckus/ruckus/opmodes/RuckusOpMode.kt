@@ -3,13 +3,15 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.common.robot.Robot
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.IntakeMachine
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.LiftMachine
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.LinearSlideMachine
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 @TeleOp(name="Ruckus")
-open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to LinearSlideMachine(), "Intake" to IntakeMachine())){
+open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to LinearSlideMachine(), "Intake" to IntakeMachine(), "Lift" to LiftMachine())){
 
     lateinit var LINEAR_SLIDES : LinearSlideMachine
     lateinit var INTAKE : IntakeMachine
+    lateinit var LIFT : LiftMachine
 
     private var toggleRotationSlow = false
     private var toggleMovementSlow = false
@@ -40,8 +42,13 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
         else if(gamepad1.right_trigger > 0 && !(gamepad1.left_trigger > 0)) LINEAR_SLIDES.runSlides(-gamepad1.right_trigger)
         else LINEAR_SLIDES.runSlides(0F)
 
-        if(gamepad1.x) INTAKE.runIntake(IntakeMachine.Direction.INTAKE)
-        else INTAKE.runIntake(IntakeMachine.Direction.OFF)
+        if(gamepad2.left_bumper) INTAKE.runIntake(IntakeMachine.IntakeDirection.INTAKE)
+        else if(gamepad2.left_trigger > 0.0) INTAKE.runIntake(IntakeMachine.IntakeDirection.OUTTAKE)
+        else INTAKE.runIntake(IntakeMachine.IntakeDirection.OFF)
+
+        if(gamepad2.right_bumper) LIFT.runLift(LiftMachine.LiftDirection.UP)
+        else if(gamepad2.right_trigger > 0) LIFT.runLift(LiftMachine.LiftDirection.DOWN)
+        else LIFT.runLift(LiftMachine.LiftDirection.OFF)
 
         telemetry.addData("RUCKUS", "opmode is running ${time}")
         telemetry.addData("STATS", "movement toggle $toggleMovementSlow, rotation toggle $toggleRotationSlow")

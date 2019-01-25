@@ -13,7 +13,7 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 
-@Autonomous(name = "Ruckus Tester")
+@Autonomous(name = "RuckusCC no comp use")
 class AutonomousRunnerControlTester : AutonomousBase() {
 
     val FILE_LEFT_SAMPLE = arrayOf("${TimeStampedData.FILE_PREFIX}sample_LEFT", "${TimeStampedData.FILE_PREFIX}sample_LEFT_BACKUP")

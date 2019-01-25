@@ -13,7 +13,7 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 
 @Autonomous(name = "Ruckus Runner")
-class AutonomousRunner : AutonomousBase() {
+class AutonomousRunner : AutonomousBase(true) {
 
     val FILE_LEFT_SAMPLE = arrayOf("${TimeStampedData.FILE_PREFIX}sample_LEFT", "${TimeStampedData.FILE_PREFIX}sample_LEFT_BACKUP")
     val FILE_MIDDLE_SAMPLE = arrayOf("${TimeStampedData.FILE_PREFIX}sample_MIDDLE", "${TimeStampedData.FILE_PREFIX}sample_MIDDLE_BACKUP")
@@ -68,6 +68,8 @@ class AutonomousRunner : AutonomousBase() {
             sample_position = findSample_THREE(TFOD.updatedRecognitions)
             if (sample_position != org.firstinspires.ftc.teamcode.roverruckus.minibit.autonomous.AutonomousBase.SamplePosition.N_A && timer_it.seconds() > 1) break
         }
+
+        TFOD.deactivate()
 
         val USE_RECORD = when(sample_position) {
             SamplePosition.LEFT -> RECORD_LEFT
