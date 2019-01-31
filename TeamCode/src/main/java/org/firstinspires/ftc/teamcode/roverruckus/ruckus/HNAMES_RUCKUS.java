@@ -13,6 +13,7 @@ public class HNAMES_RUCKUS {
             DC_ARM = "armM",
             LIFT_MOTOR = "liftM",
             JEOPARDY_NAME = "jeopardy",
-            SERVO_DUMMY   = "DummyServo";
+            SERVO_DUMMY   = "DummyServo",
+            TOTEM = "tot";
 
 }

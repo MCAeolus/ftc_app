@@ -16,11 +16,14 @@ class TestTF : AutonomousBase(true) {
         TFOD.activate()
 
         var position = SamplePosition.N_A
+        var pos2 = SamplePosition.N_A
 
         while(opModeIsActive()){
-            position = findSample_THREE(TFOD.updatedRecognitions)
+            //position = findSample_THREE(TFOD.updatedRecognitions)
+            pos2 = findfromLeftTwo(TFOD.updatedRecognitions)
 
-            telemetry.addData("position of gold", position.name)
+            //telemetry.addData("position of gold", position.name)
+            telemetry.addData("From left", pos2.name)
 
             telemetry.update()
 

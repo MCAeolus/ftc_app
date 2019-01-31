@@ -102,4 +102,36 @@ open class AutonomousBase(val useTF : Boolean = false) : LinearRobot(MecanumDriv
 
         else return SamplePosition.N_A
     }
+
+    fun findfromLeftTwo(recog : List<Recognition>?) : SamplePosition {
+        if(recog != null) {
+            telemetry.addData("recogs", recog.size)
+            telemetry.update()
+            var gold_dist = -1F
+            var silver1_dist = -1F
+            var silver2_dist = -1F
+
+            for(r in recog) {
+                if (r.label == TF_SILVER_LABEL) {
+                    if (silver1_dist > -1) silver2_dist = r.left
+                    else silver1_dist = r.left
+                } else if (r.label == TF_GOLD_LABEL) gold_dist = r.left
+            }
+
+            if(gold_dist > -1 && silver1_dist > -1 && silver2_dist > -1) {
+                telemetry.addData("going three", "")
+                telemetry.update()
+                return findSample_THREE(recog)
+            }
+            else {
+                if(gold_dist > -1 && silver1_dist > -1) {
+                    if (gold_dist < silver1_dist) return SamplePosition.LEFT
+                    else return SamplePosition.CENTER
+                }
+                else if(silver1_dist > -1 && silver2_dist > -1) return SamplePosition.RIGHT
+                else return SamplePosition.N_A
+                }
+            }
+        else return SamplePosition.N_A
+    }
 }

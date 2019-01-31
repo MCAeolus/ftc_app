@@ -66,8 +66,7 @@ class RecordingOPMode : RuckusOpMode() {
         //LINEAR SLIDES
         LINEAR_SLIDES.motorMap().forEach{ point.addByte(TimeStampedData.DataByte(it.key, listOf(it.value.power, it.value.currentPosition.toDouble()))) }
         //INTAKE
-        point.addByte(TimeStampedData.DataByte(HNAMES_RUCKUS.DC_ARM, listOf(INTAKE.armMotor.power, INTAKE.armMotor.currentPosition.toDouble())))
-        point.addByte(TimeStampedData.DataByte(HNAMES_RUCKUS.VEX_INTAKE, listOf(INTAKE.intakerMotor.power)))
+        point.addByte(TimeStampedData.DataByte(HNAMES_RUCKUS.TOTEM, listOf(INTAKE.totemServo.position)))
     }
 
     override fun stop() {

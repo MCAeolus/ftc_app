@@ -22,6 +22,7 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
     override fun start() {
         LINEAR_SLIDES = COMPONENTS["LinearSlide"] as LinearSlideMachine
         INTAKE = COMPONENTS["Intake"] as IntakeMachine
+        LIFT = COMPONENTS["Lift"] as LiftMachine
     }
 
     override fun loop() {
@@ -41,6 +42,16 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
         if(gamepad1.left_trigger > 0 && !(gamepad1.right_trigger > 0)) LINEAR_SLIDES.runSlides(gamepad1.left_trigger)
         else if(gamepad1.right_trigger > 0 && !(gamepad1.left_trigger > 0)) LINEAR_SLIDES.runSlides(-gamepad1.right_trigger)
         else LINEAR_SLIDES.runSlides(0F)
+
+        if(gamepad1.left_bumper)
+            INTAKE.runArm(IntakeMachine.ArmDirection.UP)
+        else if(gamepad1.right_bumper)
+            INTAKE.runArm(IntakeMachine.ArmDirection.DOWN)
+        else INTAKE.runArm(IntakeMachine.ArmDirection.OFF)
+
+        if(gamepad1.y) {
+            INTAKE.dropTotem()
+        }else INTAKE.resetTotem()
 
         if(gamepad2.left_bumper) INTAKE.runIntake(IntakeMachine.IntakeDirection.INTAKE)
         else if(gamepad2.left_trigger > 0.0) INTAKE.runIntake(IntakeMachine.IntakeDirection.OUTTAKE)
