@@ -34,7 +34,7 @@ class ReplayBrowser : LinearOpMode() {
         var b_pressed = false
 
         var timeSincePressHeld : Double = -1.0
-        var shiftDelta = 0.25
+        val shiftDelta = 0.25
 
         while(!isStopRequested) {
 

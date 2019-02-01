@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous
 import android.content.Context
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
@@ -16,13 +17,38 @@ import java.io.OutputStreamWriter
 @Autonomous(name = "Ruckus Runner")
 class AutonomousRunner : AutonomousBase(true) {
 
-    val FILE_LEFT_SAMPLE = arrayOf("${TimeStampedData.FILE_PREFIX}sample_LEFT_CRATER", "${TimeStampedData.FILE_PREFIX}sample_LEFT_TOTEM", "${TimeStampedData.FILE_PREFIX}sample_LEFT_BACKUP")
-    val FILE_MIDDLE_SAMPLE = arrayOf("${TimeStampedData.FILE_PREFIX}sample_MIDDLE_CRATER", "${TimeStampedData.FILE_PREFIX}sample_MIDDLE_TOTEM", "${TimeStampedData.FILE_PREFIX}sample_MIDDLE_BACKUP")
-    val FILE_RIGHT_SAMPLE = arrayOf("${TimeStampedData.FILE_PREFIX}sample_RIGHT_CRATER", "${TimeStampedData.FILE_PREFIX}sample_RIGHT_TOTEM", "${TimeStampedData.FILE_PREFIX}sample_RIGHT_BACKUP")
-
-    var toggleMode = 0
+    val defaultDir = "${TimeStampedData.REPLAY_DIRECTORY_PREFIX}AutonomousRunner"
+    val operatorName = "__OPERATION"
 
     override fun runOpMode() {
+
+        val subDir = ""
+        var selectorLoc = 0
+
+        var down_DPADpressed = false
+        var buttonPressed = true
+
+        while(!isStarted) {
+
+            if(gamepad1.dpad_down && !down_DPADpressed) {
+
+            }
+
+            val totalDir = defaultDir + subDir
+
+            val dir = hardwareMap.appContext.getDir(totalDir, Context.MODE_PRIVATE)
+            val lister = dir.list { _ : File, s : String -> s.startsWith(TimeStampedData.REPLAY_DIRECTORY_PREFIX)}
+
+            send("Please select the proper operation mode for the Autonomous Runner.")
+            send("Use UP and DOWN DPAD buttons to move selector, use 'A' to make the selection.")
+            send("")
+
+            for(i in 0 until lister.size)
+                send("${if(selectorLoc == i)">>>" else "   "}${lister[i]}", if(isOperationDirectory(totalDir + lister[i])) "OPERATION MODE" else "->")
+
+            telemetry.update()
+        }
+
 
         val start_time = time
 
@@ -42,6 +68,8 @@ class AutonomousRunner : AutonomousBase(true) {
                         }
                         is Servo -> device.position = it.data[0]
 
+                        is CRServo -> device.power = it.data[0]
+
                         is BNO055IMU -> targetRotation = it.data[0]
                     }
                 }
@@ -56,8 +84,14 @@ class AutonomousRunner : AutonomousBase(true) {
         f.createNewFile()
     }
 
-    private fun areFilesCreated() : Boolean {
-        val filterParts = hardwareMap.appContext.fileList().filter { it.contains(TimeStampedData.FILE_PREFIX) }
-        return filterParts.containsAll(listOf(FILE_LEFT_SAMPLE[0], FILE_LEFT_SAMPLE[1], FILE_LEFT_SAMPLE[2], FILE_MIDDLE_SAMPLE[0], FILE_MIDDLE_SAMPLE[1], FILE_MIDDLE_SAMPLE[2], FILE_RIGHT_SAMPLE[0], FILE_RIGHT_SAMPLE[1], FILE_RIGHT_SAMPLE[2]))
+    private fun send(h : String, p : String = "", separator : String = "", update : Boolean = false, refresh : Boolean = true) {
+        telemetry.captionValueSeparator = separator
+        telemetry.isAutoClear = refresh
+        telemetry.addData(h, p)
+        if(update)telemetry.update()
+    }
+
+    private fun isOperationDirectory(dirPath : String) = hardwareMap.appContext.getDir(dirPath, Context.MODE_PRIVATE).list().contains(operatorName)
+
     }
 }
