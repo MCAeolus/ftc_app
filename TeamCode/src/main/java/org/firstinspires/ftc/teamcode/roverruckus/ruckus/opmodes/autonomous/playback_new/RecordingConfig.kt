@@ -5,5 +5,5 @@ import com.acmerobotics.dashboard.config.Config
 @Config
 object RecordingConfig {
     @JvmField var FILE_NAME = ""
-    @JvmField var SHOULD_TRIM = "0"
+    @JvmField var DIRECTORY_NAME = ""
 }

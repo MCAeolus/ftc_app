@@ -8,7 +8,8 @@ import java.util.*
 
 class TimeStampedData {
     companion object {
-        val FILE_PREFIX = "_REPLAY_"
+        val REPLAY_PREFIX = "_REPLAY_"
+        val REPLAY_DIRECTORY_PREFIX = "_DIR_"
     }
 
     class DataStream(val rawFileName : String, val hardware : HardwareMap) {
@@ -20,8 +21,8 @@ class TimeStampedData {
         private var pointBuffer : DataPoint? = null
 
         init {
-            fileName = rawFileName.replace(FILE_PREFIX, "")
-            realFileName = "${TimeStampedData.FILE_PREFIX}$fileName"
+            fileName = rawFileName.replace(REPLAY_PREFIX, "")
+            realFileName = "${TimeStampedData.REPLAY_PREFIX}$fileName"
         }
 
         fun load() {

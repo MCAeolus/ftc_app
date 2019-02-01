@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.pla
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import java.io.File
 
 @Autonomous(name= "Recording Browser")
 class BrowserOPMode : LinearOpMode() {
@@ -16,7 +15,7 @@ class BrowserOPMode : LinearOpMode() {
         var pressTimeout = -1.0
 
         while(!isStopRequested && !gamepad1.x) {
-            val fileList = hardwareMap.appContext.fileList().filter { it.startsWith(TimeStampedData.FILE_PREFIX) }
+            val fileList = hardwareMap.appContext.fileList().filter { it.startsWith(TimeStampedData.REPLAY_PREFIX) }
             telemetry.captionValueSeparator = ""
             telemetry.addData("Use the up and down arrow on the controller to select the files below.","")
             telemetry.addData("Press 'B' THRICE (currently $b_press/3) to delete the selected file, or 'A' to mark the selected file for usage in Auto Player. Press 'X' to exit the selector. Press 'Y' to trim the file.", "")
