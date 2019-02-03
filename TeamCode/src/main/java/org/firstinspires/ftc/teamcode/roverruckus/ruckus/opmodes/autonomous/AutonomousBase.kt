@@ -72,11 +72,11 @@ open class AutonomousBase(val useTF : Boolean = false) : LinearRobot(MecanumDriv
         }
     }
 
-    enum class SamplePosition {
-        LEFT,
-        CENTER,
-        RIGHT,
-        N_A
+    enum class SamplePosition(val id : String) {
+        LEFT("LEFT"),
+        CENTER("CENTER"),
+        RIGHT("RIGHT"),
+        N_A("CENTER")
     }
 
     fun findSample_THREE(recog : List<Recognition>?) : SamplePosition {
