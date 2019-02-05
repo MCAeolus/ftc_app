@@ -34,7 +34,6 @@ class RecordingOPMode : RuckusOpMode() {
         super.init_loop()
 
         telemetry.addData("File", if(RecordingConfig.FILE_NAME == "")"Not entered. Please wait to start." else RecordingConfig.FILE_NAME)
-        telemetry.addData("Will Trim?", RecordingConfig.SHOULD_TRIM)
 
     }
 
@@ -95,7 +94,6 @@ class RecordingOPMode : RuckusOpMode() {
     }
 
     override fun stop() {
-        if(RecordingConfig.SHOULD_TRIM == "1") RECORD.trim()
         RECORD.write()
     }
 

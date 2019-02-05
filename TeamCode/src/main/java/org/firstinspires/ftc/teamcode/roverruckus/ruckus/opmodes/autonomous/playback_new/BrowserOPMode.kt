@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 
-@Autonomous(name= "Recording Browser")
+@Autonomous(name= "Recording Browser")@Disabled
 class BrowserOPMode : LinearOpMode() {
 
     override fun runOpMode() {

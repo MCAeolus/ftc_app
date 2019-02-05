@@ -30,7 +30,6 @@ class ReplayAutonomous : AutonomousBase() {
         }
 
         RECORD.load()
-        if(RecordingConfig.SHOULD_TRIM == "1") RECORD.trim()
         RECORD.prepare()
 
         (DRIVETRAIN as MecanumDriveTrain).resetEncoders()

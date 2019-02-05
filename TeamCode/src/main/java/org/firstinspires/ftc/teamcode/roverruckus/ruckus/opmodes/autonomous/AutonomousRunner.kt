@@ -13,12 +13,21 @@ import java.io.File
 @Autonomous(name = "Ruckus Runner")
 class AutonomousRunner : AutonomousBase(true) {
 
+    companion object {
+        val operatorName = "__OPERATION"
+
+        fun isOperationDirectory(baseDir : File, dirPath : String) : Boolean{
+            val f = File(baseDir, dirPath)
+            if(f.exists()) return f.list().contains(operatorName)
+            return false
+        }
+    }
+
     val defaultDir = "${TimeStampedData.REPLAY_DIRECTORY_PREFIX}AutonomousRunner"
-    val operatorName = "__OPERATION"
 
     override fun runOpMode() {
 
-        var dir : File
+        var baseDir = hardwareMap.appContext.filesDir
         var currentDir = defaultDir
 
         var selectorLoc = 0
@@ -33,9 +42,11 @@ class AutonomousRunner : AutonomousBase(true) {
 
         var operationDir : File? = null
 
+        if(!baseDir.list().contains(defaultDir)) File(baseDir, defaultDir).mkdirs()
+
         while(!isStarted) {
 
-            dir = hardwareMap.appContext.getDir(currentDir, Context.MODE_PRIVATE)
+            val dir = File(baseDir, currentDir)
 
             val dirList = dir.list { _ : File, s : String -> s.startsWith(TimeStampedData.REPLAY_DIRECTORY_PREFIX) }
 
@@ -61,9 +72,8 @@ class AutonomousRunner : AutonomousBase(true) {
                 buttonPressed = true
                 a_pressed = true
 
-                if(isOperationDirectory(currentDir + "/" + dirList[selectorLoc]))
-                    operationDir = hardwareMap.appContext.getDir(currentDir + "/" + dirList[selectorLoc], Context.MODE_PRIVATE)
-
+                if(isOperationDirectory(baseDir, currentDir + "/" + dirList[selectorLoc]))
+                    operationDir = File(dir, dirList[selectorLoc])
                 else {
                     currentDir += "/" + dirList[selectorLoc]
                 }
@@ -77,7 +87,10 @@ class AutonomousRunner : AutonomousBase(true) {
                 b_pressed = true
 
                 if(operationDir != null) operationDir = null
-                else if(currentDir != defaultDir) currentDir = dir.parent
+                else if(currentDir != defaultDir) {
+                    val thLindex = currentDir.lastIndexOf('/')
+                    currentDir = currentDir.substring(0, if(thLindex < 0) defaultDir.length else thLindex)
+                }
             }else if(!gamepad1.b && b_pressed) {
                 buttonPressed = false
                 b_pressed = false
@@ -89,14 +102,13 @@ class AutonomousRunner : AutonomousBase(true) {
 
                 val selDir = currentDir + "/" + dirList[selectorLoc]
 
-                if(isOperationDirectory(selDir)) {
-                    for(f in hardwareMap.appContext.getDir(selDir, Context.MODE_PRIVATE).listFiles())
-                        f.delete()
+                if(isOperationDirectory(baseDir, selDir)) {
+                     File(dir, dirList[selectorLoc]).listFiles().forEach { it.delete() }
                 }else {
                     makeFile(operatorName, selDir)
-                    makeFile(SamplePosition.LEFT.id, selDir)
-                    makeFile(SamplePosition.CENTER.id, selDir)
-                    makeFile(SamplePosition.RIGHT.id, selDir)
+                    makeFile("${TimeStampedData.REPLAY_PREFIX}${SamplePosition.LEFT.id}", selDir)
+                    makeFile("${TimeStampedData.REPLAY_PREFIX}${SamplePosition.CENTER.id}", selDir)
+                    makeFile("${TimeStampedData.REPLAY_PREFIX}${SamplePosition.RIGHT.id}", selDir)
                 }
             }else if(!gamepad1.left_bumper && lbumper_pressed) {
                 buttonPressed = false
@@ -104,19 +116,19 @@ class AutonomousRunner : AutonomousBase(true) {
             }
 
             if(operationDir != null) {
-                send("Current selected operation mode: ${operationDir.absolutePath}")
+                send("Current selected operation mode: ${operationDir.path}")
+                send("Ready to run.")
+            }else {
+
+                send("Please select the proper operation mode.")
+                send("Use ↕ DPAD buttons to move selector, use 'A' to make the selection.")
+                send("Use 'B' button to undo an operation selection or go back a directory.")
+                send("Use 'left bumper' to designate or un-designate a directory as an operation directory.")
                 send("")
+
+                for (i in 0 until dirList.size)
+                    send("${if (selectorLoc == i) ">>>" else "   "}${dirList[i]}", if (isOperationDirectory(baseDir, currentDir + "/" + dirList[i])) ": OPERATION MODE" else "->")
             }
-
-            send("Please select the proper operation mode for the Autonomous Runner.")
-            send("Use UP and DOWN DPAD buttons to move selector, use 'A' to make the selection.")
-            send("Use 'B' button to undo your operation selection or to go back a directory.")
-            send("Use 'left bumper' to designate or un-designate a directory as an operation directory.")
-            send("")
-
-            for(i in 0 until dirList.size)
-                send("${if(selectorLoc == i)">>>" else "   "}${dirList[i]}", if(isOperationDirectory(currentDir + "/" + dirList[i])) "OPERATION MODE" else "->")
-
             telemetry.update()
         }
 
@@ -133,7 +145,7 @@ class AutonomousRunner : AutonomousBase(true) {
                 if (sample_position != SamplePosition.N_A && timer_it.seconds() > 1) break
             }
 
-            val USE_RECORD = TimeStampedData.DataStream(operationDir.absolutePath + "/" + sample_position.id, hardwareMap)
+            val USE_RECORD = TimeStampedData.DataStream(operationDir.canonicalPath + "/${TimeStampedData.REPLAY_PREFIX}" + sample_position.id, hardwareMap)
             USE_RECORD.load()
             USE_RECORD.prepare()
 
@@ -168,7 +180,7 @@ class AutonomousRunner : AutonomousBase(true) {
     }
 
     private fun makeFile(file : String, dir : String = "") {
-        val f = File("${opMode().hardwareMap.appContext.getDir(dir, Context.MODE_PRIVATE).absolutePath}/$file")
+        val f = File(opMode().hardwareMap.appContext.filesDir, "$dir/$file")
         f.createNewFile()
     }
 
@@ -178,6 +190,4 @@ class AutonomousRunner : AutonomousBase(true) {
         telemetry.addData(h, p)
         if(update)telemetry.update()
     }
-
-    private fun isOperationDirectory(dirPath : String) = hardwareMap.appContext.getDir(dirPath, Context.MODE_PRIVATE).list().contains(operatorName)
 }

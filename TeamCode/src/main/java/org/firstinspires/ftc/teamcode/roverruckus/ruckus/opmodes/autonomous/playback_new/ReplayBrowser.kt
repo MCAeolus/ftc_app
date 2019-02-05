@@ -4,6 +4,8 @@ import android.content.Context
 import android.icu.text.AlphabeticIndex
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.AutonomousRunner
 import java.io.File
 
 
@@ -22,6 +24,7 @@ class ReplayBrowser : LinearOpMode() {
 
         var lastPartition = Partition.HEADER
         var currentPartition = Partition.HEADER
+        val baseDir = hardwareMap.appContext.filesDir
         var directoryPosition = ""
         var selectorLoc = 0
 
@@ -42,8 +45,7 @@ class ReplayBrowser : LinearOpMode() {
 
         while(!isStopRequested) {
 
-            val dir = if(directoryPosition == "")hardwareMap.appContext.filesDir else hardwareMap.appContext.getDir(directoryPosition, Context.MODE_PRIVATE)
-
+            val dir = File(baseDir, directoryPosition)
             val replayList = dir.list { _ : File, s : String -> s.startsWith(TimeStampedData.REPLAY_PREFIX) }
             val directoryList = dir.list { _ : File, s : String -> s.startsWith(TimeStampedData.REPLAY_DIRECTORY_PREFIX) }
             val replayExists = replayList.isNotEmpty()
@@ -53,9 +55,9 @@ class ReplayBrowser : LinearOpMode() {
                 if(!leftDPAD_pressed && !buttonPressed) {
                     buttonPressed = true
                     leftDPAD_pressed = true
-                    timeSincePressHeld = time
+                    timeSincePressHeld = time-shiftDelta
                 }
-                if(leftDPAD_pressed && (timeSincePressHeld == time || time - timeSincePressHeld > shiftDelta)) {
+                if(leftDPAD_pressed && time - timeSincePressHeld >= shiftDelta) {
                     timeSincePressHeld = time
                     currentPartition = when(currentPartition) {
                         Partition.HEADER -> currentPartition
@@ -72,9 +74,9 @@ class ReplayBrowser : LinearOpMode() {
                 if(!rightDPAD_pressed && !buttonPressed) {
                     buttonPressed = true
                     rightDPAD_pressed = true
-                    timeSincePressHeld = time
+                    timeSincePressHeld = time-shiftDelta
                 }
-                if(rightDPAD_pressed && (timeSincePressHeld == time || time - timeSincePressHeld > shiftDelta)) {
+                if(rightDPAD_pressed && time - timeSincePressHeld >= shiftDelta) {
                     timeSincePressHeld = time
                     currentPartition = when(currentPartition) {
                         Partition.HEADER -> if(directoryExists) Partition.DIRECTORY else if(replayExists) Partition.REPLAYS else currentPartition
@@ -93,9 +95,9 @@ class ReplayBrowser : LinearOpMode() {
                     if (!upDPAD_pressed && !buttonPressed) {
                         buttonPressed = true
                         upDPAD_pressed = true
-                        timeSincePressHeld = time
+                        timeSincePressHeld = time-shiftDelta
                     }
-                    if (upDPAD_pressed && (timeSincePressHeld == time || time - timeSincePressHeld > shiftDelta)) {
+                    if (upDPAD_pressed && time - timeSincePressHeld >= shiftDelta) {
                         timeSincePressHeld = time
                         if(selectorLoc > 0) selectorLoc--
                     }
@@ -111,9 +113,9 @@ class ReplayBrowser : LinearOpMode() {
                     if (!downDPAD_pressed && !buttonPressed) {
                         buttonPressed = true
                         downDPAD_pressed = true
-                        timeSincePressHeld = time
+                        timeSincePressHeld = time-shiftDelta
                     }
-                    if (downDPAD_pressed && (timeSincePressHeld == time || time - timeSincePressHeld > shiftDelta)) {
+                    if (downDPAD_pressed && time - timeSincePressHeld >= shiftDelta) {
                         timeSincePressHeld = time
                         if(selectorLoc < (if(currentPartition == Partition.REPLAYS) replayList.lastIndex else directoryList.lastIndex)) selectorLoc++
                     }
@@ -128,7 +130,7 @@ class ReplayBrowser : LinearOpMode() {
                 a_pressed = true
 
                 when(currentPartition) {
-                    Partition.DIRECTORY -> directoryPosition += "/" + directoryList[selectorLoc]
+                    Partition.DIRECTORY -> directoryPosition += (if(directoryPosition != "") "/" else "") + directoryList[selectorLoc]
                     Partition.REPLAYS -> RecordingConfig.FILE_NAME = replayList[selectorLoc]
                 }
             }else if (!gamepad1.a && a_pressed) {
@@ -139,8 +141,10 @@ class ReplayBrowser : LinearOpMode() {
                 buttonPressed = true
                 b_pressed = true
 
-                if(directoryPosition != "")
-                    directoryPosition = dir.parent
+                if(directoryPosition != "") {
+                    val thLindex = directoryPosition.lastIndexOf('/')
+                    directoryPosition = directoryPosition.substring(0, if(thLindex < 0) 0 else thLindex)
+                }
 
             }else if(!gamepad1.b && b_pressed) {
                 buttonPressed = false
@@ -151,15 +155,17 @@ class ReplayBrowser : LinearOpMode() {
                 x_pressed = true
 
                 if(currentPartition != Partition.HEADER) {
-                    if (x_presses > 1) {
+                    if (x_presses > 0) {
                         when (currentPartition) {
-                            Partition.DIRECTORY -> hardwareMap.appContext.deleteFile(directoryList[selectorLoc])
-                            Partition.REPLAYS -> hardwareMap.appContext.deleteFile(replayList[selectorLoc])
+                            Partition.DIRECTORY -> {
+                                val f = File(dir, directoryList[selectorLoc])
+                                f.deleteRecursively()
+                            }
+                            Partition.REPLAYS -> File(dir, replayList[selectorLoc]).delete()
                         }
                         x_presses = 0
                     }
-                    else
-                        x_presses++
+                    else x_presses++
                 }
 
             }else if(!gamepad1.x && x_pressed) {
@@ -171,8 +177,10 @@ class ReplayBrowser : LinearOpMode() {
                 buttonPressed = true
                 lbumper_pressed = true
 
-                if(RecordingConfig.DIRECTORY_NAME != "")
-                    hardwareMap.appContext.getDir(directoryPosition + "/${TimeStampedData.REPLAY_DIRECTORY_PREFIX}" + RecordingConfig.DIRECTORY_NAME, Context.MODE_PRIVATE)
+                if(RecordingConfig.DIRECTORY_NAME != "") {
+                    File(dir, TimeStampedData.REPLAY_DIRECTORY_PREFIX + RecordingConfig.DIRECTORY_NAME).mkdirs()
+                    RecordingConfig.DIRECTORY_NAME = ""
+                }
             }else if(!gamepad1.left_bumper && lbumper_pressed) {
                 buttonPressed = false
                 lbumper_pressed = false
@@ -185,47 +193,69 @@ class ReplayBrowser : LinearOpMode() {
                 selectorLoc = 0
             }
 
-            defaultRefresh = false
-
-            send("Current Directory", if(directoryPosition == "")"Master Directory" else directoryPosition, ":")
-            send("D-PAD ↔ to change PARTITION. D-PAD ↕ to move file selector inside of partition.")
-            if(RecordingConfig.DIRECTORY_NAME != "") send("Use left bumper to assign new directory with name: ${RecordingConfig.DIRECTORY_NAME}")
-            send("'A' button selects current file.")
-            send("Press 'X' button twice to delete the file or directory")
-            if(directoryPosition != "")
-                send("Press 'B' to go back to the former directory.")
-            send("")
-
             when(currentPartition) {
-                Partition.HEADER -> {
-                    send(if(directoryExists) "|SUB-DIRECTORIES|" else "No sub-directories.")
-                    send(if(replayExists) "|REPLAYS|" else "No replay files.")
-                }
-                Partition.DIRECTORY -> {
-                    send("-- SUB-DIRECTORIES --")
-                    for (i in 0 until directoryList.size)
-                        send("$i |${if(selectorLoc == i)selectorIcon else " ".repeat(selectorIcon.length)})}${directoryList[i]}")
-                    if(replayExists)send("|REPLAYS|")
-                }
-                Partition.REPLAYS -> {
-                    if(directoryExists)send("|DIRECTORIES|")
-                    send("-- REPLAYS --")
-                    for (i in 0 until replayList.size)
-                        send("$i |${if(selectorLoc == i)selectorIcon else " ".repeat(selectorIcon.length)})}${replayList[i]}", if(RecordingConfig.FILE_NAME == replayList[i])"**" else "")
-                }
+                Partition.DIRECTORY -> if(!directoryExists) currentPartition = Partition.HEADER
+                Partition.REPLAYS -> if(!replayExists) currentPartition = Partition.HEADER
             }
 
-            defaultRefresh = true
+            defaultRefresh = false
 
+            if(x_presses > 0) {
+                send("ARE YOU SURE YOU WANT TO DELETE ${if(currentPartition == Partition.DIRECTORY)directoryList[selectorLoc].toUpperCase() else replayList[selectorLoc].toUpperCase()}? Press again to confirm, or perform another action to cancel.")
+            }else {
+
+                send("Current Directory: ", if (directoryPosition == "") "Master Directory" else directoryPosition)
+                send("D-PAD ↔ to change PARTITION. D-PAD ↕ to move file selector inside of partition.")
+                if (RecordingConfig.DIRECTORY_NAME != "") send("Use 'Left Bumper' to assign new directory with name: ${RecordingConfig.DIRECTORY_NAME}")
+                send("'A' button selects current file.")
+                send("Press 'X' button twice to delete the file or directory")
+                if (directoryPosition != "")
+                    send("Press 'B' to go back to the former directory.")
+                send("")
+
+                when (currentPartition) {
+                    Partition.HEADER -> {
+                        send(if (directoryExists) "|SUB-DIRECTORIES(${directoryList.size})|" else "No sub-directories.")
+                        send(if (replayExists) "|REPLAYS(${replayList.size})|" else "No replay files.")
+                    }
+                    Partition.DIRECTORY -> {
+                        send("-- SUB-DIRECTORIES --")
+                        for (i in 0 until directoryList.size)
+                            send("$i |${if (selectorLoc == i) selectorIcon else " ".repeat(selectorIcon.length)})}${directoryList[i]}")
+                        if (replayExists) send("|REPLAYS|")
+                    }
+                    Partition.REPLAYS -> {
+                        if (directoryExists) send("|DIRECTORIES|")
+                        send("-- REPLAYS --")
+                        for (i in 0 until replayList.size)
+                            send("$i |${if (selectorLoc == i) selectorIcon else " ".repeat(selectorIcon.length)})}${replayList[i]}", if (RecordingConfig.FILE_NAME == replayList[i]) "**" else "")
+                    }
+                }
+            }
+            telemetry.update()
         }
         telemetry.captionValueSeparator = ":"
     }
 
-    private fun send(h : String, p : String = "", separator : String = "", refresh : Boolean = defaultRefresh) {
+    private fun recursiveSubFiles(f : File) : List<File> {
+        val reList = ArrayList<File>()
+        if(f.isDirectory) {
+            if(f.list().isNotEmpty()) {
+                for(fx in f.listFiles()) {
+                    if(fx.isDirectory) {
+                        reList.add(fx)
+                        reList.addAll(recursiveSubFiles(fx))
+                    }
+                }
+            }
+        }
+        return reList
+    }
+
+    private fun send(h : String, p : String = "", separator : String = "", refresh : Boolean = true) {
         telemetry.captionValueSeparator = separator
         telemetry.isAutoClear = refresh
         telemetry.addData(h, p)
-        telemetry.update()
     }
 
 }
