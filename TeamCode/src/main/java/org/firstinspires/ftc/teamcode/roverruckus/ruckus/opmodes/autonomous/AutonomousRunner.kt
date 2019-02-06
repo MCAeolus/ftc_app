@@ -103,7 +103,7 @@ class AutonomousRunner : AutonomousBase(true) {
                 val selDir = currentDir + "/" + dirList[selectorLoc]
 
                 if(isOperationDirectory(baseDir, selDir)) {
-                     File(dir, dirList[selectorLoc]).listFiles().forEach { it.delete() }
+                     File(dir, dirList[selectorLoc]).listFiles().filter { it.name == operatorName }.forEach{ it.delete() }
                 }else {
                     makeFile(operatorName, selDir)
                     makeFile("${TimeStampedData.REPLAY_PREFIX}${SamplePosition.LEFT.id}", selDir)
@@ -181,7 +181,7 @@ class AutonomousRunner : AutonomousBase(true) {
 
     private fun makeFile(file : String, dir : String = "") {
         val f = File(opMode().hardwareMap.appContext.filesDir, "$dir/$file")
-        f.createNewFile()
+        if(!f.exists()) f.createNewFile()
     }
 
     private fun send(h : String, p : String = "", separator : String = "", update : Boolean = false, refresh : Boolean = true) {

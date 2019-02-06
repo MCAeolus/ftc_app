@@ -12,21 +12,19 @@ class TimeStampedData {
         val REPLAY_DIRECTORY_PREFIX = "_DIR_"
     }
 
-    class DataStream(val rawFileName : String, val hardware : HardwareMap) {
+    class DataStream(val rawFilePath : String, val hardware : HardwareMap) {
 
-        val fileName : String
-        val realFileName : String
+        private val file : File
         private val data = ArrayList<DataPoint>()
         private var iterableData: Iterator<DataPoint>? = null
         private var pointBuffer : DataPoint? = null
 
         init {
-            fileName = rawFileName.replace(REPLAY_PREFIX, "")
-            realFileName = "${TimeStampedData.REPLAY_PREFIX}$fileName"
+            file = File(hardware.appContext.filesDir, rawFilePath)
         }
 
         fun load() {
-            val datastream = ObjectInputStream(hardware.appContext.openFileInput(realFileName))
+            val datastream = ObjectInputStream(file.inputStream())
 
             do {
                 try {
@@ -38,7 +36,7 @@ class TimeStampedData {
         }
 
         fun write() {
-            val datastream = ObjectOutputStream(hardware.appContext.openFileOutput(realFileName, Context.MODE_PRIVATE))
+            val datastream = ObjectOutputStream(file.outputStream())
 
             data.forEach { datastream.writeObject(it) }
 

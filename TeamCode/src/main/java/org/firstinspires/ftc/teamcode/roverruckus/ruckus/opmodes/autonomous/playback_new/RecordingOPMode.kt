@@ -33,7 +33,7 @@ class RecordingOPMode : RuckusOpMode() {
     override fun init_loop() {
         super.init_loop()
 
-        telemetry.addData("File", if(RecordingConfig.FILE_NAME == "")"Not entered. Please wait to start." else RecordingConfig.FILE_NAME)
+        telemetry.addData("File", if(RecordingConfig.desiredFilePath == "")"Not entered. Please wait to start." else RecordingConfig.desiredFilePath)
 
     }
 
@@ -41,7 +41,7 @@ class RecordingOPMode : RuckusOpMode() {
         super.start()
 
 
-        RECORD = TimeStampedData.DataStream(RecordingConfig.FILE_NAME, hardwareMap)
+        RECORD = TimeStampedData.DataStream(RecordingConfig.desiredFilePath, hardwareMap)
 
         if(RecordingConfig.FILE_NAME == "")requestOpModeStop()
 

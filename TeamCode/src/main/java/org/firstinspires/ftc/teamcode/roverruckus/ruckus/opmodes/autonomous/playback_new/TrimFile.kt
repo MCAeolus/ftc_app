@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 
-@Autonomous(name="Trim File")
+@Autonomous(name="Trim File")@Disabled
 class TrimFile : LinearOpMode() {
 
     override fun runOpMode() {
-        doTelemetry("Press the start button to begin.")
+        /**doTelemetry("Press the start button to begin.")
         waitForStart()
         if(RecordingConfig.FILE_NAME == "") {
             doTelemetry("STATUS", "No file has been selected.")
@@ -44,6 +45,7 @@ class TrimFile : LinearOpMode() {
 
             }
         }
+        **/
     }
 
     private fun holdToEnd() {

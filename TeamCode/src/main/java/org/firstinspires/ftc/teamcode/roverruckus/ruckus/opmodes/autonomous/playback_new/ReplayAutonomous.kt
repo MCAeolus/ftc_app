@@ -16,18 +16,12 @@ class ReplayAutonomous : AutonomousBase() {
         super.runOpMode()
 
         while(!isStarted) {
-            telemetry.addData("File", if(RecordingConfig.FILE_NAME=="")"not entered." else RecordingConfig.FILE_NAME)
+            telemetry.addData("File", if(RecordingConfig.desiredFilePath=="")"not selected." else RecordingConfig.desiredFilePath)
             telemetry.update()
         }
 
-        if(RecordingConfig.FILE_NAME == "")requestOpModeStop()
+        if(RecordingConfig.desiredFilePath == "")requestOpModeStop()
         val RECORD = TimeStampedData.DataStream(RecordingConfig.FILE_NAME, hardwareMap)
-
-        if(!hardwareMap.appContext.fileList().contains(RECORD.realFileName)) {
-            telemetry.addData("FILE DOES NOT EXIST.", "")
-            telemetry.update()
-            holdToShutdown()
-        }
 
         RECORD.load()
         RECORD.prepare()

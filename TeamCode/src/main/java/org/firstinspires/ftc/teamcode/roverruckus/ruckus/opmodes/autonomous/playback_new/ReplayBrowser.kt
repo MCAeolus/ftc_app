@@ -131,7 +131,7 @@ class ReplayBrowser : LinearOpMode() {
 
                 when(currentPartition) {
                     Partition.DIRECTORY -> directoryPosition += (if(directoryPosition != "") "/" else "") + directoryList[selectorLoc]
-                    Partition.REPLAYS -> RecordingConfig.FILE_NAME = replayList[selectorLoc]
+                    Partition.REPLAYS -> RecordingConfig.desiredFilePath = directoryPosition + "/" + replayList[selectorLoc]
                 }
             }else if (!gamepad1.a && a_pressed) {
                 buttonPressed = false
@@ -228,7 +228,7 @@ class ReplayBrowser : LinearOpMode() {
                         if (directoryExists) send("|DIRECTORIES|")
                         send("-- REPLAYS --")
                         for (i in 0 until replayList.size)
-                            send("$i |${if (selectorLoc == i) selectorIcon else " ".repeat(selectorIcon.length)})}${replayList[i]}", if (RecordingConfig.FILE_NAME == replayList[i]) "**" else "")
+                            send("$i |${if (selectorLoc == i) selectorIcon else " ".repeat(selectorIcon.length)})}${replayList[i]}", if (RecordingConfig.desiredFilePath == directoryPosition + "/" + replayList[i]) "**" else "")
                     }
                 }
             }
