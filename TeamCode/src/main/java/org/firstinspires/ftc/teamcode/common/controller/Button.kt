@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.common.controller
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.Gamepad
 import java.lang.reflect.Field
 
@@ -23,10 +24,16 @@ class Button(private val buttonType : SmidaGamepad.GamePadButton, private val bu
             isPressed = buttonFields[0]!!.getBoolean(gamepad.gamepad)
             if (!wasPressed && isPressed) initialPressTime = gamepad.opmode.time
             if (!isPressed && wasPressed) initialPressTime = -1.0
+
         }
         if (buttonType.hasValue) {
             buttonValue = buttonFields[if(!buttonType.isPressable)0 else 1]!!.getDouble(gamepad.gamepad)
-            if (!buttonType.isPressable && buttonType.hasValue) isPressed = buttonValue > 0.0
+            if (!buttonType.isPressable && buttonType.hasValue) {
+                wasPressed = isPressed
+                isPressed = buttonValue > 0.0
+                if (!wasPressed && isPressed) initialPressTime = gamepad.opmode.time
+                if (!isPressed && wasPressed) initialPressTime = -1.0
+            }
         }
         if (buttonType.isJoystick) joystickValues = Pair(buttonFields[1]!!.getDouble(gamepad.gamepad), buttonFields[2]!!.getDouble(gamepad.gamepad))
     }
@@ -38,5 +45,9 @@ class Button(private val buttonType : SmidaGamepad.GamePadButton, private val bu
             return ret
         }
         return false
+    }
+
+    fun isIndividualActionButtonPress() : Boolean {
+        return !wasPressed && isPressed
     }
 }

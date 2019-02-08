@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.internal.ui.GamepadUser
 
-@Autonomous(name = "BUTTON TESTER")
+//@Autonomous(name = "BUTTON TESTER")
 class ButtonTester : LinearOpMode() {
     override fun runOpMode() {
 
@@ -17,11 +17,6 @@ class ButtonTester : LinearOpMode() {
 
         val button: (SmidaGamepad.GamePadButton) -> Button = pad1::getButton
 
-        /**while (!button(SmidaGamepad.GamePadButton.START).isPressed && !isStopRequested) {
-            tel("STATUS", "waiting for start button to be pressed (GAMEPAD 1)")
-            updateTel()
-        }**/
-
         telemetry.captionValueSeparator = ""
 
         val iteratorButtons = SmidaGamepad.GamePadButton.values().iterator()
@@ -31,6 +26,7 @@ class ButtonTester : LinearOpMode() {
         var taskComplete = false
         var task1 = false
         var task2 = false
+        var clicks = 0
         while (!isStopRequested) {
             pad1.handleUpdate()
             tel("Current button: ${currentButton.name}", "")
@@ -42,6 +38,7 @@ class ButtonTester : LinearOpMode() {
 
             if (iteratorButtons.hasNext() && taskComplete) {
                 currentButton = iteratorButtons.next()
+                currentButtonCl = button(currentButton)
                 taskComplete = false
                 task1 = false
                 task2 = false
@@ -52,39 +49,16 @@ class ButtonTester : LinearOpMode() {
             else if (!task1 && currentButtonCl.isPressed)
                 task1 = true
 
-
-            var clicks = 0
             if (!task2 && task1 && clicks < 3) {
                 if (currentButtonCl.holdingTimeCheck(0.5, time)) clicks++
+
                 tel("Please hold down the button for 3 clicks ($clicks/3)", "")
-            } else if (!task2 && clicks >= 3) task2 = true
+            } else if (!task2 && clicks >= 3) {
+                task2 = true
+                clicks = 0
+            }
 
             updateTel()
         }
-
-
-            /**
-            SmidaGamepad.GamePadButton.values().forEach {
-            val currentButton = button(it)
-            while(!currentButton.isPressed) {
-            tel("Press the ${it.name} button.", "")
-            if(it.hasValue) tel("Current button value: ${currentButton.buttonValue}", "")
-            updateTel()
-            }
-
-            var clicks = 0
-            while(clicks < 3) {
-            tel("Hold ${it.name} down for 3 clicks ($clicks/3)", "")
-            if(currentButton.holdingTimeCheck(0.5, time)) clicks++
-            updateTel()
-            }
-            }
-             **/
-
-            while (!button(SmidaGamepad.GamePadButton.BACK).isPressed && !isStopRequested) {
-                tel("Gamepad testing completed.", "")
-                tel("Press BACK to end to finish the operation mode", "")
-                updateTel()
-            }
      }
 }

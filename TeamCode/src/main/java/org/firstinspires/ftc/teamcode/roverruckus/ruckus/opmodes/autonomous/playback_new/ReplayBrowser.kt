@@ -4,12 +4,14 @@ import android.content.Context
 import android.icu.text.AlphabeticIndex
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import org.firstinspires.ftc.teamcode.common.controller.Button
+import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.AutonomousRunner
 import java.io.File
 
 
-@Autonomous(name="New Browser")
+@Autonomous(name="REPLAY BROWSER", group="replay")
 class ReplayBrowser : LinearOpMode() {
 
     private var defaultRefresh = false
@@ -19,6 +21,9 @@ class ReplayBrowser : LinearOpMode() {
     }
 
     override fun runOpMode() {
+
+        val pad1 = SmidaGamepad(gamepad1, this)
+        val button : (SmidaGamepad.GamePadButton) -> Button = pad1::getButton
 
         val selectorIcon = ">>>"
 
@@ -44,6 +49,7 @@ class ReplayBrowser : LinearOpMode() {
         var x_presses = 0
 
         while(!isStopRequested) {
+            pad1.handleUpdate()
 
             val dir = File(baseDir, directoryPosition)
             val replayList = dir.list { _ : File, s : String -> s.startsWith(TimeStampedData.REPLAY_PREFIX) }
@@ -51,6 +57,66 @@ class ReplayBrowser : LinearOpMode() {
             val replayExists = replayList.isNotEmpty()
             val directoryExists = directoryList.isNotEmpty()
 
+
+            if(button(SmidaGamepad.GamePadButton.PAD_LEFT).isPressed)
+                if(pad1.lastCheckedButton.holdingTimeCheck(shiftDelta, time)) {
+                    currentPartition = when(currentPartition) {
+                        Partition.HEADER -> currentPartition
+                        Partition.DIRECTORY -> Partition.HEADER
+                        Partition.REPLAYS -> if(directoryExists) Partition.DIRECTORY else Partition.HEADER
+                    }
+                }
+            if(button(SmidaGamepad.GamePadButton.PAD_RIGHT).isPressed)
+                if(pad1.lastCheckedButton.holdingTimeCheck(shiftDelta, time)) {
+                    currentPartition = when(currentPartition) {
+                        Partition.HEADER -> if(directoryExists) Partition.DIRECTORY else if(replayExists) Partition.REPLAYS else currentPartition
+                        Partition.DIRECTORY -> if(replayExists) Partition.REPLAYS else Partition.DIRECTORY
+                        Partition.REPLAYS -> currentPartition
+                    }
+                }
+            if(button(SmidaGamepad.GamePadButton.PAD_UP).isPressed)
+                if(pad1.lastCheckedButton.holdingTimeCheck(shiftDelta, time)) {
+                    if (currentPartition != Partition.HEADER) //this shouldn't work in the header partition.
+                        if (selectorLoc > 0) selectorLoc--
+
+                }
+            if(button(SmidaGamepad.GamePadButton.PAD_DOWN).isPressed)
+                if(pad1.lastCheckedButton.holdingTimeCheck(shiftDelta, time)) {
+                    if (currentPartition != Partition.HEADER) //this shouldn't work in the header partition.
+                        if (selectorLoc < (if (currentPartition == Partition.REPLAYS) replayList.lastIndex else directoryList.lastIndex)) selectorLoc++
+                }
+            if(button(SmidaGamepad.GamePadButton.A).isIndividualActionButtonPress())
+                when(currentPartition) {
+                    Partition.DIRECTORY -> directoryPosition += (if(directoryPosition != "") "/" else "") + directoryList[selectorLoc]
+                    Partition.REPLAYS -> RecordingConfig.desiredFilePath = directoryPosition + "/" + replayList[selectorLoc]
+                }
+            if(button(SmidaGamepad.GamePadButton.B).isIndividualActionButtonPress())
+                if(directoryPosition != "") {
+                    val thLindex = directoryPosition.lastIndexOf('/')
+                    directoryPosition = directoryPosition.substring(0, if(thLindex < 0) 0 else thLindex)
+                }
+            if(button(SmidaGamepad.GamePadButton.X).isIndividualActionButtonPress())
+                if(currentPartition != Partition.HEADER) {
+                    if (x_presses > 0) {
+                        when (currentPartition) {
+                            Partition.DIRECTORY -> {
+                                val f = File(dir, directoryList[selectorLoc])
+                                f.deleteRecursively()
+                            }
+                            Partition.REPLAYS -> File(dir, replayList[selectorLoc]).delete()
+                        }
+                        x_presses = 0
+                    }
+                    else x_presses++
+                }
+            if(button(SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed)
+                if(RecordingConfig.DIRECTORY_NAME != "") {
+                    File(dir, TimeStampedData.REPLAY_DIRECTORY_PREFIX + RecordingConfig.DIRECTORY_NAME).mkdirs()
+                    RecordingConfig.DIRECTORY_NAME = ""
+                }
+
+
+            /**
             if(gamepad1.dpad_left) { //DPAD LEFT
                 if(!leftDPAD_pressed && !buttonPressed) {
                     buttonPressed = true
@@ -184,7 +250,7 @@ class ReplayBrowser : LinearOpMode() {
             }else if(!gamepad1.left_bumper && lbumper_pressed) {
                 buttonPressed = false
                 lbumper_pressed = false
-            }
+            }**/
 
             if(x_presses > 0 && (!gamepad1.atRest() && !gamepad1.x)) x_presses = 0
 

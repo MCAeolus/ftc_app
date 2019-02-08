@@ -25,19 +25,25 @@ class SmidaGamepad(val gamepad : Gamepad, val opmode : OpMode) {
 
         LEFT_TRIGGER(isPressable = false, hasValue = true, fields = arrayOf(Gamepad::left_trigger.javaField)), RIGHT_TRIGGER(isPressable = false, hasValue = true, fields = arrayOf(Gamepad::right_trigger.javaField)),
 
-        BACK(fields = arrayOf(Gamepad::back.javaField)), START(fields = arrayOf(Gamepad::start.javaField))
+        BACK(fields = arrayOf(Gamepad::back.javaField)), START(fields = arrayOf(Gamepad::start.javaField)),
+        NONE(isPressable = false, fields = arrayOf())
     }
 
     private val buttonMap : MutableMap<GamePadButton, Button> = mutableMapOf()
 
+    var lastCheckedButton : Button
     var isResting : Boolean = true
         private set
 
     init {
         GamePadButton.values().forEach { buttonMap[it] = Button(it, it.fields) }
+        lastCheckedButton = buttonMap[GamePadButton.NONE]!!
     }
 
-    fun getButton(button : GamePadButton) : Button = buttonMap[button]!!
+    fun getButton(button : GamePadButton) : Button {
+        lastCheckedButton = buttonMap[button]!!
+        return lastCheckedButton
+    }
 
     infix fun SmidaGamepad.button(button : GamePadButton) = getButton(button)
 
