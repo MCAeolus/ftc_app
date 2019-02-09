@@ -35,7 +35,7 @@ class Button(private val gamepad : SmidaGamepad, private val buttonType : SmidaG
                 if (!isPressed && wasPressed) initialPressTime = -1.0
             }
         }
-        if (buttonType.isJoystick) joystickValues = Pair(buttonFields[1]!!.getDouble(gamepad.gamepad), buttonFields[2]!!.getDouble(gamepad.gamepad))
+        if (buttonType.isJoystick) joystickValues = Pair(-buttonFields[1]!!.getDouble(gamepad.gamepad), buttonFields[2]!!.getDouble(gamepad.gamepad))
     }
 
     fun holdingTimeCheck(delta: Double, time: Double): Boolean {

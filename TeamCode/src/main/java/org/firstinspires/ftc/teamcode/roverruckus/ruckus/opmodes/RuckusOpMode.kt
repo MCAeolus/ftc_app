@@ -22,6 +22,8 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
     lateinit var pad1 : SmidaGamepad
     lateinit var pad2 : SmidaGamepad
 
+    private val button = SmidaGamepad.getReflectButton()
+
     override fun start() {
         LINEAR_SLIDES = COMPONENTS["LinearSlide"] as LinearSlideMachine
         INTAKE = COMPONENTS["Intake"] as IntakeMachine
@@ -32,42 +34,53 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
     }
 
     override fun loop() {
+        pad1.handleUpdate()
+        pad2.handleUpdate()
 
-        if()
+        if(button(pad1, SmidaGamepad.GamePadButton.LEFT_STICK).isIndividualActionButtonPress()) {
+          toggleMovementSlow = !toggleMovementSlow
+          toggleRotationSlow = toggleMovementSlow
+        }
+        if(button(pad1, SmidaGamepad.GamePadButton.RIGHT_STICK).isIndividualActionButtonPress())
+          toggleRotationSlow = !toggleRotationSlow
 
-        if(gamepad1.left_stick_button && !gamepad1_lStickWasPressed) {
+
+
+        /**if(gamepad1.left_stick_button && !gamepad1_lStickWasPressed) {
             gamepad1_lStickWasPressed = true
             toggleMovementSlow = !toggleMovementSlow
             toggleRotationSlow = toggleMovementSlow
         }else if(!gamepad1.left_stick_button && gamepad1_lStickWasPressed) gamepad1_lStickWasPressed = false
 
+
         if(gamepad1.right_stick_button && !gamepad1_rStickWasPressed && !toggleMovementSlow) {
             gamepad1_rStickWasPressed = true
             toggleRotationSlow = !toggleRotationSlow
         }else if(!gamepad1.right_stick_button && gamepad1_rStickWasPressed) gamepad1_rStickWasPressed = false
+        **/
 
-        DRIVETRAIN.move(-gamepad1.left_stick_x.toDouble(), gamepad1.left_stick_y.toDouble(), -gamepad1.right_stick_x.toDouble() * if(toggleRotationSlow || toggleMovementSlow) 0.5 else 1.0, if(toggleMovementSlow) 0.5 else 1.0)
+        val lJoy = button(pad1, SmidaGamepad.GamePadButton.LEFT_STICK)
+        val rJoy = button(pad1, SmidaGamepad.GamePadButton.RIGHT_STICK)
 
+        DRIVETRAIN.move(lJoy.joystickValues.first,
+            lJoy.joystickValues.second,
+            rJoy.joystickValues.first * if(toggleRotationSlow || toggleMovementSlow) 0.5 else 1.0,
+            if(toggleMovementSlow) 0.5 else 1.0)
+
+        if(button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).onlyThisIsPressing(SmidaGamepad.GamePadButton.RIGHT_TRIGGER))
+            LINEAR_SLIDES.runSlides(button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).buttonValue)
+        if(button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).onlyThisIsPressing(SmidaGamepad.GamePadButton.LEFT_TRIGGER))
+            LINEAR_SLIDES.runSlides(-button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).buttonValue)
+        else LINEAR_SLIDES.runSlides(0F)
+
+        /**
         if(gamepad1.left_trigger > 0 && !(gamepad1.right_trigger > 0)) LINEAR_SLIDES.runSlides(gamepad1.left_trigger)
         else if(gamepad1.right_trigger > 0 && !(gamepad1.left_trigger > 0)) LINEAR_SLIDES.runSlides(-gamepad1.right_trigger)
         else LINEAR_SLIDES.runSlides(0F)
+        **/
 
-        if(gamepad1.left_bumper)
-            INTAKE.runArm(IntakeMachine.ArmDirection.UP)
-        else if(gamepad1.right_bumper)
-            INTAKE.runArm(IntakeMachine.ArmDirection.DOWN)
-        else INTAKE.runArm(IntakeMachine.ArmDirection.OFF)
-
-        if(gamepad1.y) {
-            INTAKE.dropTotem()
-        }else INTAKE.resetTotem()
-
-        if(gamepad2.left_bumper) INTAKE.runIntake(IntakeMachine.IntakeDirection.INTAKE)
-        else if(gamepad2.left_trigger > 0.0) INTAKE.runIntake(IntakeMachine.IntakeDirection.OUTTAKE)
-        else INTAKE.runIntake(IntakeMachine.IntakeDirection.OFF)
-
-        if(gamepad2.right_bumper) LIFT.runLift(LiftMachine.LiftDirection.UP)
-        else if(gamepad2.right_trigger > 0) LIFT.runLift(LiftMachine.LiftDirection.DOWN)
+        if(button(pad2, SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed) LIFT.runLift(LiftMachine.LiftDirection.UP)
+        else if(button(pad2, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed) LIFT.runLift(LiftMachine.LiftDirection.DOWN)
         else LIFT.runLift(LiftMachine.LiftDirection.OFF)
 
         telemetry.addData("RUCKUS", "opmode is running ${time}")
