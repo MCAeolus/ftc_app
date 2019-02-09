@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import java.lang.reflect.Field
 
 
-class Button(private val buttonType : SmidaGamepad.GamePadButton, private val buttonFields : Array<Field?>) {
+class Button(private val gamepad : SmidaGamepad, private val buttonType : SmidaGamepad.GamePadButton, private val buttonFields : Array<Field?>) {
 
     var wasPressed: Boolean = false
         private set
@@ -18,7 +18,7 @@ class Button(private val buttonType : SmidaGamepad.GamePadButton, private val bu
     private var initialPressTime: Double = -1.0
     private var lastPressCheck: Double = -1.0
 
-    fun doUpdate(gamepad : SmidaGamepad) {
+    fun doUpdate() {
         if (buttonType.isPressable) {
             wasPressed = isPressed
             isPressed = buttonFields[0]!!.getBoolean(gamepad.gamepad)
@@ -47,7 +47,9 @@ class Button(private val buttonType : SmidaGamepad.GamePadButton, private val bu
         return false
     }
 
-    fun isIndividualActionButtonPress() : Boolean {
-        return !wasPressed && isPressed
-    }
+    fun isIndividualActionButtonPress() : Boolean = return !wasPressed && isPressed
+
+
+    fun onlyThisIsPressing(other : GamePadButton) = this.isPressed && !gamepad.getButton(other).isPressed
+
 }

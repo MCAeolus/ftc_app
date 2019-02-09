@@ -19,13 +19,22 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
     private var gamepad1_lStickWasPressed = false
     private var gamepad1_rStickWasPressed = false
 
+    lateinit var pad1 : SmidaGamepad
+    lateinit var pad2 : SmidaGamepad
+
     override fun start() {
         LINEAR_SLIDES = COMPONENTS["LinearSlide"] as LinearSlideMachine
         INTAKE = COMPONENTS["Intake"] as IntakeMachine
         LIFT = COMPONENTS["Lift"] as LiftMachine
+
+        pad1 = SmidaGamepad(gamepad1, this)
+        pad2 = SmidaGamepad(gamepad2, this)
     }
 
     override fun loop() {
+
+        if()
+
         if(gamepad1.left_stick_button && !gamepad1_lStickWasPressed) {
             gamepad1_lStickWasPressed = true
             toggleMovementSlow = !toggleMovementSlow

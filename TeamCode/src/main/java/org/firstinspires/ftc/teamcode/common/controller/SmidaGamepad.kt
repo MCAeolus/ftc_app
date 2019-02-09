@@ -36,14 +36,20 @@ class SmidaGamepad(val gamepad : Gamepad, val opmode : OpMode) {
         private set
 
     init {
-        GamePadButton.values().forEach { buttonMap[it] = Button(it, it.fields) }
+        GamePadButton.values().forEach { buttonMap[it] = Button(this, it, it.fields) }
         lastCheckedButton = buttonMap[GamePadButton.NONE]!!
     }
+
+    static fun getReflectButton() : (SmidaGamepad, GamePadButton) -> Button = SmidaGamepad::getButton
+
+    fun getReflectButton() : (GamePadButton) -> Button = ::getButton
 
     fun getButton(button : GamePadButton) : Button {
         lastCheckedButton = buttonMap[button]!!
         return lastCheckedButton
     }
+
+    static fun getButton(gamepad : SmidaGamepad, button : GamePadButton) = gamepad.getButton(button)
 
     infix fun SmidaGamepad.button(button : GamePadButton) = getButton(button)
 
