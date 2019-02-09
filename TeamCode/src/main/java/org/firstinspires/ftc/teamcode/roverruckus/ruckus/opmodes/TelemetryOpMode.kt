@@ -22,7 +22,6 @@ class TelemetryOpMode : Robot(DummyDriveTrain(), mapOf("IMU" to IMU())) {
         TELEM = SmidaTelemetry(true, true, this)
     }
 
-    override fun loop() {
-        TELEM.update()
-    }
+    override fun loop() = TELEM.update()
+
 }

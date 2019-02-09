@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.common.controller
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.hardware.Gamepad
 import java.lang.reflect.Field
 
 
@@ -47,9 +45,13 @@ class Button(private val gamepad : SmidaGamepad, private val buttonType : SmidaG
         return false
     }
 
-    fun isIndividualActionButtonPress() : Boolean = return !wasPressed && isPressed
+    fun isIndividualActionButtonPress() : Boolean = !wasPressed && isPressed
 
 
-    fun onlyThisIsPressing(other : GamePadButton) = this.isPressed && !gamepad.getButton(other).isPressed
+    fun onlyThisIsPressing(other : SmidaGamepad.GamePadButton) : Boolean {
+        val ret = this.isPressed && !gamepad.getButton(other).isPressed
+        gamepad.lastCheckedButton = this
+        return ret
+    }
 
 }

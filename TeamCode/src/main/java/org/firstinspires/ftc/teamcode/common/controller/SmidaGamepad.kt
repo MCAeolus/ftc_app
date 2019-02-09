@@ -10,6 +10,11 @@ import kotlin.reflect.jvm.javaField
 
 class SmidaGamepad(val gamepad : Gamepad, val opmode : OpMode) {
 
+    companion object {
+        fun getReflectButton() : (SmidaGamepad, GamePadButton) -> Button = SmidaGamepad::getButton
+        fun getButton(gamepad : SmidaGamepad, button : GamePadButton) = gamepad.getButton(button)
+    }
+
     enum class GamePadButton(val isPressable : Boolean = true, val hasValue : Boolean = false, val isJoystick : Boolean = false, val fields : Array<Field?>) {
         PAD_UP(fields = arrayOf(Gamepad::dpad_up.javaField)), PAD_DOWN(fields = arrayOf(Gamepad::dpad_down.javaField)),
         PAD_LEFT(fields = arrayOf(Gamepad::dpad_left.javaField)), PAD_RIGHT(fields = arrayOf(Gamepad::dpad_right.javaField)),
@@ -23,9 +28,10 @@ class SmidaGamepad(val gamepad : Gamepad, val opmode : OpMode) {
         LEFT_BUMPER(fields = arrayOf(Gamepad::left_bumper.javaField)),
         RIGHT_BUMPER(fields = arrayOf(Gamepad::right_bumper.javaField)),
 
-        LEFT_TRIGGER(isPressable = false, hasValue = true, fields = arrayOf(Gamepad::left_trigger.javaField)), RIGHT_TRIGGER(isPressable = false, hasValue = true, fields = arrayOf(Gamepad::right_trigger.javaField)),
+        LEFT_TRIGGER(isPressable = false, hasValue = true, fields = arrayOf(Gamepad::left_trigger.javaField)),
+        RIGHT_TRIGGER(isPressable = false, hasValue = true, fields = arrayOf(Gamepad::right_trigger.javaField)),
 
-        BACK(fields = arrayOf(Gamepad::back.javaField)), START(fields = arrayOf(Gamepad::start.javaField)),
+       // BACK(fields = arrayOf(Gamepad::back.javaField)), START(fields = arrayOf(Gamepad::start.javaField)),  <- these buttons don't seem to work correctly in practice.
         NONE(isPressable = false, fields = arrayOf())
     }
 
@@ -40,7 +46,6 @@ class SmidaGamepad(val gamepad : Gamepad, val opmode : OpMode) {
         lastCheckedButton = buttonMap[GamePadButton.NONE]!!
     }
 
-    static fun getReflectButton() : (SmidaGamepad, GamePadButton) -> Button = SmidaGamepad::getButton
 
     fun getReflectButton() : (GamePadButton) -> Button = ::getButton
 
@@ -49,12 +54,10 @@ class SmidaGamepad(val gamepad : Gamepad, val opmode : OpMode) {
         return lastCheckedButton
     }
 
-    static fun getButton(gamepad : SmidaGamepad, button : GamePadButton) = gamepad.getButton(button)
-
     infix fun SmidaGamepad.button(button : GamePadButton) = getButton(button)
 
     fun handleUpdate() {
-        buttonMap.forEach { it.value.doUpdate(this) }
+        buttonMap.forEach { it.value.doUpdate() }
         isResting = gamepad.atRest()
     }
 }

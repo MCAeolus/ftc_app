@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
 import org.firstinspires.ftc.teamcode.common.robot.Robot
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.IntakeMachine
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.LiftMachine
@@ -44,8 +45,6 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
         if(button(pad1, SmidaGamepad.GamePadButton.RIGHT_STICK).isIndividualActionButtonPress())
           toggleRotationSlow = !toggleRotationSlow
 
-
-
         /**if(gamepad1.left_stick_button && !gamepad1_lStickWasPressed) {
             gamepad1_lStickWasPressed = true
             toggleMovementSlow = !toggleMovementSlow
@@ -67,21 +66,31 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
             rJoy.joystickValues.first * if(toggleRotationSlow || toggleMovementSlow) 0.5 else 1.0,
             if(toggleMovementSlow) 0.5 else 1.0)
 
-        if(button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).onlyThisIsPressing(SmidaGamepad.GamePadButton.RIGHT_TRIGGER))
-            LINEAR_SLIDES.runSlides(button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).buttonValue)
-        if(button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).onlyThisIsPressing(SmidaGamepad.GamePadButton.LEFT_TRIGGER))
-            LINEAR_SLIDES.runSlides(-button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).buttonValue)
-        else LINEAR_SLIDES.runSlides(0F)
+        when {
+            button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).onlyThisIsPressing(SmidaGamepad.GamePadButton.RIGHT_TRIGGER) ->
+                LINEAR_SLIDES.runSlides(pad1.lastCheckedButton.buttonValue.toFloat())
+            button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).onlyThisIsPressing(SmidaGamepad.GamePadButton.LEFT_TRIGGER) ->
+                LINEAR_SLIDES.runSlides(-pad1.lastCheckedButton.buttonValue.toFloat())
+            else -> LINEAR_SLIDES.runSlides(0F)
+        }
 
         /**
+        if(button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).onlyThisIsPressing(SmidaGamepad.GamePadButton.RIGHT_TRIGGER))
+            LINEAR_SLIDES.runSlides(button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).buttonValue.toFloat())
+        if(button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).onlyThisIsPressing(SmidaGamepad.GamePadButton.LEFT_TRIGGER))
+            LINEAR_SLIDES.runSlides(-button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).buttonValue.toFloat())
+        else LINEAR_SLIDES.runSlides(0F)
+
         if(gamepad1.left_trigger > 0 && !(gamepad1.right_trigger > 0)) LINEAR_SLIDES.runSlides(gamepad1.left_trigger)
         else if(gamepad1.right_trigger > 0 && !(gamepad1.left_trigger > 0)) LINEAR_SLIDES.runSlides(-gamepad1.right_trigger)
         else LINEAR_SLIDES.runSlides(0F)
         **/
 
-        if(button(pad2, SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed) LIFT.runLift(LiftMachine.LiftDirection.UP)
-        else if(button(pad2, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed) LIFT.runLift(LiftMachine.LiftDirection.DOWN)
-        else LIFT.runLift(LiftMachine.LiftDirection.OFF)
+        when {
+            button(pad2, SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed -> LIFT.runLift(LiftMachine.LiftDirection.UP)
+            button(pad2, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed -> LIFT.runLift(LiftMachine.LiftDirection.DOWN)
+            else -> LIFT.runLift(LiftMachine.LiftDirection.OFF)
+        }
 
         telemetry.addData("RUCKUS", "opmode is running ${time}")
         telemetry.addData("STATS", "movement toggle $toggleMovementSlow, rotation toggle $toggleRotationSlow")
