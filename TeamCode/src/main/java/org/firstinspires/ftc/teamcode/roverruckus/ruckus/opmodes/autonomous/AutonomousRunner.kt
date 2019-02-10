@@ -14,7 +14,7 @@ import java.io.File
 class AutonomousRunner : AutonomousBase(true) {
 
     companion object {
-        val operatorName = "__OPERATION"
+        const val operatorName = "__OPERATION"
 
         fun isOperationDirectory(baseDir : File, dirPath : String) : Boolean{
             val f = File(baseDir, dirPath)
@@ -23,11 +23,11 @@ class AutonomousRunner : AutonomousBase(true) {
         }
     }
 
-    val defaultDir = "${TimeStampedData.REPLAY_DIRECTORY_PREFIX}AutonomousRunner"
+    private val defaultDir = "${TimeStampedData.REPLAY_DIRECTORY_PREFIX}AutonomousRunner"
 
     override fun runOpMode() {
 
-        var baseDir = hardwareMap.appContext.filesDir
+        val baseDir = hardwareMap.appContext.filesDir
         var currentDir = defaultDir
 
         var selectorLoc = 0

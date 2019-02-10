@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new
 
-import android.content.Context
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import java.io.*
@@ -8,20 +7,16 @@ import java.util.*
 
 class TimeStampedData {
     companion object {
-        val REPLAY_PREFIX = "_REPLAY_"
-        val REPLAY_DIRECTORY_PREFIX = "_DIR_"
+        const val REPLAY_PREFIX = "_REPLAY_"
+        const val REPLAY_DIRECTORY_PREFIX = "_DIR_"
     }
 
-    class DataStream(val rawFilePath : String, val hardware : HardwareMap) {
+    class DataStream(rawFilePath : String, val hardware : HardwareMap) {
 
-        private val file : File
+        private val file : File = File(hardware.appContext.filesDir, rawFilePath)
         private val data = ArrayList<DataPoint>()
         private var iterableData: Iterator<DataPoint>? = null
         private var pointBuffer : DataPoint? = null
-
-        init {
-            file = File(hardware.appContext.filesDir, rawFilePath)
-        }
 
         fun load() {
             val datastream = ObjectInputStream(file.inputStream())
@@ -51,12 +46,15 @@ class TimeStampedData {
             if(iterableData == null && data.isNotEmpty()) prepare()
             else if(iterableData == null) return null
 
-            if(pointBuffer != null) {
-                val pb = pointBuffer
-                pointBuffer = null
-                return pb
+            return when {
+                pointBuffer != null -> {
+                    val pb = pointBuffer
+                    pointBuffer = null
+                    pb
+                }
+                iterableData!!.hasNext() -> iterableData?.next()
+                else -> null
             }
-            else return if(iterableData!!.hasNext()) iterableData?.next() else null
         }
 
         fun pointsUntil(time : Double) : Pair<List<DataPoint>, Boolean> {
@@ -76,7 +74,7 @@ class TimeStampedData {
             return Pair(retList, hasFinished())
         }
 
-        fun hasFinished() : Boolean = (iterableData?.hasNext() != true)
+        private fun hasFinished() : Boolean = (iterableData?.hasNext() != true)
 
         fun newPoint(time : Double, bytes : ArrayList<DataByte>) : DataPoint {
             val point = DataPoint(time, time getDelta data.lastOrNull(), bytes)

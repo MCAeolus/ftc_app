@@ -17,9 +17,6 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
     private var toggleRotationSlow = false
     private var toggleMovementSlow = false
 
-    private var gamepad1_lStickWasPressed = false
-    private var gamepad1_rStickWasPressed = false
-
     lateinit var pad1 : SmidaGamepad
     lateinit var pad2 : SmidaGamepad
 
@@ -92,7 +89,7 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
             else -> LIFT.runLift(LiftMachine.LiftDirection.OFF)
         }
 
-        telemetry.addData("RUCKUS", "opmode is running ${time}")
+        telemetry.addData("RUCKUS", "opmode is running for $time seconds")
         telemetry.addData("STATS", "movement toggle $toggleMovementSlow, rotation toggle $toggleRotationSlow")
     }
 }

@@ -1,15 +1,10 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new
 
-import android.content.Context
-import android.icu.text.AlphabeticIndex
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.common.controller.Button
 import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.AutonomousRunner
 import java.io.File
-
 
 @Autonomous(name="REPLAY BROWSER", group="replay")
 class ReplayBrowser : LinearOpMode() {
@@ -33,7 +28,7 @@ class ReplayBrowser : LinearOpMode() {
         var directoryPosition = ""
         var selectorLoc = 0
 
-        var buttonPressed = false
+        /*var buttonPressed = false
         var leftDPAD_pressed = false
         var rightDPAD_pressed = false
         var upDPAD_pressed = false
@@ -43,7 +38,8 @@ class ReplayBrowser : LinearOpMode() {
         var x_pressed = false
         var lbumper_pressed = false
 
-        var timeSincePressHeld : Double = -1.0
+        var timeSincePressHeld : Double = -1.0*/
+
         val shiftDelta = 0.25
 
         var x_presses = 0
@@ -116,7 +112,7 @@ class ReplayBrowser : LinearOpMode() {
                 }
 
 
-            /**
+            /*
             if(gamepad1.dpad_left) { //DPAD LEFT
                 if(!leftDPAD_pressed && !buttonPressed) {
                     buttonPressed = true
@@ -250,7 +246,7 @@ class ReplayBrowser : LinearOpMode() {
             }else if(!gamepad1.left_bumper && lbumper_pressed) {
                 buttonPressed = false
                 lbumper_pressed = false
-            }**/
+            }*/
 
             if(x_presses > 0 && (!gamepad1.atRest() && !gamepad1.x)) x_presses = 0
 
@@ -318,10 +314,6 @@ class ReplayBrowser : LinearOpMode() {
         return reList
     }
 
-    private fun send(h : String, p : String = "", separator : String = "", refresh : Boolean = true) {
-        telemetry.captionValueSeparator = separator
-        telemetry.isAutoClear = refresh
-        telemetry.addData(h, p)
-    }
+    private fun send(h : String, p : String = "") = telemetry.addData(h, p)
 
 }
