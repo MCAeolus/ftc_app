@@ -22,17 +22,17 @@ class ExampleMotorTest : LinearOpMode() {
         while(!isStopRequested) {
             pad1.handleUpdate()
 
-            if(button(SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed)
-                motor.power = 1.0
-            else if(button(SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed)
-                motor.power = -1.0
-            else motor.power = 0.0
+            when {
+                button(SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed -> motor.power = 1.0
+                button(SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed -> motor.power = -1.0
+                else -> motor.power = 0.0
+            }
 
-            if(button(SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed)
-                ser.power = 1.0
-            else if(button(SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed)
-                ser.power = -1.0
-            else ser.power = 1.0
+            when {
+                button(SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed -> ser.power = 1.0
+                button(SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed -> ser.power = -1.0
+                else -> ser.power = 1.0
+            }
 
         }
     }
