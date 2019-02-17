@@ -7,13 +7,10 @@ public class HNAMES_RUCKUS {
             DRIVE_MOTORFR = "driveFR",
             DRIVE_MOTORBL = "driveBL",
             DRIVE_MOTORBR = "driveBR",
-            LEFT_SLIDE_MOTOR = "slideML",
-            RIGHT_SLIDE_MOTOR = "slideMR",
-            VEX_INTAKE = "vIntake",
-            DC_ARM = "armM",
-            LIFT_MOTOR = "liftM",
-            JEOPARDY_NAME = "jeopardy",
-            SERVO_DUMMY   = "DummyServo",
+            OUTTAKE_ARM_MOTOR = "outtakeM",
+            LIFT_MOTOR = "lift",
+            INTAKE_ARM_MOTOR = "intake",
+            OUTTAKE_SERVO   = "outtakeS",
             TOTEM = "tot";
 
 }

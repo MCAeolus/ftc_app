@@ -10,11 +10,9 @@ import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
 class MusicTester : LinearOpMode() {
 
     override fun runOpMode() {
-        val jeopID = hardwareMap.appContext.resources.getIdentifier(HNAMES_RUCKUS.JEOPARDY_NAME, "raw", hardwareMap.appContext.packageName)
 
         telemetry.addData("STATUS", "preloading music...")
         telemetry.update()
-        SoundPlayer.getInstance().preload(hardwareMap.appContext, jeopID)
         telemetry.addData("STATUS", "music loaded.")
         telemetry.update()
 

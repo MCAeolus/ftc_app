@@ -3,14 +3,12 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
 import org.firstinspires.ftc.teamcode.common.robot.Robot
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.IntakeMachine
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.LiftMachine
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.LinearSlideMachine
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
-@TeleOp(name="Ruckus")
-open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to LinearSlideMachine(), "Intake" to IntakeMachine(), "Lift" to LiftMachine())){
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.*
 
-    lateinit var LINEAR_SLIDES : LinearSlideMachine
+@TeleOp(name="Ruckus")
+open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("Outtake" to OuttakeMachine(), "Intake" to IntakeMachine(), "Lift" to LiftMachine())){
+
+    lateinit var OUTTAKE : OuttakeMachine
     lateinit var INTAKE : IntakeMachine
     lateinit var LIFT : LiftMachine
 
@@ -22,8 +20,20 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
 
     private val button = SmidaGamepad.getReflectButton()
 
+    private val layout = mapOf(
+        "Slow Toggle" to (SmidaGamepad.GamePadButton.LEFT_STICK to pad1),
+        "Rotation Toggle" to (SmidaGamepad.GamePadButton.RIGHT_STICK to pad1),
+        "Cardinal Drive" to (SmidaGamepad.GamePadButton.LEFT_STICK to pad1),
+        "Rotational Drive" to (SmidaGamepad.GamePadButton.RIGHT_STICK to pad1),
+
+        "Move Intake Out" to SmidaGamepad.GamePadButton.LEFT_TRIGGER to pad1,
+        "Move Intake In" to SmidaGamepad.GamePadButton.RIGHT_TRIGGER to pad1,
+
+        "Outtake Dumper" to SmidaGamepad.GamePadButton.X to pad1
+    )
+
     override fun start() {
-        LINEAR_SLIDES = COMPONENTS["LinearSlide"] as LinearSlideMachine
+        OUTTAKE = COMPONENTS["Outtake"] as OuttakeMachine
         INTAKE = COMPONENTS["Intake"] as IntakeMachine
         LIFT = COMPONENTS["Lift"] as LiftMachine
 
@@ -39,6 +49,7 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
           toggleMovementSlow = !toggleMovementSlow
           toggleRotationSlow = toggleMovementSlow
         }
+
         if(button(pad1, SmidaGamepad.GamePadButton.RIGHT_STICK).isIndividualActionButtonPress())
           toggleRotationSlow = !toggleRotationSlow
 
@@ -65,10 +76,20 @@ open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("LinearSlide" to Line
 
         when {
             button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).onlyThisIsPressing(SmidaGamepad.GamePadButton.RIGHT_TRIGGER) ->
-                LINEAR_SLIDES.runSlides(pad1.lastCheckedButton.buttonValue.toFloat())
+                INTAKE.runArm(IntakeMachine.ArmDirection.OUT)
             button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).onlyThisIsPressing(SmidaGamepad.GamePadButton.LEFT_TRIGGER) ->
-                LINEAR_SLIDES.runSlides(-pad1.lastCheckedButton.buttonValue.toFloat())
-            else -> LINEAR_SLIDES.runSlides(0F)
+                INTAKE.runArm(IntakeMachine.ArmDirection.IN)
+            else -> INTAKE.runArm(IntakeMachine.ArmDirection.OFF)
+        }
+
+        if(button(pad1, SmidaGamepad.GamePadButton.X).isPressed)
+            OUTTAKE.setDumpPosition(OuttakeMachine.DumpPosition.DUMP)
+        else OUTTAKE.setDumpPosition(OuttakeMachine.DumpPosition.RESET)
+
+        when {
+            button(pad1, SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed -> OUTTAKE.runSlides(1.0f);
+            button(pad1, SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed -> OUTTAKE.runSlides(-1.0f);
+            else -> OUTTAKE.runSlides(0.0f)
         }
 
         /**

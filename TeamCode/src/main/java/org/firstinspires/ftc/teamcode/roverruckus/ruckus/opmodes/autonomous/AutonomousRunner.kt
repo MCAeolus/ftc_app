@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.teamcode.common.controller.Button
+import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new.TimeStampedData
 import java.io.File
 
@@ -32,87 +34,63 @@ class AutonomousRunner : AutonomousBase(true) {
 
         var selectorLoc = 0
 
+        /**
         var up_DPADpressed = false
         var down_DPADpressed = false
         var a_pressed = false
         var b_pressed = false
         var lbumper_pressed = false
-
-        var buttonPressed = false
+        **/
 
         var operationDir : File? = null
+
+        val pad1 = SmidaGamepad(gamepad1, this)
+        val button : (SmidaGamepad.GamePadButton) -> Button = pad1::getButton
+
+        val buttonDelta = 0.25
 
         if(!baseDir.list().contains(defaultDir)) File(baseDir, defaultDir).mkdirs()
 
         while(!isStarted) {
+            pad1.handleUpdate()
 
             val dir = File(baseDir, currentDir)
 
             val dirList = dir.list { _ : File, s : String -> s.startsWith(TimeStampedData.REPLAY_DIRECTORY_PREFIX) }
 
-            if(gamepad1.dpad_up && !up_DPADpressed && !buttonPressed) {
-                buttonPressed = true
-                up_DPADpressed = true
+            if(button(SmidaGamepad.GamePadButton.PAD_UP).holdingTimeCheck(buttonDelta, time))
                 if(selectorLoc > 0) selectorLoc--
-            }else if(!gamepad1.dpad_up && up_DPADpressed) {
-                buttonPressed = false
-                up_DPADpressed = false
-            }
 
-            if(gamepad1.dpad_down && !down_DPADpressed && !buttonPressed) {
-                buttonPressed = true
-                down_DPADpressed = true
+            if(button(SmidaGamepad.GamePadButton.PAD_DOWN).holdingTimeCheck(buttonDelta, time))
                 if(selectorLoc < dirList.lastIndex) selectorLoc++
-            }else if(!gamepad1.dpad_down && down_DPADpressed) {
-                buttonPressed = false
-                down_DPADpressed = false
-            }
 
-            if(gamepad1.a && !a_pressed && !buttonPressed) {
-                buttonPressed = true
-                a_pressed = true
-
+            if(button(SmidaGamepad.GamePadButton.A).isIndividualActionButtonPress())
                 if(isOperationDirectory(baseDir, currentDir + "/" + dirList[selectorLoc]))
                     operationDir = File(dir, dirList[selectorLoc])
                 else {
                     currentDir += "/" + dirList[selectorLoc]
                 }
-            }else if(!gamepad1.a && a_pressed) {
-                buttonPressed = false
-                a_pressed = false
-            }
 
-            if(gamepad1.b && !b_pressed && !buttonPressed) {
-                buttonPressed = true
-                b_pressed = true
-
+            if(button(SmidaGamepad.GamePadButton.B).isIndividualActionButtonPress()) {
                 if(operationDir != null) operationDir = null
                 else if(currentDir != defaultDir) {
                     val thLindex = currentDir.lastIndexOf('/')
                     currentDir = currentDir.substring(0, if(thLindex < 0) defaultDir.length else thLindex)
                 }
-            }else if(!gamepad1.b && b_pressed) {
-                buttonPressed = false
-                b_pressed = false
             }
 
-            if(gamepad1.left_bumper && !lbumper_pressed && !buttonPressed) {
-                buttonPressed = true
-                lbumper_pressed = true
-
+            if(button(SmidaGamepad.GamePadButton.LEFT_BUMPER).isIndividualActionButtonPress()) {
                 val selDir = currentDir + "/" + dirList[selectorLoc]
 
-                if(isOperationDirectory(baseDir, selDir)) {
-                     File(dir, dirList[selectorLoc]).listFiles().filter { it.name == operatorName }.forEach{ it.delete() }
-                }else {
+                if (isOperationDirectory(baseDir, selDir))
+                    File(dir, dirList[selectorLoc]).listFiles().filter { it.name == operatorName }.forEach { it.delete() }
+
+                else {
                     makeFile(operatorName, selDir)
                     makeFile("${TimeStampedData.REPLAY_PREFIX}${SamplePosition.LEFT.id}", selDir)
                     makeFile("${TimeStampedData.REPLAY_PREFIX}${SamplePosition.CENTER.id}", selDir)
                     makeFile("${TimeStampedData.REPLAY_PREFIX}${SamplePosition.RIGHT.id}", selDir)
                 }
-            }else if(!gamepad1.left_bumper && lbumper_pressed) {
-                buttonPressed = false
-                lbumper_pressed = false
             }
 
             if(operationDir != null) {

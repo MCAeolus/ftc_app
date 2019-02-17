@@ -15,32 +15,18 @@ class IntakeMachine : IMachine, Trackable {
     }
 
     enum class ArmDirection(val speed : Double) {
-        UP(1.0), DOWN(-0.5), OFF(0.0)
+        OUT(1.0), IN(-1.0), OFF(0.0)
     }
 
-    lateinit var intakerMotor : CRServo
     lateinit var armMotor : DcMotor
 
-    lateinit var totemServo : Servo
-
     override fun init(robot: IRobot) {
-        intakerMotor = robot.opMode().hardwareMap.get(CRServo::class.java, HNAMES_RUCKUS.VEX_INTAKE)
-        armMotor = robot.opMode().hardwareMap.get(DcMotor::class.java, HNAMES_RUCKUS.DC_ARM)
+        armMotor = robot.opMode().hardwareMap.get(DcMotor::class.java, HNAMES_RUCKUS.INTAKE_ARM_MOTOR)
         armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        totemServo = robot.opMode().hardwareMap.get(Servo::class.java, HNAMES_RUCKUS.TOTEM)
-        resetTotem()
-    }
-
-    fun dropTotem() {
-        totemServo.position = 0.0
-    }
-
-    fun resetTotem() {
-        totemServo.position = 0.6
     }
 
     fun runIntake(dir : IntakeDirection) {
-        intakerMotor.power = dir.speed
+        //intakerMotor.power = dir.speed
     }
 
     fun runArm(dir : ArmDirection) {
@@ -49,9 +35,10 @@ class IntakeMachine : IMachine, Trackable {
 
     override fun stop() {
        runIntake(IntakeDirection.OFF)
+       runArm(ArmDirection.OFF)
     }
 
     override fun data(): Map<String, Any> {
-       return linkedMapOf("Intake Power" to intakerMotor.power, "Arm Power" to armMotor.power)
+       return linkedMapOf("Arm Power" to armMotor.power)
     }
 }

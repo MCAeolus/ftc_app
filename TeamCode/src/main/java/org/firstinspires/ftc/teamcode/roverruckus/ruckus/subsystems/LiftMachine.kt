@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
 import org.firstinspires.ftc.teamcode.common.util.Trackable
@@ -17,6 +18,7 @@ class LiftMachine : IMachine, Trackable {
     override fun init(robot: IRobot) {
         liftMotor = robot.opMode().hardwareMap.get(DcMotor::class.java, HNAMES_RUCKUS.LIFT_MOTOR)
         liftMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        liftMotor.direction = DcMotorSimple.Direction.REVERSE
         liftMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
     }
 
