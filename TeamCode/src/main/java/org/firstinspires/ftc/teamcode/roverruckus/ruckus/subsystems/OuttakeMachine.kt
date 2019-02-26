@@ -14,7 +14,7 @@ class OuttakeMachine : IMachine, Trackable {
     lateinit var dumpServo : Servo
 
     enum class DumpPosition(val pos : Double) {
-        DUMP(1.0), RESET(0.0)
+        DUMP(0.75), RESET(0.2)
     }
 
     override fun init(robot: IRobot) {

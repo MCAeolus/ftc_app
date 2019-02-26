@@ -10,7 +10,11 @@ import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
 class LiftMachine : IMachine, Trackable {
 
     enum class LiftDirection(val speed : Double) {
-        UP(1.0), DOWN(-1.0), OFF(0.0)
+        UP(-1.0), DOWN(1.0), OFF(0.0)
+    }
+
+    enum class LiftPosition(val enc : Int) {
+        DOWN(100), UP(0)
     }
 
     lateinit var liftMotor : DcMotor
@@ -18,12 +22,17 @@ class LiftMachine : IMachine, Trackable {
     override fun init(robot: IRobot) {
         liftMotor = robot.opMode().hardwareMap.get(DcMotor::class.java, HNAMES_RUCKUS.LIFT_MOTOR)
         liftMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        liftMotor.direction = DcMotorSimple.Direction.REVERSE
-        liftMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        liftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
     fun runLift(dir : LiftDirection) {
         liftMotor.power = dir.speed
+    }
+
+    fun liftPosition(di : LiftPosition) {
+        liftMotor.targetPosition = di.enc
+        liftMotor.power = 1.0
+        liftMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
     }
 
     override fun stop() {

@@ -15,6 +15,7 @@
     android:theme="@style/AppThemeRedRC" >
 
     <!-- The main robot controller activity -->
+
     <activity
       android:name="org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity"
       android:screenOrientation="fullUser"

@@ -21,7 +21,7 @@ class ReplayAutonomous : AutonomousBase() {
         }
 
         if(RecordingConfig.desiredFilePath == "")requestOpModeStop()
-        val RECORD = TimeStampedData.DataStream(RecordingConfig.FILE_NAME, hardwareMap)
+        val RECORD = TimeStampedData.DataStream(RecordingConfig.desiredFilePath, hardwareMap)
 
         RECORD.load()
         RECORD.prepare()

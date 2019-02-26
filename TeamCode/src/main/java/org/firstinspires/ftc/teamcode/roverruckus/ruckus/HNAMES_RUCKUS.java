@@ -11,6 +11,8 @@ public class HNAMES_RUCKUS {
             LIFT_MOTOR = "lift",
             INTAKE_ARM_MOTOR = "intake",
             OUTTAKE_SERVO   = "outtakeS",
+            INTAKER_MOTOR = "intaker",
+            LINEAR_SLIDES = "linearslide",
             TOTEM = "tot";
 
 }

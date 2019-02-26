@@ -26,6 +26,7 @@ class ReplayBrowser : LinearOpMode() {
         var currentPartition = Partition.HEADER
         val baseDir = hardwareMap.appContext.filesDir
         var directoryPosition = ""
+        var lastDirectoryPosition = ""
         var selectorLoc = 0
 
         /*var buttonPressed = false
@@ -248,7 +249,12 @@ class ReplayBrowser : LinearOpMode() {
                 lbumper_pressed = false
             }*/
 
-            if(x_presses > 0 && (!gamepad1.atRest() && !gamepad1.x)) x_presses = 0
+            if(x_presses > 0 && (!pad1.isResting && !button(SmidaGamepad.GamePadButton.X).isPressed)) x_presses = 0
+
+            if(directoryPosition != lastDirectoryPosition) {
+                lastDirectoryPosition = directoryPosition
+                selectorLoc = 0
+            }
 
             if(currentPartition != lastPartition) {
                 lastPartition = currentPartition

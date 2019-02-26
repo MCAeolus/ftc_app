@@ -29,6 +29,8 @@ class AutonomousRunner : AutonomousBase(true) {
 
     override fun runOpMode() {
 
+        super.runOpMode()
+
         val baseDir = hardwareMap.appContext.filesDir
         var currentDir = defaultDir
 
@@ -42,7 +44,7 @@ class AutonomousRunner : AutonomousBase(true) {
         var lbumper_pressed = false
         **/
 
-        var operationDir : File? = null
+        var operationDir : String? = null
 
         val pad1 = SmidaGamepad(gamepad1, this)
         val button : (SmidaGamepad.GamePadButton) -> Button = pad1::getButton
@@ -66,9 +68,10 @@ class AutonomousRunner : AutonomousBase(true) {
 
             if(button(SmidaGamepad.GamePadButton.A).isIndividualActionButtonPress())
                 if(isOperationDirectory(baseDir, currentDir + "/" + dirList[selectorLoc]))
-                    operationDir = File(dir, dirList[selectorLoc])
+                    operationDir = currentDir + "/" + dirList[selectorLoc]
                 else {
                     currentDir += "/" + dirList[selectorLoc]
+                    selectorLoc = 0
                 }
 
             if(button(SmidaGamepad.GamePadButton.B).isIndividualActionButtonPress()) {
@@ -76,6 +79,7 @@ class AutonomousRunner : AutonomousBase(true) {
                 else if(currentDir != defaultDir) {
                     val thLindex = currentDir.lastIndexOf('/')
                     currentDir = currentDir.substring(0, if(thLindex < 0) defaultDir.length else thLindex)
+                    selectorLoc = 0
                 }
             }
 
@@ -94,7 +98,7 @@ class AutonomousRunner : AutonomousBase(true) {
             }
 
             if(operationDir != null) {
-                send("Current selected operation mode: ${operationDir.path}")
+                send("Current selected operation mode: $operationDir")
                 send("Ready to run.")
             }else {
 
@@ -119,11 +123,13 @@ class AutonomousRunner : AutonomousBase(true) {
             timer_it.reset()
 
             while (opModeIsActive() && timer_it.seconds() < 5) {
-                sample_position = findSample_THREE(TFOD.updatedRecognitions)
+                sample_position = findFromLeftByGold(TFOD.updatedRecognitions)
                 if (sample_position != SamplePosition.N_A && timer_it.seconds() > 1) break
             }
 
-            val USE_RECORD = TimeStampedData.DataStream(operationDir.canonicalPath + "/${TimeStampedData.REPLAY_PREFIX}" + sample_position.id, hardwareMap)
+            telemetry.log().add("POSITION", sample_position.id)
+
+            val USE_RECORD = TimeStampedData.DataStream(operationDir + "/${TimeStampedData.REPLAY_PREFIX}${sample_position.id}", hardwareMap)
             USE_RECORD.load()
             USE_RECORD.prepare()
 
