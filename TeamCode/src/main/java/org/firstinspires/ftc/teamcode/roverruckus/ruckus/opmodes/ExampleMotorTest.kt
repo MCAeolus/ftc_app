@@ -22,9 +22,23 @@ class ExampleMotorTest : LinearOpMode() {
         val ser = hardwareMap.get(CRServo::class.java, "cr")
 
 
+<<<<<<< HEAD
 
         while(!isStopRequested) {
             pad1.handleUpdate()
+=======
+            when {
+                button(SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed -> motor.power = 1.0
+                button(SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed -> motor.power = -1.0
+                else -> motor.power = 0.0
+            }
+
+            when {
+                button(SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed -> ser.power = 1.0
+                button(SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed -> ser.power = -1.0
+                else -> ser.power = 1.0
+            }
+>>>>>>> origin/master
 
             if(button(SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed) {
                 ser.power = 0.8
