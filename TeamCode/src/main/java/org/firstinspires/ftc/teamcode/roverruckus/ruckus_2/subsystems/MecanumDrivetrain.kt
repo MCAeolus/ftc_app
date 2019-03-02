@@ -3,14 +3,13 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.teamcode.common.util.DummyDcMotor
 import org.firstinspires.ftc.teamcode.common.util.TelemetryUtil
 import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
 import org.firstinspires.ftc.teamcode.common.util.math.Vector2d
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.Subsystem
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.MecanumWheelData
 import java.util.*
-import kotlin.math.PI
 
 class MecanumDrivetrain(hardware : HardwareMap) : Subsystem() {
 
@@ -53,7 +52,6 @@ class MecanumDrivetrain(hardware : HardwareMap) : Subsystem() {
         var frontRightMotorPower = 0.0
         var backLeftMotorPower = 0.0
         var backRightMotorPower = 0.0
-
     }
 
     override fun update(): LinkedHashMap<String, Any> {

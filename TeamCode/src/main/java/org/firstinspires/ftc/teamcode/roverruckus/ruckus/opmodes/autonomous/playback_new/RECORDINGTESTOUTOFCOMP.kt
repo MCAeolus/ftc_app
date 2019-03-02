@@ -1,26 +1,15 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new
 
-import android.media.tv.TvInputManager
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
-import com.qualcomm.robotcore.hardware.configuration.UnspecifiedMotor
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
-import org.firstinspires.ftc.teamcode.common.common_machines.IMU
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.LiftMachine
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
-import java.io.File
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
 import java.io.FileNotFoundException
-import java.util.concurrent.TimeoutException
-import kotlin.reflect.jvm.internal.impl.types.checker.TypeIntersector
 
 
 @Autonomous(name="RECORDING TEST OUT OF COMP")@Disabled

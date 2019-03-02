@@ -1,33 +1,26 @@
-package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new
+package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
-import org.firstinspires.ftc.teamcode.common.common_machines.IMU
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
+import java.io.FileNotFoundException
 
 
-@Autonomous(name="Recording Mode")
-class RecordingOPMode : RuckusOpMode() {
+@Autonomous(name="RECORDING TEST OUT OF COMP")@Disabled
+class RECORDINGTESTOUTOFCOMP : OpMode() {
 
-    lateinit var IMU_ : IMU
     lateinit var RECORD : TimeStampedData.DataStream
     var STARTTIME = -1.0
 
     private val blacklistDevices = listOf("imu 1")
 
-
     override fun init() {
-        super.init()
-
-        IMU_ = IMU()
-        IMU_.init(this)
-
         msStuckDetectStop = 10000
         msStuckDetectLoop = 10000
     }
@@ -41,17 +34,17 @@ class RecordingOPMode : RuckusOpMode() {
 
     override fun start() {
         super.start()
-
-
-        RECORD = TimeStampedData.DataStream(RecordingConfig.desiredFilePath, hardwareMap)
+        try {
+            RECORD = TimeStampedData.DataStream(RecordingConfig.desiredFilePath, hardwareMap)
+        }catch (e : FileNotFoundException) {
+            telemetry.log().add("File not found. Stopping")
+            requestOpModeStop()
+        }
 
         if(RecordingConfig.desiredFilePath == "")requestOpModeStop()
-
-        (DRIVETRAIN as MecanumDriveTrain).resetEncoders()
     }
 
     override fun loop() {
-        super.loop()
         if(STARTTIME == -1.0)STARTTIME = time
 
         val elapsed = time - STARTTIME
@@ -84,8 +77,9 @@ class RecordingOPMode : RuckusOpMode() {
     }
 
     override fun stop() {
-        super.stop()
-        if(::RECORD.isInitialized) RECORD.write()
+
+        if(::RECORD.isInitialized)
+            RECORD.write()
     }
 
 }

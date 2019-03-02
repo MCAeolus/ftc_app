@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems
+package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util
 
 import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.common.util.DummyDcMotor

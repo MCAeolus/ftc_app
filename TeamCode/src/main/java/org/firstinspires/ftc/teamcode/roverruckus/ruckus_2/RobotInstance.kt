@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService
 
 class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
 
-    val mecanumDrive : MecanumDrivetrain
+    val mecanumDrive : MecanumDrivetrain = MecanumDrivetrain(opmode.hardwareMap)
 
     val subsystems = arrayListOf<Subsystem>()
     var isStarted = false
@@ -19,7 +19,6 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
     constructor(opmode : OpMode) : this(opmode, opmode.hardwareMap)
 
     init {
-        mecanumDrive = MecanumDrivetrain(opmode.hardwareMap)
         subsystems.add(mecanumDrive)
     }
 
