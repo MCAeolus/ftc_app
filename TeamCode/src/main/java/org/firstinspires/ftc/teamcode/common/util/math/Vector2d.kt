@@ -25,9 +25,9 @@ class Vector2d(val x : Double, val y : Double) {
         return Vector2d(x * Math.cos(radConvert) - y * Math.sin(radConvert), x * Math.sin(radConvert) + y * Math.cos(radConvert))
     }
     fun normalize() : Vector2d{
-        val len = magnitude()
-        if(len < EPSILON) return Vector2d(1, 0)
-        else return multiply(1.0 / len)
+        val mag = magnitude()
+        return if(mag < EPSILON) Vector2d(1, 0)
+               else multiply(1.0 / mag)
     }
 
     fun inverse() = Vector2d(-x, -y)

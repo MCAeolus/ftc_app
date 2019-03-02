@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface TelemetryField {
+public @interface
+TelemetryField {
     String data() default "";
 }

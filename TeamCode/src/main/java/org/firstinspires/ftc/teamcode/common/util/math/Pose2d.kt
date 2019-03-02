@@ -5,6 +5,8 @@ import org.firstinspires.ftc.teamcode.common.util.math.Vector2d.Companion.EPSILO
 class Pose2d(val position : Vector2d, val heading : Double) {
 
     constructor(x : Double, y : Double, heading : Double) : this(Vector2d(x, y), heading)
+    constructor(x : Int, y : Int, heading : Int) : this(Vector2d(x, y), heading.toDouble())
+
 
     fun x() = position.x
     fun y() = position.y
