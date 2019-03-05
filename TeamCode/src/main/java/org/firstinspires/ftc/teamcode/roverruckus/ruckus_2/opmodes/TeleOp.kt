@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.common.util.math.Vector2d
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
 
 @TeleOp(name = "New Teleop")
-class TeleOp : OpMode() {
+open class TeleOp : OpMode() {
 
     lateinit var robot : RobotInstance
         private set

@@ -90,6 +90,13 @@ class MecanumDrivetrain(hardware : HardwareMap) : Subsystem() {
         }
     }
 
+    fun resetEncoders() {
+        mecanumWheels.forEach {
+            it.motor().mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            it.motor().mode = DcMotor.RunMode.RUN_USING_ENCODER
+        }
+    }
+
     fun stop() {
         setVelocity(Pose2d(0, 0, 0))
     }

@@ -28,11 +28,7 @@ class ReplayFile {
         init {
             val builder = GsonBuilder()
 
-
-            //TODO this
-            builder.registerTypeAdapter(DcMotor.RunMode::class.java, JsonDeserializer<DcMotor.RunMode> { json, type, context ->
-
-            })
+            //add custom serializers/deserializers here
 
             GSON = builder.create()
         }

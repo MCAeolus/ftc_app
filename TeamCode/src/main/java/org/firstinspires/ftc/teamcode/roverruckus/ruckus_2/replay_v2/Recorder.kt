@@ -1,22 +1,20 @@
-package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay
+package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.opmodes.TeleOp
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.RecordingConfig
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
 
+@Autonomous(name="Recorder")
+class Recorder : TeleOp() {
 
-@Autonomous(name="Recording Mode")@Disabled
-class RecordingOPMode : RuckusOpMode() {
-
-    lateinit var IMU_ : IMU
     lateinit var RECORD : TimeStampedData.DataStream
     var STARTTIME = -1.0
 
@@ -25,9 +23,6 @@ class RecordingOPMode : RuckusOpMode() {
 
     override fun init() {
         super.init()
-
-        IMU_ = IMU()
-        IMU_.init(this)
 
         msStuckDetectStop = 10000
         msStuckDetectLoop = 10000
@@ -43,12 +38,11 @@ class RecordingOPMode : RuckusOpMode() {
     override fun start() {
         super.start()
 
-
         RECORD = TimeStampedData.DataStream(RecordingConfig.desiredFilePath, hardwareMap)
 
         if(RecordingConfig.desiredFilePath == "")requestOpModeStop()
 
-        (DRIVETRAIN as MecanumDriveTrain).resetEncoders()
+        super.robot.mecanumDrive.resetEncoders()
     }
 
     override fun loop() {
@@ -66,6 +60,14 @@ class RecordingOPMode : RuckusOpMode() {
 
         //grabbing all data from the hardware map
 
+
+        //drivetrain
+
+
+
+
+        /** OLD METHOD - good fer referencing... that's about it
+
         deviceLoop@
         for(device in hardwareMap) {
             val name = hardwareMap.getNamesOf(device).first()
@@ -82,11 +84,11 @@ class RecordingOPMode : RuckusOpMode() {
 
             point.addByte(TimeStampedData.DataByte(name, data))
         }
+        **/
     }
 
     override fun stop() {
         super.stop()
         if(::RECORD.isInitialized) RECORD.write()
     }
-
 }
