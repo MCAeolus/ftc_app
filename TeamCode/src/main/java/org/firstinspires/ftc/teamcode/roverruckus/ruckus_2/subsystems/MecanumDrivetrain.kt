@@ -19,15 +19,21 @@ class MecanumDrivetrain(hardware : HardwareMap) : Subsystem() {
     //
 
     private val telemetryData = TelemetryData()
-    private val motorPowers = Array(4) { _ -> 0.0 } //default of 0.0, V = [FL, BL, BR, FR]
 
     private var wheelRadius = 2 //in inches
 
-    private val mecanumWheels = arrayOf(
+    private val mecanumWheels = arrayOf( //V = [FL, BL, BR, FR]
             MecanumWheelData(Vector2d(1, -1), Vector2d(7, 7), HNAMES_RUCKUS.DRIVE_MOTORFL),
             MecanumWheelData(Vector2d(1, 1), Vector2d(-7, 7), HNAMES_RUCKUS.DRIVE_MOTORBL),
             MecanumWheelData(Vector2d(1, -1), Vector2d(-7, -7), HNAMES_RUCKUS.DRIVE_MOTORBR),
             MecanumWheelData(Vector2d(1, 1), Vector2d(7, -7), HNAMES_RUCKUS.DRIVE_MOTORFR)
+    )
+
+    private val mecanumVelocityFields = arrayOf(
+            TelemetryData::frontLeftMotorPower,
+            TelemetryData::backLeftMotorPower,
+            TelemetryData::backRightMotorPower,
+            TelemetryData::frontRightMotorPower
     )
 
     var targetVelocity = Pose2d(0, 0, 0)
@@ -58,13 +64,10 @@ class MecanumDrivetrain(hardware : HardwareMap) : Subsystem() {
 
         updateMotorPowers()
 
-        for(i in 0..3)
-            mecanumWheels[i].motor().power = motorPowers[i]
+        mecanumWheels.forEach { it.applyPower() }
 
-        telemetryData.frontLeftMotorPower = motorPowers[0]
-        telemetryData.backLeftMotorPower = motorPowers[1]
-        telemetryData.backRightMotorPower = motorPowers[2]
-        telemetryData.frontRightMotorPower = motorPowers[3]
+        //update telemetry data
+        for(i in 0..3) mecanumVelocityFields[i].set(telemetryData, mecanumWheels[i].motorPower)
 
         return TelemetryUtil.convertToMap(telemetryData)
     }
@@ -83,7 +86,7 @@ class MecanumDrivetrain(hardware : HardwareMap) : Subsystem() {
              targetVelocity.y() + targetVelocity.heading*wheel.wheelPosition.x
             )
             val wheelVelocity = rotationalVelocity.dot(wheel.rollerDirection) / wheelRadius
-            motorPowers[i] = wheelVelocity
+            wheel.motorPower = wheelVelocity
         }
     }
 

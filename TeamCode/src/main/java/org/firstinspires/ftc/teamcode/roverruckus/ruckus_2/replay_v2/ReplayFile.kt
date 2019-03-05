@@ -1,24 +1,65 @@
-package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay
+package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2
 
+import android.util.Log
+import com.google.gson.*
+import com.google.gson.stream.JsonReader
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import java.io.*
+import java.lang.reflect.Type
 import java.util.*
 
-class TimeStampedData {
+class ReplayFile {
     companion object {
         const val REPLAY_PREFIX = "_REPLAY_"
         const val REPLAY_DIRECTORY_PREFIX = "_DIR_"
+
+        const val EXTERNAL_DIRECTORY_HEADING = "Replays"
     }
 
+    /**
+     * The primary updates over original replay system is that this is saved externally, and that it is saved in a JSON format to be easily read elsewhere.
+     */
     class DataStream(rawFilePath : String, val hardware : HardwareMap) {
 
-        private val file : File = File(hardware.appContext.filesDir, rawFilePath)
+        private val GSON : Gson
+
+        init {
+            val builder = GsonBuilder()
+
+
+            //TODO this
+            builder.registerTypeAdapter(DcMotor.RunMode::class.java, JsonDeserializer<DcMotor.RunMode> { json, type, context ->
+
+            })
+
+            GSON = builder.create()
+        }
+
+        private val file : File = File(hardware.appContext.getExternalFilesDir(EXTERNAL_DIRECTORY_HEADING), rawFilePath)
         private val data = ArrayList<DataPoint>()
         private var iterableData: Iterator<DataPoint>? = null
         private var pointBuffer : DataPoint? = null
 
         fun load() {
+
+            val jsonReader = GSON.newJsonReader(file.reader())
+            jsonReader.beginArray()
+
+            while(jsonReader.hasNext()) {
+                try {
+                    val dataObject = GSON.fromJson(jsonReader.nextString(), DataPoint::class.java)
+                    data.add(dataObject)
+                }catch (e : java.lang.Exception) {
+                    Log.wtf("REPLAY LOADER", e)
+                }
+            }
+
+            jsonReader.endArray()
+            jsonReader.close()
+
+            /**
             val datastream = ObjectInputStream(file.inputStream())
 
             do {
@@ -28,14 +69,29 @@ class TimeStampedData {
             }while(true)
 
             datastream.close()
+            **/
         }
 
         fun write() {
+
+            val jArray = JsonArray()
+
+            data.forEach { jArray.add(GSON.toJson(it)) }
+
+            file.writer().write(jArray.toString())
+
+            file.writer().close()
+
+
+            /**
             val datastream = ObjectOutputStream(file.outputStream())
 
             data.forEach { datastream.writeObject(it) }
 
+
+
             datastream.close()
+            **/
         }
 
         fun prepare() {
