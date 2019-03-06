@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.pla
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDrive
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
 
 
-@Autonomous(name="Recording Mode")
+@Autonomous(name="Recording Mode")@Disabled
 class RecordingOPMode : RuckusOpMode() {
 
     lateinit var IMU_ : IMU

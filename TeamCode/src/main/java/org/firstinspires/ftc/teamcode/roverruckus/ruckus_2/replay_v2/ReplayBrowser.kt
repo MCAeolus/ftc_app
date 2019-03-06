@@ -1,13 +1,12 @@
-package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new
+package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.common.controller.Button
 import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
 import java.io.File
 
-@Autonomous(name="REPLAY BROWSER", group="replay")@Disabled
+@Autonomous(name="REPLAY BROWSER", group="replay")
 class ReplayBrowser : LinearOpMode() {
 
     private var defaultRefresh = false
@@ -25,7 +24,7 @@ class ReplayBrowser : LinearOpMode() {
 
         var lastPartition = Partition.HEADER
         var currentPartition = Partition.HEADER
-        val baseDir = hardwareMap.appContext.filesDir
+        val baseDir = hardwareMap.appContext.getExternalFilesDir(ReplayFile.EXTERNAL_DIRECTORY_HEADING)
         var directoryPosition = ""
         var lastDirectoryPosition = ""
         var selectorLoc = 0
@@ -50,8 +49,8 @@ class ReplayBrowser : LinearOpMode() {
             pad1.handleUpdate()
 
             val dir = File(baseDir, directoryPosition)
-            val replayList = dir.list { _ : File, s : String -> s.startsWith(TimeStampedData.REPLAY_PREFIX) }
-            val directoryList = dir.list { _ : File, s : String -> s.startsWith(TimeStampedData.REPLAY_DIRECTORY_PREFIX) }
+            val replayList = dir.list { _ : File, s : String -> s.toLowerCase().endsWith(".json") }
+            val directoryList = dir.list { _ : File, s : String -> !s.toLowerCase().endsWith(".json") }
             val replayExists = replayList.isNotEmpty()
             val directoryExists = directoryList.isNotEmpty()
 
@@ -86,7 +85,7 @@ class ReplayBrowser : LinearOpMode() {
             if(button(SmidaGamepad.GamePadButton.A).isIndividualActionButtonPress())
                 when(currentPartition) {
                     Partition.DIRECTORY -> directoryPosition += (if(directoryPosition != "") "/" else "") + directoryList[selectorLoc]
-                    Partition.REPLAYS -> RecordingConfig.desiredFilePath = directoryPosition + "/" + replayList[selectorLoc]
+                    Partition.REPLAYS -> RecordingPreferences.setFileDestination( directoryPosition + "/" + replayList[selectorLoc], hardwareMap.appContext)
                 }
             if(button(SmidaGamepad.GamePadButton.B).isIndividualActionButtonPress())
                 if(directoryPosition != "") {
@@ -108,147 +107,10 @@ class ReplayBrowser : LinearOpMode() {
                     else x_presses++
                 }
             if(button(SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed)
-                if(RecordingConfig.DIRECTORY_NAME != "") {
-                    File(dir, TimeStampedData.REPLAY_DIRECTORY_PREFIX + RecordingConfig.DIRECTORY_NAME).mkdirs()
-                    RecordingConfig.DIRECTORY_NAME = ""
+                if(RecordingPreferences.newDirectory != "") {
+                    File(dir, RecordingPreferences.newDirectory).mkdirs()
+                    RecordingPreferences.newDirectory = ""
                 }
-
-
-            /*
-            if(gamepad1.dpad_left) { //DPAD LEFT
-                if(!leftDPAD_pressed && !buttonPressed) {
-                    buttonPressed = true
-                    leftDPAD_pressed = true
-                    timeSincePressHeld = time-shiftDelta
-                }
-                if(leftDPAD_pressed && time - timeSincePressHeld >= shiftDelta) {
-                    timeSincePressHeld = time
-                    currentPartition = when(currentPartition) {
-                        Partition.HEADER -> currentPartition
-                        Partition.DIRECTORY -> Partition.HEADER
-                        Partition.REPLAYS -> if(directoryExists) Partition.DIRECTORY else Partition.HEADER
-                    }
-                }
-            }else if(!gamepad1.dpad_left && leftDPAD_pressed) {
-                buttonPressed = false
-                leftDPAD_pressed = false
-                timeSincePressHeld = -1.0
-            }
-            if(gamepad1.dpad_right) { //DPAD RIGHT
-                if(!rightDPAD_pressed && !buttonPressed) {
-                    buttonPressed = true
-                    rightDPAD_pressed = true
-                    timeSincePressHeld = time-shiftDelta
-                }
-                if(rightDPAD_pressed && time - timeSincePressHeld >= shiftDelta) {
-                    timeSincePressHeld = time
-                    currentPartition = when(currentPartition) {
-                        Partition.HEADER -> if(directoryExists) Partition.DIRECTORY else if(replayExists) Partition.REPLAYS else currentPartition
-                        Partition.DIRECTORY -> if(replayExists) Partition.REPLAYS else Partition.DIRECTORY
-                        Partition.REPLAYS -> currentPartition
-                    }
-                }
-            }else if(!gamepad1.dpad_right && rightDPAD_pressed) {
-                buttonPressed = false
-                rightDPAD_pressed = false
-                timeSincePressHeld = -1.0
-            }
-            if(gamepad1.dpad_up) { //DPAD UP
-                if(currentPartition != Partition.HEADER) { //this shouldn't work in the header partition.
-
-                    if (!upDPAD_pressed && !buttonPressed) {
-                        buttonPressed = true
-                        upDPAD_pressed = true
-                        timeSincePressHeld = time-shiftDelta
-                    }
-                    if (upDPAD_pressed && time - timeSincePressHeld >= shiftDelta) {
-                        timeSincePressHeld = time
-                        if(selectorLoc > 0) selectorLoc--
-                    }
-                }
-            }else if(!gamepad1.dpad_up && upDPAD_pressed) {
-                buttonPressed = false
-                upDPAD_pressed = false
-                timeSincePressHeld = -1.0
-            }
-            if(gamepad1.dpad_down) { //DPAD DOWN
-                if(currentPartition != Partition.HEADER) { //this shouldn't work in the header partition.
-
-                    if (!downDPAD_pressed && !buttonPressed) {
-                        buttonPressed = true
-                        downDPAD_pressed = true
-                        timeSincePressHeld = time-shiftDelta
-                    }
-                    if (downDPAD_pressed && time - timeSincePressHeld >= shiftDelta) {
-                        timeSincePressHeld = time
-                        if(selectorLoc < (if(currentPartition == Partition.REPLAYS) replayList.lastIndex else directoryList.lastIndex)) selectorLoc++
-                    }
-                }
-            }else if(!gamepad1.dpad_down && downDPAD_pressed) {
-                buttonPressed = false
-                downDPAD_pressed = false
-                timeSincePressHeld = -1.0
-            }
-            if(gamepad1.a && !a_pressed && !buttonPressed) { //A Button
-                buttonPressed = true
-                a_pressed = true
-
-                when(currentPartition) {
-                    Partition.DIRECTORY -> directoryPosition += (if(directoryPosition != "") "/" else "") + directoryList[selectorLoc]
-                    Partition.REPLAYS -> RecordingConfig.desiredFilePath = directoryPosition + "/" + replayList[selectorLoc]
-                }
-            }else if (!gamepad1.a && a_pressed) {
-                buttonPressed = false
-                a_pressed = false
-            }
-            if(gamepad1.b && !b_pressed && !buttonPressed) { //B Button
-                buttonPressed = true
-                b_pressed = true
-
-                if(directoryPosition != "") {
-                    val thLindex = directoryPosition.lastIndexOf('/')
-                    directoryPosition = directoryPosition.substring(0, if(thLindex < 0) 0 else thLindex)
-                }
-
-            }else if(!gamepad1.b && b_pressed) {
-                buttonPressed = false
-                b_pressed = false
-            }
-            if(gamepad1.x && !x_pressed && !buttonPressed) { //X Button
-                buttonPressed = true
-                x_pressed = true
-
-                if(currentPartition != Partition.HEADER) {
-                    if (x_presses > 0) {
-                        when (currentPartition) {
-                            Partition.DIRECTORY -> {
-                                val f = File(dir, directoryList[selectorLoc])
-                                f.deleteRecursively()
-                            }
-                            Partition.REPLAYS -> File(dir, replayList[selectorLoc]).delete()
-                        }
-                        x_presses = 0
-                    }
-                    else x_presses++
-                }
-
-            }else if(!gamepad1.x && x_pressed) {
-                buttonPressed = false
-                x_pressed = false
-            }
-
-            if(gamepad1.left_bumper && !lbumper_pressed && !buttonPressed) { //Left Bumper
-                buttonPressed = true
-                lbumper_pressed = true
-
-                if(RecordingConfig.DIRECTORY_NAME != "") {
-                    File(dir, TimeStampedData.REPLAY_DIRECTORY_PREFIX + RecordingConfig.DIRECTORY_NAME).mkdirs()
-                    RecordingConfig.DIRECTORY_NAME = ""
-                }
-            }else if(!gamepad1.left_bumper && lbumper_pressed) {
-                buttonPressed = false
-                lbumper_pressed = false
-            }*/
 
             if(x_presses > 0 && (!pad1.isResting && !button(SmidaGamepad.GamePadButton.X).isPressed)) x_presses = 0
 
@@ -275,7 +137,7 @@ class ReplayBrowser : LinearOpMode() {
 
                 send("Current Directory: ", if (directoryPosition == "") "Master Directory" else directoryPosition)
                 send("D-PAD ↔ to change PARTITION. D-PAD ↕ to move file selector inside of partition.")
-                if (RecordingConfig.DIRECTORY_NAME != "") send("Use 'Left Bumper' to assign new directory with name: ${RecordingConfig.DIRECTORY_NAME}")
+                if (RecordingPreferences.newDirectory != "") send("Use 'Left Bumper' to assign new directory with name: ${RecordingPreferences.newDirectory}")
                 send("'A' button selects current file.")
                 send("Press 'X' button twice to delete the file or directory")
                 if (directoryPosition != "")
@@ -297,7 +159,7 @@ class ReplayBrowser : LinearOpMode() {
                         if (directoryExists) send("|DIRECTORIES|")
                         send("-- REPLAYS --")
                         for (i in 0 until replayList.size)
-                            send("$i |${if (selectorLoc == i) selectorIcon else " ".repeat(selectorIcon.length)})}${replayList[i]}", if (RecordingConfig.desiredFilePath == directoryPosition + "/" + replayList[i]) "**" else "")
+                            send("$i |${if (selectorLoc == i) selectorIcon else " ".repeat(selectorIcon.length)})}${replayList[i]}", if (RecordingPreferences.filePath == directoryPosition + "/" + replayList[i]) "**" else "")
                     }
                 }
             }

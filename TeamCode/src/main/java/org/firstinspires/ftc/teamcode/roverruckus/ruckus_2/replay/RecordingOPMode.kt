@@ -43,7 +43,6 @@ class RecordingOPMode : RuckusOpMode() {
     override fun start() {
         super.start()
 
-
         RECORD = TimeStampedData.DataStream(RecordingConfig.desiredFilePath, hardwareMap)
 
         if(RecordingConfig.desiredFilePath == "")requestOpModeStop()

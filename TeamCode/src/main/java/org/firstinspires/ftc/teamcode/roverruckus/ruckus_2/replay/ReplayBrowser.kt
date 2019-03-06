@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.common.controller.Button
 import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
 import java.io.File
 
-@Autonomous(name="REPLAY BROWSER", group="replay")
+@Autonomous(name="REPLAY BROWSER", group="replay")@Disabled
 class ReplayBrowser : LinearOpMode() {
 
     private var defaultRefresh = false

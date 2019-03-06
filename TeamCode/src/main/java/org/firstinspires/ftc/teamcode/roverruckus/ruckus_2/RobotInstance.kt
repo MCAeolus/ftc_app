@@ -60,6 +60,7 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
     }
 
     fun stop() {
+        mecanumDrive.stop()
     }
 
     fun hold(millis : Double) {

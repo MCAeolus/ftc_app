@@ -150,5 +150,5 @@ class TimeStampedData {
         }
     }
 
-    class DataByte(val name: String, val data: List<Any>) : Serializable
+    class DataByte(val name: String, val data: List<Double>) : Serializable
 }

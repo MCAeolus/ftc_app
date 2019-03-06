@@ -142,7 +142,7 @@ class AutonomousRunner : AutonomousBase(true) {
                     iv.bytes.forEach {
                         val device = hardwareMap.get(it.name)
 
-                        when (device) {
+                        /**when (device) {
                             is DcMotor -> {
                                 device.mode = DcMotor.RunMode.RUN_USING_ENCODER
                                 device.power = it.data[0]
@@ -153,7 +153,7 @@ class AutonomousRunner : AutonomousBase(true) {
                             is CRServo -> device.power = it.data[0]
 
                             is BNO055IMU -> targetRotation = it.data[0]
-                        }
+                        }**/
                     }
                 }
                 if (data.second) break

@@ -2,38 +2,46 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2
 
 import android.util.Log
 import com.google.gson.*
+import com.google.gson.internal.LinkedTreeMap
 import com.google.gson.stream.JsonReader
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
+import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
 import java.io.*
 import java.lang.reflect.Type
 import java.util.*
 
 class ReplayFile {
     companion object {
-        const val REPLAY_PREFIX = "_REPLAY_"
-        const val REPLAY_DIRECTORY_PREFIX = "_DIR_"
-
         const val EXTERNAL_DIRECTORY_HEADING = "Replays"
     }
 
     /**
      * The primary updates over original replay system is that this is saved externally, and that it is saved in a JSON format to be easily read elsewhere.
      */
-    class DataStream(rawFilePath : String, val hardware : HardwareMap) {
+    class DataStream(private var rawFilePath : String, val hardware : HardwareMap) {
 
         private val GSON : Gson
+        private val file : File
 
         init {
             val builder = GsonBuilder()
 
             //add custom serializers/deserializers here
+            builder.registerTypeAdapter(Pose2d::class.java, JsonDeserializer<Pose2d> { json, type, context ->
+
+                val j = json.asJsonObject
+                Pose2d(j.get("x").asDouble, j.get("y").asDouble, j.get("heading").asDouble)
+            })
 
             GSON = builder.create()
+
+            if(!rawFilePath.toLowerCase().endsWith(".json")) rawFilePath+=".json"
+
+            file = File(hardware.appContext.getExternalFilesDir(EXTERNAL_DIRECTORY_HEADING), rawFilePath)
         }
 
-        private val file : File = File(hardware.appContext.getExternalFilesDir(EXTERNAL_DIRECTORY_HEADING), rawFilePath)
         private val data = ArrayList<DataPoint>()
         private var iterableData: Iterator<DataPoint>? = null
         private var pointBuffer : DataPoint? = null
@@ -46,6 +54,12 @@ class ReplayFile {
             while(jsonReader.hasNext()) {
                 try {
                     val dataObject = GSON.fromJson(jsonReader.nextString(), DataPoint::class.java)
+                    for(b in dataObject.bytes) {
+                        for(data in b.data)
+                            if(data is LinkedTreeMap<*, *>)
+                    }
+
+
                     data.add(dataObject)
                 }catch (e : java.lang.Exception) {
                     Log.wtf("REPLAY LOADER", e)
@@ -74,10 +88,10 @@ class ReplayFile {
 
             data.forEach { jArray.add(GSON.toJson(it)) }
 
-            file.writer().write(jArray.toString())
+            val writer = PrintWriter(file)
 
-            file.writer().close()
-
+            writer.print(jArray.toString())
+            writer.close()
 
             /**
             val datastream = ObjectOutputStream(file.outputStream())
@@ -202,5 +216,7 @@ class ReplayFile {
         }
     }
 
-    class DataByte(val name: String, val data: List<Any>) : Serializable
+    class DataByte(val name: String, val data: ArrayList<Any>) : Serializable {
+
+    }
 }

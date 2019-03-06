@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
 
-@Autonomous(name="read out file")
+@Autonomous(name="read out file")@Disabled
 class readout : LinearOpMode() {
 
     override fun runOpMode() {

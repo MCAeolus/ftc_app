@@ -11,6 +11,7 @@ class LiftSystem(hardware : HardwareMap) : Subsystem() {
 
 
     init {
+
     }
 
     override fun update(): LinkedHashMap<String, Any> {

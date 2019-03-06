@@ -15,14 +15,19 @@ import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedDat
 @Autonomous(name="Recorder")
 class Recorder : TeleOp() {
 
-    lateinit var RECORD : TimeStampedData.DataStream
+    lateinit var RECORD : ReplayFile.DataStream
     var STARTTIME = -1.0
 
     private val blacklistDevices = listOf("imu 1")
 
+    companion object {
+        const val DRIVETRAIN_TAG = "drivetrain"
+    }
 
     override fun init() {
         super.init()
+
+        RecordingPreferences.loadFromPrefs(hardwareMap.appContext)
 
         msStuckDetectStop = 10000
         msStuckDetectLoop = 10000
@@ -31,16 +36,16 @@ class Recorder : TeleOp() {
     override fun init_loop() {
         super.init_loop()
 
-        telemetry.addData("File", if(RecordingConfig.desiredFilePath == "")"Not entered. Please wait to start." else RecordingConfig.desiredFilePath)
+        telemetry.addData("File", if(RecordingPreferences.filePath == "")"Not entered. Please wait to start." else RecordingPreferences.filePath)
 
     }
 
     override fun start() {
         super.start()
 
-        RECORD = TimeStampedData.DataStream(RecordingConfig.desiredFilePath, hardwareMap)
+        RECORD = ReplayFile.DataStream(RecordingPreferences.filePath, hardwareMap)
 
-        if(RecordingConfig.desiredFilePath == "")requestOpModeStop()
+        if(RecordingPreferences.filePath == "")requestOpModeStop()
 
         super.robot.mecanumDrive.resetEncoders()
     }
@@ -62,6 +67,9 @@ class Recorder : TeleOp() {
 
 
         //drivetrain
+        point.addByte(ReplayFile.DataByte(DRIVETRAIN_TAG, arrayListOf(
+                robot.mecanumDrive.targetVelocity
+        )))
 
 
 
