@@ -2,7 +2,14 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util
 
 import android.util.Log
 import com.google.gson.*
+import com.google.gson.internal.LazilyParsedNumber
+import com.qualcomm.robotcore.hardware.DcMotor
+import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
+import org.firstinspires.ftc.teamcode.common.util.math.Vector2d
+import java.io.InvalidClassException
 import java.lang.NullPointerException
+import java.util.*
+import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
@@ -11,11 +18,22 @@ import kotlin.reflect.jvm.javaField
 object JsonConversionUtil {
 
     /**
-     * Deserialization implementation drawn upon from Google's GSON
+     * Inspiration drawn from Google's GSON
      * https://github.com/google/gson/tree/master/gson/src/main
      */
 
     private val primativeTypes = arrayOf(Double::class, Float::class, Int::class, Short::class, Long::class, Byte::class, Boolean::class, String::class, Char::class)
+    val adapters = hashMapOf<Class<*>, ClassAdapter<*>>()
+
+    init {
+        adapters[Vector2d::class.java] = object : ClassAdapter<Vector2d>() {
+            override fun newObject(): Vector2d = Vector2d(0, 0)
+        }
+
+        adapters[Pose2d::class.java] = object : ClassAdapter<Pose2d>() {
+            override fun newObject(): Pose2d = Pose2d(0, 0, 0)
+        }
+    }
 
     fun recursiveObjectToJson(o : Any) : JsonElement {
 
@@ -53,7 +71,7 @@ object JsonConversionUtil {
 
                 if(primativeTypes.contains(fieldValue::class)) {
                     when(fieldValue::class) { //I love primitives! /s
-                        Int::class,
+                        Int::class,           //there has to be a better way to do this
                         Short::class,
                         Long::class,
                         Float::class,
@@ -89,11 +107,25 @@ object JsonConversionUtil {
                 val cType = Class.forName(jObj.get("type").asString)
                 val jValues = jObj.getAsJsonObject("value")
 
-                val newObject = cType.newInstance()
+                if(cType.isEnum) {
+                    for( enum in cType.enumConstants)
+                        if((enum as Enum<*>).name == jValues.get("name").asString) return enum
+                }
 
-                for(field in newObject::class.declaredMemberProperties) {
-                    field.isAccessible = true
+                val newObject = try {
+                    cType.newInstance()
+                } catch ( e : Exception ) {
+                    if(adapters.containsKey(cType)) adapters[cType]!!.newObject()
+                    else throw InvalidClassException("${cType.name} has no adapter or empty constructors!")
+                }
+
+                for(field in newObject!!::class.declaredMemberProperties) {
+                    val shouldAccess = field.isAccessible
+
+                    field.javaField!!.isAccessible = true
                     field.javaField!!.set(newObject, recursiveJsonToObject(jValues.get(field.name)))
+
+                    field.javaField!!.isAccessible = shouldAccess
                 }
 
                 return newObject
@@ -103,10 +135,11 @@ object JsonConversionUtil {
                 return when {
                     jPrim.isBoolean -> jPrim.asBoolean
                     jPrim.isString -> jPrim.asString
-                    jPrim.isNumber -> jPrim.asNumber
-                    else -> ""
+                    jPrim.isNumber -> ((jPrim.asNumber as LazilyParsedNumber)::class.java.getField("value").get(jPrim.asNumber) as String)
+                    else -> "nil"
                 }
             }
         }
     }
+
 }

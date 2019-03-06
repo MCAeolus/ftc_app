@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.JsonConversionUtil
 import java.io.*
 import java.lang.reflect.Type
 import java.util.*
@@ -30,16 +32,9 @@ class ReplayFile {
         init {
             val builder = GsonBuilder()
 
-            //add custom serializers/deserializers here
-            builder.registerTypeAdapter(Pose2d::class.java, JsonDeserializer<Pose2d> { json, type, context ->
-
-                val j = json.asJsonObject
-                Pose2d(j.get("x").asDouble, j.get("y").asDouble, j.get("heading").asDouble)
-            })
-
             GSON = builder.create()
 
-            if(!rawFilePath.toLowerCase().endsWith(".json")) rawFilePath+=".json"
+            if(!rawFilePath.toLowerCase().endsWith(".json")) rawFilePath+=".dat"
 
             file = File(hardware.appContext.getExternalFilesDir(EXTERNAL_DIRECTORY_HEADING), rawFilePath)
         }
@@ -50,81 +45,24 @@ class ReplayFile {
 
         fun load() {
 
-            val jsonReader = GSON.newJsonReader(file.reader())
-            jsonReader.beginArray()
-
-            while(jsonReader.hasNext()) {
-                try {
-                    val dataObject = GSON.fromJson(jsonReader.nextString(), DataPoint::class.java)
-
-                    data.add(dataObject)
-                }catch (e : java.lang.Exception) {
-                    Log.wtf("REPLAY LOADER", e)
-                }
-            }
-
-            jsonReader.endArray()
-            jsonReader.close()
-
-            /**
             val datastream = ObjectInputStream(file.inputStream())
 
             do {
                 try {
-                    data.add(datastream.readObject() as DataPoint)
+                    data.add(datastream.readObject() as ReplayFile.DataPoint)
                 } catch ( e : Exception ) { break }
             }while(true)
 
             datastream.close()
-            **/
         }
 
         fun write() {
 
-            val jArray = JsonArray()
-
-            data.forEach {
-
-                jArray.add(recursiveJsonFormatting(it))
-
-            }
-
-            val writer = PrintWriter(file)
-
-            writer.print(jArray.toString())
-            writer.close()
-
-            /**
             val datastream = ObjectOutputStream(file.outputStream())
 
             data.forEach { datastream.writeObject(it) }
 
-
-
             datastream.close()
-            **/
-        }
-
-        private fun recursiveJsonFormatting(o : Any) : JsonElement {
-
-            if(o is Collection<*>) {
-                val arr = JsonArray()
-
-                for(v in o) arr.add(recursiveJsonFormatting(v!!))
-
-                return arr
-            } else {
-                val obj = JsonObject()
-                obj.addProperty("type", obj::class.java.name)
-
-                val objValues = JsonObject()
-
-                for(field in o::class.memberProperties) objValues.add(field.name, recursiveJsonFormatting(field.getter.call(o)!!))
-
-                obj.add("value", objValues)
-
-                return obj
-            }
         }
 
         fun prepare() {

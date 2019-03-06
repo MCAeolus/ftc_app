@@ -30,8 +30,15 @@ class Player : LinearOpMode() {
         if (RecordingPreferences.filePath == "") requestOpModeStop()
         val RECORD = ReplayFile.DataStream(RecordingPreferences.filePath, hardwareMap)
 
+        telemetry.addData("File status", "loading data.")
+        telemetry.update()
         RECORD.load()
+        telemetry.addData("File status", "preparing data.")
+        telemetry.update()
         RECORD.prepare()
+
+        telemetry.addData("File status", "finished loading data.")
+        telemetry.update()
 
         robot.mecanumDrive.resetEncoders()
 
@@ -54,6 +61,7 @@ class Player : LinearOpMode() {
                     }
                 }
             }
+            robot.update()
             if (data.second) break
         }
         robot.stop()
