@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
 import java.io.*
 import java.lang.reflect.Type
 import java.util.*
+import kotlin.reflect.full.declaredMembers
+import kotlin.reflect.full.memberProperties
 
 class ReplayFile {
     companion object {
@@ -54,11 +56,6 @@ class ReplayFile {
             while(jsonReader.hasNext()) {
                 try {
                     val dataObject = GSON.fromJson(jsonReader.nextString(), DataPoint::class.java)
-                    for(b in dataObject.bytes) {
-                        for(data in b.data)
-                            if(data is LinkedTreeMap<*, *>)
-                    }
-
 
                     data.add(dataObject)
                 }catch (e : java.lang.Exception) {
@@ -86,7 +83,11 @@ class ReplayFile {
 
             val jArray = JsonArray()
 
-            data.forEach { jArray.add(GSON.toJson(it)) }
+            data.forEach {
+
+                jArray.add(recursiveJsonFormatting(it))
+
+            }
 
             val writer = PrintWriter(file)
 
@@ -102,6 +103,28 @@ class ReplayFile {
 
             datastream.close()
             **/
+        }
+
+        private fun recursiveJsonFormatting(o : Any) : JsonElement {
+
+            if(o is Collection<*>) {
+                val arr = JsonArray()
+
+                for(v in o) arr.add(recursiveJsonFormatting(v!!))
+
+                return arr
+            } else {
+                val obj = JsonObject()
+                obj.addProperty("type", obj::class.java.name)
+
+                val objValues = JsonObject()
+
+                for(field in o::class.memberProperties) objValues.add(field.name, recursiveJsonFormatting(field.getter.call(o)!!))
+
+                obj.add("value", objValues)
+
+                return obj
+            }
         }
 
         fun prepare() {
@@ -200,6 +223,9 @@ class ReplayFile {
     }
 
     class DataPoint(val time: Double, val timeDelta: Double, val bytes: ArrayList<DataByte> = ArrayList()) : Serializable {
+
+        constructor() : this(0.0, 0.0)
+
         fun addByte(data: DataByte): DataPoint {
             bytes.add(data)
             return this
@@ -216,7 +242,8 @@ class ReplayFile {
         }
     }
 
-    class DataByte(val name: String, val data: ArrayList<Any>) : Serializable {
+    class DataByte(val name: String, val data: List<Any>) : Serializable {
 
+        constructor() : this("", listOf())
     }
 }
