@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.AutonomousBase
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
 
 @Autonomous(name= "Replay Mode")@Disabled
 class ReplayAutonomous : AutonomousBase() {

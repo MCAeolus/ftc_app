@@ -1,21 +1,13 @@
 package test.java
 
-import android.provider.MediaStore
-import android.util.JsonReader
 import android.util.Log
 import com.google.gson.*
 import com.qualcomm.robotcore.hardware.DcMotor
-import junit.framework.Assert.assertEquals
 import org.firstinspires.ftc.teamcode.common.util.math.Vector2d
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2.ReplayFile
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.JsonConversionUtil
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.json.JsonConversionUtil
 import org.junit.Test
-import org.junit.experimental.theories.DataPoint
 import java.io.File
-import java.io.PrintWriter
-import kotlin.reflect.KClass
-import kotlin.reflect.full.createType
-import kotlin.reflect.full.memberProperties
 
 class JSONConverterTest {
 

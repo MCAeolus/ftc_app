@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.common.controller.Button
 import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new.TimeStampedData
 import java.io.File
 
 @Autonomous(name = "Ruckus Runner")

@@ -16,7 +16,7 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
     }
 
     var intakeMode = IntakeMode.UP
-        set(mode : IntakeMode) {
+        set(mode) {
             shouldUpdate = true
             field = mode
         }
@@ -44,12 +44,16 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
                     intakePositionMotor.targetPosition = intakeMode.ticks
                     intakePositionMotor.power = positionalMotorPower
                     intakePositionMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+                    isUpdating = true
                 }
                 IntakeMode.DOWN -> {
                     intakePositionMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
                     intakePositionMotor.targetPosition = intakeMode.ticks
                     intakePositionMotor.power = positionalMotorPower
                     intakePositionMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+                    isUpdating = true
                 }
             }
             shouldUpdate = false

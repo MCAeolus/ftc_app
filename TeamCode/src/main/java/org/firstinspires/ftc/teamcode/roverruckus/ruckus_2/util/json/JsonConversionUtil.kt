@@ -1,15 +1,10 @@
-package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util
+package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.json
 
-import android.util.Log
 import com.google.gson.*
 import com.google.gson.internal.LazilyParsedNumber
-import com.qualcomm.robotcore.hardware.DcMotor
 import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
 import org.firstinspires.ftc.teamcode.common.util.math.Vector2d
 import java.io.InvalidClassException
-import java.lang.NullPointerException
-import java.util.*
-import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible

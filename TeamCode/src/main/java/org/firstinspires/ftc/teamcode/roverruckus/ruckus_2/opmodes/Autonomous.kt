@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.roverruckus.minibit.HARDWARENAMES_MINIBOT
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.AutonomousBase
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2.Player
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2.ReplayFile
 import java.io.File
@@ -56,15 +55,6 @@ class Autonomous : LinearOpMode() {
         var selectorLoc = 0
 
         var samplePosition = SampleLocation.N_A
-        tensorFlow.activate()
-
-        /**
-        var up_DPADpressed = false
-        var down_DPADpressed = false
-        var a_pressed = false
-        var b_pressed = false
-        var lbumper_pressed = false
-         **/
 
         var operationDir: String? = null
 
@@ -75,6 +65,7 @@ class Autonomous : LinearOpMode() {
 
         if (!baseDir.list().contains(defaultDir)) File(baseDir, defaultDir).mkdirs()
 
+        tensorFlow.activate()
         while (!isStarted) {
             pad1.handleUpdate()
             samplePosition = findGoldPosition(tensorFlow.updatedRecognitions)
@@ -120,7 +111,7 @@ class Autonomous : LinearOpMode() {
             }
 
             if (operationDir != null) {
-                send("Current selected operation mode: $operationDir")
+                send("Current selected operation mode: ${operationDir.substringAfterLast('/')}")
                 send("Ready to run.")
             } else {
 
@@ -129,11 +120,11 @@ class Autonomous : LinearOpMode() {
                 send("Use 'B' button to undo an operation selection or go back a directory.")
                 send("Use 'left bumper' to designate or un-designate a directory as an operation directory.")
                 send("")
-                send("Currently detecting sample ${samplePosition.name}")
 
                 for (i in 0 until dirList.size)
                     send("${if (selectorLoc == i) ">>>" else "   "}${dirList[i]}", if (isOperationDirectory(baseDir, currentDir + "/" + dirList[i])) ": OPERATION MODE" else "->")
             }
+            send("Currently detecting sample ${samplePosition.name}")
             telemetry.update()
         }
 

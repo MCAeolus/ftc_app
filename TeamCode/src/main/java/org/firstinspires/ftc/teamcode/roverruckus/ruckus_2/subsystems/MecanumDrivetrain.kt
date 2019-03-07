@@ -45,15 +45,16 @@ class MecanumDrivetrain(hardware : HardwareMap, private val robot : RobotInstanc
             TelemetryData::frontRightMotorPower
     )
 
-    var targetVelocity = Pose2d(0, 0, 0)
+    var targetVelocity = Pose2d(0, 0, 0) //as received... may not be physically attainable
         private set
 
-    var currentPosition = Pose2d(0, 0, 0)
+    var currentPosition = Pose2d(0, 0, 0) //this is an estimate
         private set
 
     //val K = mecanumWheels[0].wheelPosition.x.absoluteValue + mecanumWheels[0].wheelPosition.y.absoluteValue //wheel 0 will be our reference wheel (since all have the same distance magnitude)
+    //referenced out because I don't need to estimate the position heading
 
-    private var lastWheelRotations : Array<Double>
+    private var lastWheelRotations : Array<Double> //to find current pose
 
     init {
         for(i in 0..3) {
@@ -104,7 +105,7 @@ class MecanumDrivetrain(hardware : HardwareMap, private val robot : RobotInstanc
         return TelemetryUtil.convertToMap(telemetryData)
     }
 
-    fun setVelocity(vec : Pose2d) {
+    fun setVelocity(vec : Pose2d) { //this is used as the setter in the case that modifications should occur to the velocity before updating it.
         targetVelocity = vec
     }
 

@@ -10,7 +10,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
 
 
 @Autonomous(name="Recording Mode")@Disabled

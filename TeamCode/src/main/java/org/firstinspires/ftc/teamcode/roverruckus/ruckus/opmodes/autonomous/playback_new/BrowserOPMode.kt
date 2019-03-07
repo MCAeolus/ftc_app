@@ -48,7 +48,7 @@ class BrowserOPMode : LinearOpMode() {
                 }
                 else if(gamepad1.y) {
                     pressTimeout = time
-                    val RECORD = org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData.DataStream(fileList[selectorLoc], hardwareMap)
+                    val RECORD = TimeStampedData.DataStream(fileList[selectorLoc], hardwareMap)
                     RECORD.load()
                     RECORD.trim()
                     RECORD.write()

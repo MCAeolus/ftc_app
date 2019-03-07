@@ -4,12 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.TimestampedData
 import com.qualcomm.robotcore.util.ThreadPool
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.LiftSystem
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.MecanumDrivetrain
 import java.util.concurrent.ExecutorService
+import kotlin.reflect.full.memberFunctions
 
 class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
 
-    val mecanumDrive : MecanumDrivetrain = MecanumDrivetrain(opmode.hardwareMap)
+    val mecanumDrive = MecanumDrivetrain(opmode.hardwareMap, this)
+    val liftSystem = LiftSystem(opmode.hardwareMap, this)
 
     val subsystems = arrayListOf<Subsystem>()
     var isStarted = false
@@ -20,6 +23,7 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
 
     init {
         subsystems.add(mecanumDrive)
+        subsystems.add(liftSystem)
     }
 
     fun start() {
@@ -60,7 +64,15 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
     }
 
     fun stop() {
-        mecanumDrive.stop()
+        for(subsystem in subsystems) //use reflection to check if the subsystem has a #stop() method.
+            for(func in subsystem::class.memberFunctions) if(func.name == "stop") func.call(subsystem)
+        /**
+         * Does it make sense to use reflection for this? Not really.
+         * This could be done just as easily with an interface and then all you have to do is check for the interface.
+         * But is reflection cool? Yes.
+         * So that's why this uses reflection.
+         */
+
     }
 
     fun hold(millis : Double) {

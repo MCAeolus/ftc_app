@@ -10,17 +10,68 @@ class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Su
 
     private val liftMotor = hardware.get(DcMotor::class.java, HNAMES_RUCKUS.LIFT_MOTOR)
 
+    enum class LiftMode(val ticks : Int) {
+        LIFTED(0),
+        LOWERED(500), //TODO find real value
+        MANUAL(-1)
+    }
 
+    var liftMode = LiftMode.LIFTED
+        set(mode) {
+            shouldUpdate = true
+            field = mode
+        }
+
+    private val liftMotorPower = 1.0
+
+    var manualLiftPower = 0.0
 
     init {
         liftMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        liftMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        liftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
     }
 
-
+    private var shouldUpdate = false
+    private var isUpdating = false
 
     override fun update(): LinkedHashMap<String, Any> {
 
+        if(shouldUpdate) {
+            when(liftMode) {
+                LiftMode.LIFTED -> {
+                    liftMotor.targetPosition = liftMode.ticks
+                    liftMotor.power = liftMotorPower
+                    liftMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
 
-        return linkedMapOf()
+                    isUpdating = true
+                }
+                LiftSystem.LiftMode.LOWERED -> {
+                    liftMotor.targetPosition = liftMode.ticks
+                    liftMotor.power = liftMotorPower
+                    liftMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+                    isUpdating = true
+                }
+                LiftSystem.LiftMode.MANUAL -> {
+                    liftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+                }
+            }
+            shouldUpdate = false
+        }
+
+        if(liftMode == LiftMode.MANUAL) liftMotor.power = manualLiftPower
+
+        if(isUpdating && !liftMotor.isBusy) {
+            isUpdating = false
+            liftMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        }
+
+
+        return linkedMapOf("lift mode" to liftMode, "is updating" to isUpdating)
+    }
+
+    fun stop() {
+        liftMotor.power = 0.0
     }
 }

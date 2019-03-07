@@ -1,19 +1,9 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2
 
-import android.util.Log
-import com.google.gson.*
-import com.google.gson.internal.LinkedTreeMap
-import com.google.gson.stream.JsonReader
-import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
-import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.JsonConversionUtil
 import java.io.*
-import java.lang.reflect.Type
 import java.util.*
-import kotlin.reflect.full.declaredMembers
-import kotlin.reflect.full.memberProperties
 
 class ReplayFile {
     companion object {

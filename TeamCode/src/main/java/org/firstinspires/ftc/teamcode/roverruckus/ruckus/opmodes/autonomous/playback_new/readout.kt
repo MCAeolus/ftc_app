@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.pla
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
 
 @Autonomous(name="read out file")@Disabled
 class readout : LinearOpMode() {
