@@ -12,8 +12,7 @@ object RecordingPreferences {
 
     @JvmField
     var filePath : String = ""
-    @JvmField
-    var newFilePath : String = ""
+
     @JvmField
     var newDirectory : String = ""
 

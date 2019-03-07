@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2
 
-abstract class Subsystem {
+import com.qualcomm.robotcore.hardware.HardwareMap
+
+abstract class Subsystem() {
 
     abstract fun update() : LinkedHashMap<String, Any>
 }

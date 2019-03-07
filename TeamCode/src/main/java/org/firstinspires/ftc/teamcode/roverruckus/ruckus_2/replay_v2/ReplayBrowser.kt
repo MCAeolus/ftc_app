@@ -29,18 +29,6 @@ class ReplayBrowser : LinearOpMode() {
         var lastDirectoryPosition = ""
         var selectorLoc = 0
 
-        /*var buttonPressed = false
-        var leftDPAD_pressed = false
-        var rightDPAD_pressed = false
-        var upDPAD_pressed = false
-        var downDPAD_pressed = false
-        var a_pressed = false
-        var b_pressed = false
-        var x_pressed = false
-        var lbumper_pressed = false
-
-        var timeSincePressHeld : Double = -1.0*/
-
         val shiftDelta = 0.25
 
         var x_presses = 0

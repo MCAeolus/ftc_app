@@ -1,22 +1,16 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2
 
-import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.hardware.CRServo
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.Servo
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
-import org.firstinspires.ftc.teamcode.common.common_machines.IMU
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.opmodes.TeleOp
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.RecordingConfig
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
 
 @Autonomous(name="Recorder")
 class Recorder : TeleOp() {
 
     lateinit var RECORD : ReplayFile.DataStream
     var STARTTIME = -1.0
+
+    val msSaveStateInterval = 5 //TODO experiment with this value.
+    private var msLastSaveStateTime = -1L
 
     private val blacklistDevices = listOf("imu 1")
 
@@ -52,10 +46,17 @@ class Recorder : TeleOp() {
 
     override fun loop() {
         super.loop()
-        if(STARTTIME == -1.0)STARTTIME = time
+        if (STARTTIME == -1.0) STARTTIME = time
 
         val elapsed = time - STARTTIME
+        val msCurrentTime = System.currentTimeMillis()
         telemetry.addData("Elapsed time", "$elapsed seconds")
+
+        if (msCurrentTime - msLastSaveStateTime < msSaveStateInterval && msLastSaveStateTime != -1L)
+            return
+
+        msLastSaveStateTime = msCurrentTime
+
 
         /*
         RECORDING HERE
@@ -68,13 +69,14 @@ class Recorder : TeleOp() {
 
         //drivetrain
         point.addByte(ReplayFile.DataByte(DRIVETRAIN_TAG, arrayListOf(
-                robot.mecanumDrive.targetVelocity
+                robot.mecanumDrive.targetVelocity,
+                robot.mecanumDrive.currentPosition //FOR GRAPHING
         )))
 
 
 
 
-        /** OLD METHOD - good fer referencing... that's about it
+        /** OLD METHOD - good fer referencing...
 
         deviceLoop@
         for(device in hardwareMap) {

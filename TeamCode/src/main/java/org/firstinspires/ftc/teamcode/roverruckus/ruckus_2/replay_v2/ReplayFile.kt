@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay.TimeStampedData
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.JsonConversionUtil
 import java.io.*
 import java.lang.reflect.Type
@@ -19,6 +18,7 @@ import kotlin.reflect.full.memberProperties
 class ReplayFile {
     companion object {
         const val EXTERNAL_DIRECTORY_HEADING = "Replays"
+        const val REPLAY_FILE_SUFFIX = ".dat"
     }
 
     /**
@@ -26,15 +26,10 @@ class ReplayFile {
      */
     class DataStream(private var rawFilePath : String, val hardware : HardwareMap) {
 
-        private val GSON : Gson
         private val file : File
 
         init {
-            val builder = GsonBuilder()
-
-            GSON = builder.create()
-
-            if(!rawFilePath.toLowerCase().endsWith(".json")) rawFilePath+=".dat"
+            if(!rawFilePath.toLowerCase().endsWith(REPLAY_FILE_SUFFIX)) rawFilePath+=REPLAY_FILE_SUFFIX
 
             file = File(hardware.appContext.getExternalFilesDir(EXTERNAL_DIRECTORY_HEADING), rawFilePath)
         }
