@@ -5,4 +5,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 abstract class Subsystem {
 
     abstract fun update() : LinkedHashMap<String, Any>
+
+    abstract fun replayData() : List<Any>
 }

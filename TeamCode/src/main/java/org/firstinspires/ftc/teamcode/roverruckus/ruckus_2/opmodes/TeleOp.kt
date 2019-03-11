@@ -36,6 +36,11 @@ open class TeleOp : OpMode() {
 
         robot.mecanumDrive.setVelocity(gamepadVector)
 
+        if(button(pad2, SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed)
+            robot.liftSystem.manualLiftPower = 1.0
+        else if(button(pad2, SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed)
+            robot.liftSystem.manualLiftPower = -1.0
+
         robot.update()
     }
 

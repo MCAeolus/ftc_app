@@ -28,7 +28,7 @@ class TelemetryOpMode : Robot(DummyDriveTrain(), mapOf("IMU" to IMU(), "INTAKE" 
         IMU = COMPONENTS["IMU"] as IMU
         INTAKE = COMPONENTS["INTAKE"] as IntakeMachine
         LIFT = COMPONENTS["LIFT"] as LiftMachine
-        INTAKE.armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        //INTAKE.armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         TELEM = SmidaTelemetry(true, true, this)
     }
 
@@ -36,10 +36,10 @@ class TelemetryOpMode : Robot(DummyDriveTrain(), mapOf("IMU" to IMU(), "INTAKE" 
         TELEM.update()
 
 
-        if(gamepad1.x) {
+        /**if(gamepad1.x) {
             INTAKE.armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             INTAKE.armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        }
+        }**/
     }
 
 }

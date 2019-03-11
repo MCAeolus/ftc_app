@@ -25,6 +25,10 @@ class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Su
     private val liftMotorPower = 1.0
 
     var manualLiftPower = 0.0
+        set(pow) {
+            liftMode = LiftMode.MANUAL
+            field = pow
+        }
 
     init {
         liftMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE

@@ -67,6 +67,9 @@ class Recorder : TeleOp() {
         //grabbing all data from the hardware map
 
 
+        for(subsystem in robot.subsystems)
+
+
         //drivetrain
         point.addByte(ReplayFile.DataByte(DRIVETRAIN_TAG, arrayListOf(
                 robot.mecanumDrive.targetVelocity,

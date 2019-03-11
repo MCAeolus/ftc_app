@@ -70,6 +70,7 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
         return linkedMapOf("intake mode" to intakeMode.name, "is updating" to isUpdating)
     }
 
-
-
+    override fun replayData(): List<Any> {
+        return listOf()
+    }
 }
