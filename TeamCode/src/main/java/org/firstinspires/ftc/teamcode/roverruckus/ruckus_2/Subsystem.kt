@@ -7,4 +7,6 @@ abstract class Subsystem {
     abstract fun update() : LinkedHashMap<String, Any>
 
     abstract fun replayData() : List<Any>
+
+    abstract fun updateFromReplay(l : List<Any>)
 }

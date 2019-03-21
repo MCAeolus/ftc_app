@@ -26,8 +26,10 @@ class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Su
 
     var manualLiftPower = 0.0
         set(pow) {
-            liftMode = LiftMode.MANUAL
-            field = pow
+            if((pow == 0.0 && field != 0.0) || pow != 0.0) {
+                liftMode = LiftMode.MANUAL
+                field = pow
+            }
         }
 
     init {
@@ -76,6 +78,16 @@ class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Su
     }
 
     fun stop() {
-        liftMotor.power = 0.0
+        manualLiftPower = 0.0
+        liftMode = LiftMode.MANUAL
+    }
+
+    override fun replayData(): List<Any> {
+        return listOf(liftMode, manualLiftPower)
+    }
+
+    override fun updateFromReplay(l: List<Any>) {
+        liftMode = l[0] as LiftMode
+        manualLiftPower = l[1] as Double
     }
 }

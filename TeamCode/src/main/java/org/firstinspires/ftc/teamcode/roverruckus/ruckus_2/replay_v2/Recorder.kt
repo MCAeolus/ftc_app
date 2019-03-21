@@ -14,10 +14,6 @@ class Recorder : TeleOp() {
 
     private val blacklistDevices = listOf("imu 1")
 
-    companion object {
-        const val DRIVETRAIN_TAG = "drivetrain"
-    }
-
     override fun init() {
         super.init()
 
@@ -68,13 +64,7 @@ class Recorder : TeleOp() {
 
 
         for(subsystem in robot.subsystems)
-
-
-        //drivetrain
-        point.addByte(ReplayFile.DataByte(DRIVETRAIN_TAG, arrayListOf(
-                robot.mecanumDrive.targetVelocity,
-                robot.mecanumDrive.currentPosition //FOR GRAPHING
-        )))
+            point.addByte(ReplayFile.DataByte(subsystem.key, subsystem.value.replayData()))
 
 
 

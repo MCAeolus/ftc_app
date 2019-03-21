@@ -169,4 +169,12 @@ class MecanumDrivetrain(hardware : HardwareMap, private val robot : RobotInstanc
     fun stop() {
         setVelocity(Pose2d(0, 0, 0))
     }
+
+    override fun replayData(): List<Any> {
+        return listOf(targetVelocity, currentPosition)
+    }
+
+    override fun updateFromReplay(l: List<Any>) {
+        targetVelocity = l[0] as Pose2d
+    }
 }

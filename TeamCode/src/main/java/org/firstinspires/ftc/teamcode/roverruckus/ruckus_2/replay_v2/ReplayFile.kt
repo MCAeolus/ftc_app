@@ -11,17 +11,17 @@ class ReplayFile {
         const val REPLAY_FILE_SUFFIX = ".dat"
     }
 
-    /**
-     * The primary updates over original replay system is that this is saved externally, and that it is saved in a JSON format to be easily read elsewhere.
-     */
-    class DataStream(private var rawFilePath : String, val hardware : HardwareMap) {
 
+    class DataStream(rawFilePath : String, val hardware : HardwareMap) {
+
+        var filePath = rawFilePath
+            private set
         private val file : File
 
         init {
-            if(!rawFilePath.toLowerCase().endsWith(REPLAY_FILE_SUFFIX)) rawFilePath+=REPLAY_FILE_SUFFIX
+            if(!rawFilePath.toLowerCase().endsWith(REPLAY_FILE_SUFFIX)) filePath+=REPLAY_FILE_SUFFIX
 
-            file = File(hardware.appContext.getExternalFilesDir(EXTERNAL_DIRECTORY_HEADING), rawFilePath)
+            file = File(hardware.appContext.getExternalFilesDir(EXTERNAL_DIRECTORY_HEADING), filePath)
         }
 
         private val data = ArrayList<DataPoint>()
@@ -98,6 +98,10 @@ class ReplayFile {
             val point = DataPoint(time, time getDelta data.lastOrNull())
             data.add(point)
             return point
+        }
+
+        fun getRawData() : List<DataPoint> {
+            return data.clone() as List<DataPoint>
         }
 
         private infix fun Double.getDelta(point : DataPoint?) : Double = this - (point?.time ?: this)

@@ -12,4 +12,11 @@ class OuttakeSystem(hardware : HardwareMap, private val robot : RobotInstance) :
     override fun update(): LinkedHashMap<String, Any> {
         return linkedMapOf()
     }
+
+    override fun replayData(): List<Any> {
+        return emptyList()
+    }
+
+    override fun updateFromReplay(l: List<Any>) {
+    }
 }

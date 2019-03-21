@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2.Recorder.Companion.DRIVETRAIN_TAG
 
 @Autonomous(name="Player")
 class Player : LinearOpMode() {
@@ -26,15 +25,10 @@ class Player : LinearOpMode() {
                 opmode.telemetry.update()
 
                 val data = stream.pointsUntil(elapsed)
-                var targetRotation = 0.0
+
                 data.first.forEach { iv ->
                     iv.bytes.forEach {
-
-                        when(it.name) {
-                            DRIVETRAIN_TAG -> {
-                                robot.mecanumDrive.setVelocity(it.data[0] as Pose2d)
-                            }
-                        }
+                        robot.subsystems[it.name]!!.updateFromReplay(it.data)
                     }
                 }
                 robot.update()

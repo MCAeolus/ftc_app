@@ -71,6 +71,10 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
     }
 
     override fun replayData(): List<Any> {
-        return listOf()
+        return listOf(intakeMode)
+    }
+
+    override fun updateFromReplay(l: List<Any>) {
+        intakeMode = l[0] as IntakeMode
     }
 }

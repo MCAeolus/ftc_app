@@ -14,7 +14,7 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
     val mecanumDrive = MecanumDrivetrain(opmode.hardwareMap, this)
     val liftSystem = LiftSystem(opmode.hardwareMap, this)
 
-    val subsystems = arrayListOf<Subsystem>()
+    val subsystems = HashMap<String, Subsystem>()
     var isStarted = false
         private set
 
@@ -22,8 +22,8 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
     constructor(opmode : OpMode) : this(opmode, opmode.hardwareMap)
 
     init {
-        subsystems.add(mecanumDrive)
-        subsystems.add(liftSystem)
+        addSubsystem(mecanumDrive)
+        addSubsystem(liftSystem)
     }
 
     fun start() {
@@ -38,7 +38,7 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
         val finalTelemetry = linkedMapOf<String, LinkedHashMap<String, Any>>()
         try {
 
-            for (subsystem in subsystems) //we can assert the class name is not null because no subsystem is anonymous.
+            for (subsystem in subsystems.values) //we can assert the class name is not null because no subsystem is anonymous.
                 finalTelemetry[subsystem::class.simpleName!! + "\n"] = subsystem.update() //update
 
         } catch (e: Throwable) {
@@ -64,8 +64,10 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
     }
 
     fun stop() {
-        for(subsystem in subsystems) //use reflection to check if the subsystem has a #stop() method.
-            for(func in subsystem::class.memberFunctions) if(func.name == "stop") func.call(subsystem)
+        for(subsystem in subsystems) {//use reflection to check if the subsystem has a #stop() method.
+            for (func in subsystem.value::class.memberFunctions) if (func.name == "stop") func.call(subsystem.value)
+            subsystem.value.update()
+        }
         /**
          * Does it make sense to use reflection for this? Not really.
          * This could be done just as easily with an interface and then all you have to do is check for the interface.
@@ -79,6 +81,10 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
         val start = System.currentTimeMillis()
         while((start + millis) < System.currentTimeMillis())
             update()
+    }
+
+    private fun addSubsystem(subsystem : Subsystem) {
+        subsystems[subsystem::class.simpleName!!] = subsystem
     }
 
 
