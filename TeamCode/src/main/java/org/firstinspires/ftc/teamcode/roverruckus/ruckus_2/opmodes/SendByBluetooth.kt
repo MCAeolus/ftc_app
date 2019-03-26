@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.opmodes
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
+import android.content.Intent
+import android.content.Intent.ACTION_SEND
+import android.content.Intent.EXTRA_STREAM
 import android.util.Log
 import com.google.gson.JsonElement
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
@@ -63,16 +66,36 @@ class SendByBluetooth : LinearOpMode() {
 
             while (!isStopRequested && !isStarted) send("INFO", "Press play to begin searching.")
 
+            val jsonList = ConvertToGraphData.convertAllPresets(hardwareMap)
+            telemetry.log().add("Json list: " + jsonList.size)
+            //send("STATUS", "All replays converted to JSON.")
+
+            val intent = Intent()
+            intent.action = ACTION_SEND
+            intent.type = "text/plain"
+
+            intent.putExtra(EXTRA_STREAM, "Hi.")
+            //for(json in jsonList)
+            //    intent.putExtra(EXTRA_STREAM, json.toString())
+
+            hardwareMap.appContext.startActivity(intent)
+
+            /**
+
             val serverSocket = bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(APP_NAME, APP_UUID)
+
             var isDone = false
 
             while (opModeIsActive() && !isDone) {
                 send("STATUS", "Waiting on connection.")
 
                 val socket : BluetoothSocket? = try {
-                    serverSocket.accept()
+                    serverSocket.accept(1000)
                 } catch (e : IOException ) {
                     Log.e("BLUETOOTH", "Failed to accept client.")
+                    null
+                } catch (e : Exception ) {
+                    Log.e("BLUETOOTH", "alternate error $e")
                     null
                 }
                 socket.also {
@@ -82,11 +105,14 @@ class SendByBluetooth : LinearOpMode() {
                     isDone = true
                 }
             }
+            serverSocket.close()
+            **/
         } else
             send("ERROR", "Bluetooth adapter doesn't exist.")
 
         bluetoothAdapter?.disable()
         holdUntilStop()
+
 
 
 
