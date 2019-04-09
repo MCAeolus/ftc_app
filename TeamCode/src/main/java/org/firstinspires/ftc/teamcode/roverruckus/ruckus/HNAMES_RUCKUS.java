@@ -8,7 +8,7 @@ public class HNAMES_RUCKUS {
             DRIVE_MOTORFR = "driveFR",
             DRIVE_MOTORBL = "driveBL",
             DRIVE_MOTORBR = "driveBR",
-            OUTTAKE_ARM_MOTOR = "outtakeM",
+            OUTTAKE_DELIVERY_SLIDE = "outtakeM",
             LIFT_MOTOR = "lift",
             INTAKE_ARM_MOTOR = "intake",
             OUTTAKE_SERVO   = "outtakeS",

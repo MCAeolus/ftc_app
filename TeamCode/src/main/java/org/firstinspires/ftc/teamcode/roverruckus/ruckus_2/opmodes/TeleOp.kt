@@ -40,6 +40,10 @@ open class TeleOp : OpMode() {
             robot.liftSystem.manualLiftPower = 1.0
         else if(button(pad2, SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed)
             robot.liftSystem.manualLiftPower = -1.0
+        else
+            robot.liftSystem.manualLiftPower = 0.0
+
+        //if(button(pad1, ))
 
         robot.update()
     }

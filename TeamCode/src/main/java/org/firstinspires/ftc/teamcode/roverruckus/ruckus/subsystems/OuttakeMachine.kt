@@ -18,7 +18,7 @@ class OuttakeMachine : IMachine, Trackable {
     }
 
     override fun init(robot: IRobot) {
-        liftingArm = robot.opMode().hardwareMap.get(DcMotor::class.java, HNAMES_RUCKUS.OUTTAKE_ARM_MOTOR)
+        liftingArm = robot.opMode().hardwareMap.get(DcMotor::class.java, HNAMES_RUCKUS.OUTTAKE_DELIVERY_SLIDE)
         dumpServo = robot.opMode().hardwareMap.get(Servo::class.java, HNAMES_RUCKUS.OUTTAKE_SERVO)
 
         liftingArm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE

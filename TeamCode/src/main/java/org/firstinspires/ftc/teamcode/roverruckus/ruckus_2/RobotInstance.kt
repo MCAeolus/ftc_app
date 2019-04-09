@@ -4,15 +4,19 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.TimestampedData
 import com.qualcomm.robotcore.util.ThreadPool
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.IntakeSystem
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.LiftSystem
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.MecanumDrivetrain
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.OuttakeSystem
 import java.util.concurrent.ExecutorService
 import kotlin.reflect.full.memberFunctions
 
 class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
 
-    val mecanumDrive = MecanumDrivetrain(opmode.hardwareMap, this)
-    val liftSystem = LiftSystem(opmode.hardwareMap, this)
+    val mecanumDrive = MecanumDrivetrain(hardware, this)
+    val liftSystem = LiftSystem(hardware, this)
+    val outtakeSystem = OuttakeSystem(hardware, this)
+    val intakeSystem = IntakeSystem(hardware, this)
 
     val subsystems = HashMap<String, Subsystem>()
     var isStarted = false
@@ -24,6 +28,8 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
     init {
         addSubsystem(mecanumDrive)
         addSubsystem(liftSystem)
+        addSubsystem(outtakeSystem)
+        addSubsystem(intakeSystem)
     }
 
     fun start() {

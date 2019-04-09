@@ -21,6 +21,8 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
             field = mode
         }
 
+    var slidesPower = 0.0
+
     private val positionalMotorPower = 0.6
 
     private var shouldUpdate = false
@@ -28,6 +30,7 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
 
 
     private val intakePositionMotor = hardware.get(DcMotor::class.java, HNAMES_RUCKUS.INTAKE_ARM_MOTOR)
+    private val linearSlides = hardware.get(DcMotor::class.java, HNAMES_RUCKUS.LINEAR_SLIDES)
 
     init {
         intakePositionMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
@@ -62,19 +65,22 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
             intakePositionMotor.power = 0.0
         }
 
+        linearSlides.power = slidesPower
+
         if(isUpdating && !intakePositionMotor.isBusy) {
             isUpdating = false
             intakePositionMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         }
 
-        return linkedMapOf("intake mode" to intakeMode.name, "is updating" to isUpdating)
+        return linkedMapOf("intake mode" to intakeMode.name, "is updating" to isUpdating, "linear slides power" to slidesPower)
     }
 
     override fun replayData(): List<Any> {
-        return listOf(intakeMode)
+        return listOf(intakeMode, slidesPower)
     }
 
     override fun updateFromReplay(l: List<Any>) {
         intakeMode = l[0] as IntakeMode
+        slidesPower = l[1] as Double
     }
 }
