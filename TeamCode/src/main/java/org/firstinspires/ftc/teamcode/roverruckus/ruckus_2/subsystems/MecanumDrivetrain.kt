@@ -5,27 +5,24 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
-import org.firstinspires.ftc.teamcode.common.common_machines.IMU
 import org.firstinspires.ftc.teamcode.common.util.TelemetryUtil
 import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
 import org.firstinspires.ftc.teamcode.common.util.math.Vector2d
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
+import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.Subsystem
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.LoggedField
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.MecanumWheelData
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.RuckusTelemetryConverter
 import java.util.*
-import kotlin.math.absoluteValue
 
-class MecanumDrivetrain(hardware : HardwareMap, private val robot : RobotInstance) : Subsystem() {
+class MecanumDrivetrain(hardware : HardwareMap, private val robot : RobotInstance) : Subsystem(hardware, robot) {
 
     //
     //based off of paper on inverse kinematics for mecanum drivetrains.
     //https://www.chiefdelphi.com/t/paper-mecanum-and-omni-kinematic-and-force-analysis/106153
     //
 
-    private val telemetryData = TelemetryData()
 
     private var wheelRadius = 2 //in inches
 
@@ -38,18 +35,13 @@ class MecanumDrivetrain(hardware : HardwareMap, private val robot : RobotInstanc
 
     private val imu : BNO055IMU
 
-    private val mecanumVelocityFields = arrayOf(
-            TelemetryData::frontLeftMotorPower,
-            TelemetryData::backLeftMotorPower,
-            TelemetryData::backRightMotorPower,
-            TelemetryData::frontRightMotorPower
-    )
-
-    var targetVelocity = Pose2d(0, 0, 0) //as received... may not be physically attainable
+    @LoggedField(description = "target velocity")var targetVelocity = Pose2d(0, 0, 0) //as received... may not be physically attainable
         private set
 
-    var currentPosition = Pose2d(0, 0, 0) //this is an estimate
+    @LoggedField(description = "estimated position")var currentPosition = Pose2d(0, 0, 0) //this is an estimate
         private set
+
+    @LoggedField(description = "is slow")var inSlowMode = false
 
     //val K = mecanumWheels[0].wheelPosition.x.absoluteValue + mecanumWheels[0].wheelPosition.y.absoluteValue //wheel 0 will be our reference wheel (since all have the same distance magnitude)
     //referenced out because I don't need to estimate the position heading
@@ -80,29 +72,21 @@ class MecanumDrivetrain(hardware : HardwareMap, private val robot : RobotInstanc
         imu = hardware.get(com.qualcomm.hardware.bosch.BNO055IMU::class.java, HNAMES_RUCKUS.IMU_NAME)
         imu.initialize(imuParameters)
 
-
         lastWheelRotations = getWheelRotations()
     }
 
-    class TelemetryData {
-        var frontLeftMotorPower = 0.0
-        var frontRightMotorPower = 0.0
-        var backLeftMotorPower = 0.0
-        var backRightMotorPower = 0.0
-    }
-
     override fun update(): LinkedHashMap<String, Any> {
+
+        if(inSlowMode)
+            targetVelocity = targetVelocity.multiply(0.25, 0.005)
 
         updateMotorPowers()
 
         mecanumWheels.forEach { it.applyPower() }
 
-        //update telemetry data
-        for(i in 0..3) mecanumVelocityFields[i].set(telemetryData, mecanumWheels[i].motorPower)
-
         updatePosition()
 
-        return TelemetryUtil.convertToMap(telemetryData)
+        return RuckusTelemetryConverter.convertToMap(this)
     }
 
     fun setVelocity(vec : Pose2d) { //this is used as the setter in the case that modifications should occur to the velocity before updating it.

@@ -11,10 +11,10 @@ import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.MecanumDri
 object ConvertToGraphData {
 
     enum class ReplayPresets(val path : String, val start : String, val nom : String, val description : String) {
-        CRATER_FAST("", "crater", "fast", "something something something"),
-        CRATER_SLOW("", "crater", "slow", "something something something"),
-        CRATER_NONE("", "crater", "none", "something something something"),
-        DEPOT_FAST("", "depot", "fast", "something something something")
+        CRATER_FAST("Autonomous/Crater/FAST/", "crater", "fast", "fast on crater side"),
+        //CRATER_SLOW("", "crater", "slow", "something something something"),
+        //CRATER_NONE("", "crater", "none", "something something something"),
+        DEPOT_FAST("Autonomous/Depot/FAST/", "depot", "fast", "fast on depot side")
 
     }
 

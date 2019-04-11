@@ -16,17 +16,44 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-@Autonomous(name="Send By Bluetooth")
-class SendByBluetooth : LinearOpMode() {
+@Autonomous(name="Update Replays")
+class ReplayUpdater : LinearOpMode() {
 
-    val DEV_UUID = UUID.fromString("2036cdb1-416f-4fef-93f2-28a954b71efc")
+    //val DEV_UUID = UUID.fromString("2036cdb1-416f-4fef-93f2-28a954b71efc")
 
-    var bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    //var bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
-    val BLUETOOTH_DEVICE_ADDRESS = "44:85:00:7E:72:13"
+    //val BLUETOOTH_DEVICE_ADDRESS = "44:85:00:7E:72:13"
+
+    val defaultDir = "ReplayJSON"
 
     override fun runOpMode() {
 
+        val baseDir = hardwareMap.appContext.getExternalFilesDir(ReplayFile.EXTERNAL_DIRECTORY_HEADING)
+
+        if(!baseDir.list().contains(defaultDir)) File(baseDir, defaultDir).mkdirs()
+
+
+        telemetry.addData("STATUS", "Converting replays to JSON.")
+        telemetry.update()
+
+        val jsons = ConvertToGraphData.convertAllPresets(hardwareMap)
+
+        telemetry.addData("STATUS", "Begin writing to file.")
+        telemetry.update()
+
+        var it = 0
+        for(j in jsons) {
+            val file = File(baseDir, defaultDir + "/replay" + it++ + ".json")
+            file.writeText(j.toString())
+        }
+
+        telemetry.addData("STATUS", "Done creating replays. ${it} total replays made.")
+        telemetry.update()
+
+        holdUntilStop()
+
+        /**
         bluetoothAdapter.enable()
 
         while (!isStarted && !isStopRequested) send("STATUS", "Press 'play' to begin.")
@@ -64,6 +91,7 @@ class SendByBluetooth : LinearOpMode() {
 
         holdUntilStop()
         bluetoothAdapter.disable()
+        **/
     }
 
 

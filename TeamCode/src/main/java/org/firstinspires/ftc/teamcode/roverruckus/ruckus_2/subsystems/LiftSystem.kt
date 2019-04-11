@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems
 
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
+import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.Subsystem
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.LoggedField
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.RuckusTelemetryConverter
 
-class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Subsystem() {
+class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Subsystem(hardware, robot) {
 
     private val liftMotor = hardware.get(DcMotor::class.java, HNAMES_RUCKUS.LIFT_MOTOR)
 
@@ -16,14 +18,16 @@ class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Su
         MANUAL(-1)
     }
 
+    @LoggedField(description = "lift mode")
     var liftMode = LiftMode.LIFTED
         set(mode) {
             shouldUpdate = true
             field = mode
         }
 
-    private val liftMotorPower = 1.0
+    private val liftMotorPower = 0.5
 
+    @LoggedField(description = "manual lift power")
     var manualLiftPower = 0.0
         set(pow) {
             if((pow == 0.0 && field != 0.0) || pow != 0.0) {
@@ -39,6 +43,8 @@ class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Su
     }
 
     private var shouldUpdate = false
+
+    @LoggedField(description = "is updating")
     private var isUpdating = false
 
     override fun update(): LinkedHashMap<String, Any> {
@@ -74,7 +80,7 @@ class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Su
         }
 
 
-        return linkedMapOf("lift mode" to liftMode, "is updating" to isUpdating)
+        return RuckusTelemetryConverter.convertToMap(this)
     }
 
     fun stop() {

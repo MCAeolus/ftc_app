@@ -37,8 +37,8 @@ class ReplayBrowser : LinearOpMode() {
             pad1.handleUpdate()
 
             val dir = File(baseDir, directoryPosition)
-            val replayList = dir.list { _ : File, s : String -> s.toLowerCase().endsWith(".json") }
-            val directoryList = dir.list { _ : File, s : String -> !s.toLowerCase().endsWith(".json") }
+            val replayList = dir.list { _ : File, s : String -> s.toLowerCase().endsWith(ReplayFile.REPLAY_FILE_SUFFIX) }
+            val directoryList = dir.list { _ : File, s : String -> !s.toLowerCase().endsWith(ReplayFile.REPLAY_FILE_SUFFIX) }
             val replayExists = replayList.isNotEmpty()
             val directoryExists = directoryList.isNotEmpty()
 

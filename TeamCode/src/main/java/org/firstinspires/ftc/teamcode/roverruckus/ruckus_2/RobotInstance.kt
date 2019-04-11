@@ -2,37 +2,45 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.TimestampedData
-import com.qualcomm.robotcore.util.ThreadPool
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.MecanumDrivetrain
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.IntakeSystem
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.LiftSystem
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.MecanumDrivetrain
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.OuttakeSystem
+import java.io.InvalidClassException
 import java.util.concurrent.ExecutorService
+import kotlin.reflect.KClass
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.full.primaryConstructor
 
 class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
 
-    val mecanumDrive = MecanumDrivetrain(hardware, this)
-    val liftSystem = LiftSystem(hardware, this)
-    val outtakeSystem = OuttakeSystem(hardware, this)
-    val intakeSystem = IntakeSystem(hardware, this)
-
     val subsystems = HashMap<String, Subsystem>()
-    var isStarted = false
+
+    lateinit var mecanumDrive : MecanumDrivetrain
+        private set
+    lateinit var liftSystem : LiftSystem
+        private set
+    lateinit var outtakeSystem : OuttakeSystem
+        private set
+    lateinit var intakeSystem : IntakeSystem
         private set
 
+    var isStarted = false
+        private set
+    var isStopped = false
+        private set
 
     constructor(opmode : OpMode) : this(opmode, opmode.hardwareMap)
 
-    init {
-        addSubsystem(mecanumDrive)
-        addSubsystem(liftSystem)
-        addSubsystem(outtakeSystem)
-        addSubsystem(intakeSystem)
-    }
+    init { }
 
     fun start() {
+        mecanumDrive = addSubsystem()
+        liftSystem = addSubsystem()
+        outtakeSystem = addSubsystem()
+        intakeSystem = addSubsystem()
+
         if(!isStarted) {
 
 
@@ -70,6 +78,7 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
     }
 
     fun stop() {
+        isStopped = true
         for(subsystem in subsystems) {//use reflection to check if the subsystem has a #stop() method.
             for (func in subsystem.value::class.memberFunctions) if (func.name == "stop") func.call(subsystem.value)
             subsystem.value.update()
@@ -89,9 +98,15 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
             update()
     }
 
-    private fun addSubsystem(subsystem : Subsystem) {
+    private fun addSubsystem(subsystem : Subsystem) : Subsystem {
         subsystems[subsystem::class.simpleName!!] = subsystem
+        return subsystem
     }
 
-
+    private inline fun <reified T : Subsystem>addSubsystem() : T {
+        val clazz = T::class
+        val newObject = clazz.primaryConstructor!!.call(hardware, this)
+        subsystems[clazz.simpleName!!] = newObject
+        return newObject
+    }
 }

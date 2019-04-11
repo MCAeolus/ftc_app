@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.common.util.math
 
 import com.qualcomm.hardware.bosch.BNO055IMU
+import java.io.Serializable
 
-class Vector2d(val x : Double, val y : Double) {
+class Vector2d(val x : Double, val y : Double) : Serializable {
 
     constructor(x : Int, y : Int) : this(x.toDouble(), y.toDouble())
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.roverruckus.ruckus;
+package org.firstinspires.ftc.teamcode.roverruckus;
 
 public class HNAMES_RUCKUS {
 
@@ -12,9 +12,9 @@ public class HNAMES_RUCKUS {
             LIFT_MOTOR = "lift",
             INTAKE_ARM_MOTOR = "intake",
             OUTTAKE_SERVO   = "outtakeS",
-            INTAKER_MOTOR = "intaker",
+            VEX_INTAKE_MOTOR = "vexIntake",
             LINEAR_SLIDES = "linearslide",
-            TOTEM = "tot",
+            //TOTEM = "tot",
             IMU_NAME = "imu",
             GOLD_SAMPLE_TAG = "Gold Mineral",
             SILVER_SAMPLE_TAG = "Silver Mineral";

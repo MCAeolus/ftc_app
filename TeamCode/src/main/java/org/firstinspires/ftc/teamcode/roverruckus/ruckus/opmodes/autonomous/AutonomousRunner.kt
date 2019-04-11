@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback_new.TimeStampedData
 import java.io.File
 
-@Autonomous(name = "Ruckus Runner")
+//@Autonomous(name = "Ruckus Runner")
 class AutonomousRunner : AutonomousBase(true) {
 
     companion object {

@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems
 
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.common.common_machines.IMachine
 import org.firstinspires.ftc.teamcode.common.robot.IRobot
 import org.firstinspires.ftc.teamcode.common.util.Trackable
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
+import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
 
 class OuttakeMachine : IMachine, Trackable {
 

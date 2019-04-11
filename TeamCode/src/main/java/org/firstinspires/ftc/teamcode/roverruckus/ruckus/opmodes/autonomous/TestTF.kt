@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 
-@Autonomous(name="TF Tester")
+//@Autonomous(name="TF Tester")
 class TestTF : AutonomousBase(true) {
 
     override fun runOpMode() {

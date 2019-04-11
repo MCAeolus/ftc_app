@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.IntakeMachin
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.LiftMachine
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 
-@TeleOp(name = "Telemetry and Debugging")
+//@TeleOp(name = "Telemetry and Debugging")
 class TelemetryOpMode : Robot(DummyDriveTrain(), mapOf("IMU" to IMU(), "INTAKE" to IntakeMachine(), "LIFT" to LiftMachine())) {
 
     @TelemetryField

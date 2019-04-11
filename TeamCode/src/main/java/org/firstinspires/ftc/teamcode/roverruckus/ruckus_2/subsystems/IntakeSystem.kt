@@ -1,58 +1,108 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems
 
+import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
+import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.Subsystem
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.LoggedField
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.RuckusTelemetryConverter
 
-class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : Subsystem() {
+class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : Subsystem(hardware, robot) {
 
+    val linearSlideActivateThreshold = 1300
+
+    @LoggedField(description = "is intake locked")
     var intakeLocked = false
 
-    enum class IntakeMode(val ticks : Int) {
-        DOWN(500), //TODO find actual value
-        UP(0)
+    enum class IntakePosition(val ticks : Int) {
+        DOWN(1200) {
+            override fun flip() = UP
+        },
+        UP(0) {
+            override fun flip() = DOWN
+        };
+
+        abstract fun flip() : IntakePosition
     }
 
-    var intakeMode = IntakeMode.UP
+    enum class IntakeDirection(val speed : Double) {
+        INTAKE(0.8),
+        OUTTAKE(-0.8),
+        STOPPED(0.0)
+    }
+
+    @LoggedField(description = "intake position")
+    var intakePosition = IntakePosition.UP
         set(mode) {
             shouldUpdate = true
             field = mode
         }
 
-    var slidesPower = 0.0
+    @LoggedField(description = "intaking direction")
+    var intakeDirection = IntakeDirection.STOPPED
+
+    @LoggedField(description = "linear slide power")
+    var linearSlidesPower = 0.0
 
     private val positionalMotorPower = 0.6
 
     private var shouldUpdate = false
+    @LoggedField(description = "is updating")
     private var isUpdating = false
 
 
     private val intakePositionMotor = hardware.get(DcMotor::class.java, HNAMES_RUCKUS.INTAKE_ARM_MOTOR)
+    private val brushVexMotor = hardware.get(CRServo::class.java, HNAMES_RUCKUS.VEX_INTAKE_MOTOR)
     private val linearSlides = hardware.get(DcMotor::class.java, HNAMES_RUCKUS.LINEAR_SLIDES)
 
+    @LoggedField(description = "linear slides initial position")
+    var initialLinearSlidesOrientation = 0
+        private set
+
+    var hasBeenPastThreshold = false
+
     init {
-        intakePositionMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
+        intakePositionMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         intakePositionMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         intakePositionMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
+        linearSlides.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        linearSlides.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        linearSlides.direction = DcMotorSimple.Direction.REVERSE
+
+        initialLinearSlidesOrientation = linearSlides.currentPosition
     }
 
     override fun update(): LinkedHashMap<String, Any> {
 
+        if(linearSlides.currentPosition >= (initialLinearSlidesOrientation + linearSlideActivateThreshold)) {
+            if (!hasBeenPastThreshold) {
+                hasBeenPastThreshold = true
+                intakePosition = IntakePosition.DOWN
+            }
+        } else {
+            if(hasBeenPastThreshold) {
+                hasBeenPastThreshold = false
+                intakePosition = IntakePosition.UP
+            }
+        }
+
         if(!intakeLocked && shouldUpdate) {
-            when(intakeMode) {
-                IntakeMode.UP -> {
+            when(intakePosition) {
+                IntakePosition.UP -> {
                     intakePositionMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-                    intakePositionMotor.targetPosition = intakeMode.ticks
+                    intakePositionMotor.targetPosition = intakePosition.ticks
                     intakePositionMotor.power = positionalMotorPower
                     intakePositionMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
 
                     isUpdating = true
                 }
-                IntakeMode.DOWN -> {
+                IntakePosition.DOWN -> {
                     intakePositionMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
-                    intakePositionMotor.targetPosition = intakeMode.ticks
+                    intakePositionMotor.targetPosition = intakePosition.ticks
                     intakePositionMotor.power = positionalMotorPower
                     intakePositionMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
 
@@ -60,27 +110,36 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
                 }
             }
             shouldUpdate = false
-        } else if(intakeLocked){
-            intakePositionMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        } else if(intakeLocked)
             intakePositionMotor.power = 0.0
-        }
 
-        linearSlides.power = slidesPower
+        brushVexMotor.power = intakeDirection.speed
+
+        linearSlides.power = linearSlidesPower
 
         if(isUpdating && !intakePositionMotor.isBusy) {
             isUpdating = false
             intakePositionMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+            intakePositionMotor.power = 0.0
         }
 
-        return linkedMapOf("intake mode" to intakeMode.name, "is updating" to isUpdating, "linear slides power" to slidesPower)
+        return RuckusTelemetryConverter.convertToMap(this)
     }
 
     override fun replayData(): List<Any> {
-        return listOf(intakeMode, slidesPower)
+        return listOf(intakePosition, linearSlidesPower, intakeDirection)
     }
 
     override fun updateFromReplay(l: List<Any>) {
-        intakeMode = l[0] as IntakeMode
-        slidesPower = l[1] as Double
+        intakePosition = l[0] as IntakePosition
+        linearSlidesPower = l[1] as Double
+        intakeDirection = l[2] as IntakeDirection
     }
+
+    fun stop() {
+        intakePosition = IntakePosition.UP
+        linearSlidesPower = 0.0
+        intakeDirection = IntakeDirection.STOPPED
+    }
+
 }

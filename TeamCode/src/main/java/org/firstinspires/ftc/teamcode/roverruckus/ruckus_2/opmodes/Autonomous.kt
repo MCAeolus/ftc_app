@@ -2,18 +2,14 @@ package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.opmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 import org.firstinspires.ftc.teamcode.common.controller.Button
 import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
-import org.firstinspires.ftc.teamcode.roverruckus.minibit.HARDWARENAMES_MINIBOT
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.AutonomousBase
+import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2.Player
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2.ReplayFile
@@ -74,7 +70,7 @@ class Autonomous : LinearOpMode() {
 
             val dirList = dir.list { _: File, s: String -> !s.endsWith(ReplayFile.REPLAY_FILE_SUFFIX) }
 
-            if (button(SmidaGamepad.GamePadButton.PAD_UP).holdingTimeCheck(buttonDelta, time))
+            if (button(SmidaGamepad.GamePadButton .PAD_UP).holdingTimeCheck(buttonDelta, time))
                 if (selectorLoc > 0) selectorLoc--
 
             if (button(SmidaGamepad.GamePadButton.PAD_DOWN).holdingTimeCheck(buttonDelta, time))
@@ -124,6 +120,7 @@ class Autonomous : LinearOpMode() {
                 for (i in 0 until dirList.size)
                     send("${if (selectorLoc == i) ">>>" else "   "}${dirList[i]}", if (isOperationDirectory(baseDir, currentDir + "/" + dirList[i])) ": OPERATION MODE" else "->")
             }
+            send("")
             send("Currently detecting sample ${samplePosition.name}")
             telemetry.update()
         }

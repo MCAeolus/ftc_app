@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.playback
 
 import android.content.Context
-import com.acmerobotics.dashboard.config.Config
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import org.firstinspires.ftc.teamcode.common.common_machines.IMU
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.RuckusOpMode
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus.subsystems.MecanumDriveTrain
 import java.io.FileOutputStream

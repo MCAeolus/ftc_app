@@ -10,7 +10,7 @@ import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty0
 import kotlin.reflect.jvm.javaField
 
-@TeleOp(name="Ruckus")
+//@TeleOp(name="Ruckus")
 open class RuckusOpMode : Robot(MecanumDriveTrain(), mapOf("Outtake" to OuttakeMachine(), "Intake" to IntakeMachine(), "Lift" to LiftMachine())){
 
     lateinit var OUTTAKE : OuttakeMachine
