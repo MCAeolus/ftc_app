@@ -50,51 +50,62 @@ open class TeleOp : OpMode() {
 
         val lJoystickVals = button(pad1, SmidaGamepad.GamePadButton.LEFT_STICK).joystickValues
         val rJoystickX = button(pad1, SmidaGamepad.GamePadButton.RIGHT_STICK).joystickValues.first
-        val gamepadVector = Pose2d(-lJoystickVals.second, lJoystickVals.first, rJoystickX).multiply(3.0) //ramp up quicker
-
-        robot.mecanumDrive.setVelocity(gamepadVector) //drivetrain
+        val gamepadVector = Pose2d(-lJoystickVals.second, lJoystickVals.first, rJoystickX).multiply(3.0, 1.0) //ramp up quicker
 
         if(button(pad1, SmidaGamepad.GamePadButton.LEFT_STICK).isIndividualActionButtonPress())
             robot.mecanumDrive.inSlowMode = !robot.mecanumDrive.inSlowMode
+
+        robot.mecanumDrive.setVelocity(gamepadVector) //drivetrain
+
+
 
         /**
          * ROBOT LIFT
          */
 
-        if(button(pad2, SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed) //the robot lift
-            robot.liftSystem.manualLiftPower = 1.0
-        else if(button(pad2, SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed)
-            robot.liftSystem.manualLiftPower = -1.0
-        else
-            robot.liftSystem.manualLiftPower = 0.0
+        when {
+            button(pad2, SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed //the robot lift
+            -> robot.liftSystem.manualLiftPower = 1.0
+            button(pad2, SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed -> robot.liftSystem.manualLiftPower = -1.0
+            else -> robot.liftSystem.manualLiftPower = 0.0
+        }
 
         /**
          * OUTTAKE SYSTEM
          */
 
-        if(button(pad1, SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed) //delivery lift
-            robot.outtakeSystem.deliveryDirection = OuttakeSystem.DeliveryDirection.UP
-        else if(button(pad1, SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed)
-            robot.outtakeSystem.deliveryDirection = OuttakeSystem.DeliveryDirection.DOWN
-        else robot.outtakeSystem.deliveryDirection = OuttakeSystem.DeliveryDirection.STOPPED
+        when {
+            button(pad1, SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed //delivery lift
+            -> robot.outtakeSystem.deliveryDirection = OuttakeSystem.DeliveryDirection.UP
+            button(pad1, SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed -> robot.outtakeSystem.deliveryDirection = OuttakeSystem.DeliveryDirection.DOWN
+            else -> robot.outtakeSystem.deliveryDirection = OuttakeSystem.DeliveryDirection.STOPPED
+        }
+
+        if(button(pad1, SmidaGamepad.GamePadButton.A).isPressed) //dump servo
+            robot.outtakeSystem.dumpPosition = OuttakeSystem.DumpPosition.DOWN
+        else robot.outtakeSystem.dumpPosition = OuttakeSystem.DumpPosition.UP
 
 
         /**
          * INTAKE SYSTEM
          */
 
-        if(button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed) //the linear slide
-            robot.intakeSystem.linearSlidesPower = pad1.lastCheckedButton.buttonValue
-        else if(button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed) {
-            robot.intakeSystem.linearSlidesPower = -pad1.lastCheckedButton.buttonValue
-            robot.intakeSystem.intakePosition = IntakeSystem.IntakePosition.DOWN
-        } else robot.intakeSystem.linearSlidesPower = 0.0
+        when {
+            button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed //the linear slide
+            -> robot.intakeSystem.linearSlidesPower = pad1.lastCheckedButton.buttonValue
+            button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed -> {
+                robot.intakeSystem.linearSlidesPower = -pad1.lastCheckedButton.buttonValue
+                robot.intakeSystem.intakePosition = IntakeSystem.IntakePosition.DOWN
+            }
+            else -> robot.intakeSystem.linearSlidesPower = 0.0
+        }
 
-        if(button(pad1, SmidaGamepad.GamePadButton.X).isIndividualActionButtonPress()) {
+        if(button(pad1, SmidaGamepad.GamePadButton.X).isIndividualActionButtonPress()) { //manually flip the intake
             robot.intakeSystem.intakePosition = robot.intakeSystem.intakePosition.flip()
             isIntakeControlled = false
         }
 
+        //automated control for the intake
         if(robot.outtakeSystem.deliveryDirection != OuttakeSystem.DeliveryDirection.STOPPED && robot.intakeSystem.intakePosition != IntakeSystem.IntakePosition.DOWN) {
             robot.intakeSystem.intakePosition = IntakeSystem.IntakePosition.DOWN
             isIntakeControlled = true
@@ -103,11 +114,11 @@ open class TeleOp : OpMode() {
             isIntakeControlled = false
         }
 
-        if(button(pad2, SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed)
-            robot.intakeSystem.intakeDirection = IntakeSystem.IntakeDirection.INTAKE
-        else if(button(pad2, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed)
-            robot.intakeSystem.intakeDirection = IntakeSystem.IntakeDirection.OUTTAKE
-        else robot.intakeSystem.intakeDirection = IntakeSystem.IntakeDirection.STOPPED
+        when {
+            button(pad2, SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed -> robot.intakeSystem.intakeDirection = IntakeSystem.IntakeDirection.INTAKE
+            button(pad2, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed -> robot.intakeSystem.intakeDirection = IntakeSystem.IntakeDirection.OUTTAKE
+            else -> robot.intakeSystem.intakeDirection = IntakeSystem.IntakeDirection.STOPPED
+        }
 
 
         /**

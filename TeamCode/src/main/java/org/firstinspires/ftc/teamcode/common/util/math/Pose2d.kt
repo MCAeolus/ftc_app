@@ -29,6 +29,6 @@ class Pose2d(val position : Vector2d, val heading : Double) : Serializable {
     }
 
     override fun toString(): String {
-        return position.toString() + ", $heading, ${heading * Vector2d.AngleUnit.DEGREES.convertTo}"
+        return position.toString() + ", $heading original, ${heading * Vector2d.AngleUnit.DEGREES.convertTo} as degrees"
     }
 }

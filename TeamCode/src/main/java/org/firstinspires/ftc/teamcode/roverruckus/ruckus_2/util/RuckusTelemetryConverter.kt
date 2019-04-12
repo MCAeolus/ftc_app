@@ -14,7 +14,7 @@ object RuckusTelemetryConverter {
                 f.isAccessible = true
                 val value = f.getter.call(o).toString()
                 val name = if(ann.description == "") f.name else ann.description
-                retMap[name] = value ?: "null"
+                retMap[name] = value
             }
         }
         return retMap

@@ -24,6 +24,7 @@ open class ManualAdjustments : OpMode() {
 
     lateinit var wormMotor : DcMotor
     lateinit var linearSlides : DcMotor
+    lateinit var outtakeMotor : DcMotor
 
     override fun init() {
         //robot = RobotInstance(this)
@@ -39,6 +40,9 @@ open class ManualAdjustments : OpMode() {
         linearSlides.mode = DcMotor.RunMode.RUN_USING_ENCODER
         linearSlides.direction = DcMotorSimple.Direction.REVERSE
 
+        outtakeMotor = hardwareMap.get(DcMotor::class.java, HNAMES_RUCKUS.OUTTAKE_DELIVERY_SLIDE)
+
+
         pad1 = SmidaGamepad(gamepad1, this)
         pad2 = SmidaGamepad(gamepad2, this)
     }
@@ -53,38 +57,23 @@ open class ManualAdjustments : OpMode() {
         pad2.handleUpdate()
 
 
-        val lJoystickVals = button(pad1, SmidaGamepad.GamePadButton.LEFT_STICK).joystickValues
-        val rJoystickX = button(pad1, SmidaGamepad.GamePadButton.RIGHT_STICK).joystickValues.first
-        val gamepadVector = Pose2d(-lJoystickVals.second, lJoystickVals.first, rJoystickX).multiply(3.0) //ramp up quicker
+        when {
+            button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed -> wormMotor.power = pad1.lastCheckedButton.buttonValue
+            button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed -> wormMotor.power = -pad1.lastCheckedButton.buttonValue
+            else -> wormMotor.power = 0.0
+        }
 
-        /**
-        robot.mecanumDrive.setVelocity(gamepadVector) //drivetrain
+        when {
+            button(pad1, SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed -> linearSlides.power = 1.0
+            button(pad1, SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed -> linearSlides.power = -1.0
+            else -> linearSlides.power = 0.0
+        }
 
-
-        if(button(pad2, SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed) //the robot lift
-            robot.liftSystem.manualLiftPower = 1.0
-        else if(button(pad2, SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed)
-            robot.liftSystem.manualLiftPower = -1.0
-        else
-            robot.liftSystem.manualLiftPower = 0.0
-        **/
-
-        /**
-         * INTAKE SYSTEM
-         */
-
-        if(button(pad1, SmidaGamepad.GamePadButton.LEFT_TRIGGER).isPressed)
-            wormMotor.power = pad1.lastCheckedButton.buttonValue
-        else if(button(pad1, SmidaGamepad.GamePadButton.RIGHT_TRIGGER).isPressed)
-            wormMotor.power = -pad1.lastCheckedButton.buttonValue
-        else wormMotor.power = 0.0
-
-        if(button(pad1, SmidaGamepad.GamePadButton.LEFT_BUMPER).isPressed)
-            linearSlides.power = 1.0
-        else if(button(pad1, SmidaGamepad.GamePadButton.RIGHT_BUMPER).isPressed)
-            linearSlides.power = -1.0
-        else linearSlides.power = 0.0
-
+        when {
+            button(pad1, SmidaGamepad.GamePadButton.X).isPressed -> outtakeMotor.power = 1.0
+            button(pad1, SmidaGamepad.GamePadButton.B).isPressed -> outtakeMotor.power = -1.0
+            else -> outtakeMotor.power = 0.0
+        }
 
         telemetry.addData("worm position", wormMotor.currentPosition)
         telemetry.addData("slides position", linearSlides.currentPosition)

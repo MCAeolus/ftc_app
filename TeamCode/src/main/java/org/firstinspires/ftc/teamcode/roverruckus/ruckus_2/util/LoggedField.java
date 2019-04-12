@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util;
 
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import kotlin.annotation.AnnotationTarget;
+import kotlin.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target(allowedTargets = AnnotationTarget.PROPERTY)
 public @interface LoggedField {
     String description() default "";
 }

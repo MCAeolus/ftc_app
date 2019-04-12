@@ -11,10 +11,9 @@ class RecorderTest : TeleOp() {
 
     val msSaveStateInterval = 5 //TODO experiment with this value.
     private var msLastSaveStateTime = -1L
-
-    private val blacklistDevices = listOf("imu 1")
-
+    
     private var hasControllerUpdated = false
+    private var controllerNotRunning = -1.0
 
     override fun init() {
         super.init()
@@ -45,12 +44,18 @@ class RecorderTest : TeleOp() {
     override fun loop() {
         super.loop()
 
-        if(!hasControllerUpdated && (!pad1.isResting || !pad2.isResting)) hasControllerUpdated = true
-        else if(!hasControllerUpdated) return
+        if(pad1.isResting && pad2.isResting && !hasControllerUpdated) {
+            telemetry.addData("STATUS", "Recording will begin when the controller is used.")
+            return
+        }
 
         if (STARTTIME == -1.0) STARTTIME = time
 
         val elapsed = time - STARTTIME
+
+        controllerNotRunning = if(pad1.isResting && pad2.isResting) elapsed
+                               else -1.0
+
         val msCurrentTime = System.currentTimeMillis()
         telemetry.addData("Elapsed time", "$elapsed seconds")
 
@@ -71,9 +76,6 @@ class RecorderTest : TeleOp() {
 
         for(subsystem in robot.subsystems)
             point.addByte(ReplayFile.DataByte(subsystem.key, subsystem.value.replayData()))
-
-
-
 
         /** OLD METHOD - good fer referencing...
 
@@ -98,6 +100,8 @@ class RecorderTest : TeleOp() {
 
     override fun stop() {
         super.stop()
+
+        if(controllerNotRunning > -1.0) RECORD.trim(0.0, controllerNotRunning)
         if(::RECORD.isInitialized) RECORD.write()
     }
 }

@@ -11,10 +11,11 @@ import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.subsystems.MecanumDri
 object ConvertToGraphData {
 
     enum class ReplayPresets(val path : String, val start : String, val nom : String, val description : String) {
-        CRATER_FAST("Autonomous/Crater/FAST/", "crater", "fast", "fast on crater side"),
-        //CRATER_SLOW("", "crater", "slow", "something something something"),
-        //CRATER_NONE("", "crater", "none", "something something something"),
-        DEPOT_FAST("Autonomous/Depot/FAST/", "depot", "fast", "fast on depot side")
+        CRATER_FAST("Autonomous/Crater/FAST/", "crater", "fast", "The goal of this autonomous mode is to quickly perform a single-sample run that drops from the lifter, places the totem and parks."),
+        CRATER_SLOW("Autonomous/Crater/SLOW/", "crater", "slow", "The purpose of the slow autonomous mode is the same as the fast autonomous mode, but adds in a delay before going to place the totem in order to avoid collisions with another robot."),
+        CRATER_NONE("Autonomous/Crater/NONE/", "crater", "none", "The none autonomous is a backup in-case there is any reason the robot can't or shouldn't run a full autonomous mode."),
+        CRATER_DOUBLE("Autonomous/Crater/DOUBLE/", "crater", "double sample", "In the case that the alliance partner can't sample, this mode performs all the normal actions of an autonomous mode, but also claims the depot-side sample."),
+        DEPOT_FAST("Autonomous/Depot/NORMAL/", "depot", "normal", "The normal depot operation is to unlatch from the lander, perform the depot sample field, place the team totem and park in the enemy crater.")
 
     }
 
