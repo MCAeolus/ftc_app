@@ -6,19 +6,19 @@ import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.Subsystem
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.LoggedField
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.RuckusTelemetryConverter
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.telemetry.LoggedField
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.telemetry.RuckusTelemetryConverter
 
 class OuttakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : Subsystem(hardware, robot) {
 
     enum class DeliveryDirection(val speed : Double) {
         UP(1.0),
-        DOWN(-1.0),
+        DOWN(-0.25),
         STOPPED(0.0)
     }
 
     enum class DumpPosition(val pos : Double) {
-        UP(0.0),
+        UP(0.1),
         DOWN(0.7)
     }
 
@@ -32,28 +32,62 @@ class OuttakeSystem(hardware : HardwareMap, private val robot : RobotInstance) :
     @LoggedField(description = "delivery lift direction")
     var deliveryDirection = DeliveryDirection.STOPPED
         set(mode) {
-            shouldUpdate = true
+            shouldUpdateSlides = true
             field = mode
         }
 
     @LoggedField(description = "dump position")
     var dumpPosition = DumpPosition.UP
         set(mode) {
-            shouldUpdate = true
+            shouldUpdateDump = true
             field = mode
         }
 
-    private var shouldUpdate = false
+    private var shouldUpdateSlides = false
+    private var shouldUpdateDump = false
+
+    @LoggedField(description = "controlling intake")
+    var isControllingIntake = false
+
+    @LoggedField(description = "slow mode intake")
+    var isSlowModeIntake = false
+
+    private var positionWhileControllingIntake = DeliveryDirection.STOPPED
 
     override fun update(): LinkedHashMap<String, Any> {
 
-        deliveryLift.power = deliveryDirection.speed
+        if(shouldUpdateDump) {
+            deliveryLift.power = deliveryDirection.speed * (if(isSlowModeIntake) 0.5 else 1.0)
 
-        if(shouldUpdate) {
+            when(deliveryDirection) {
+                DeliveryDirection.STOPPED -> if(isControllingIntake) {
+                    isControllingIntake = false
+                    robot.intakeSystem.intakePosition = IntakeSystem.IntakePosition.UP
+                    positionWhileControllingIntake = DeliveryDirection.STOPPED
+                }
+                DeliveryDirection.UP,
+                DeliveryDirection.DOWN -> {
+                    if(!isControllingIntake && positionWhileControllingIntake != deliveryDirection) {
+                        robot.intakeSystem.intakePosition = IntakeSystem.IntakePosition.DOWN
+                        positionWhileControllingIntake = deliveryDirection
+                        isControllingIntake = true
+                    }
+                }
+            }
+
+            shouldUpdateDump = false
+        }
+
+        if(shouldUpdateSlides) {
             dumpServo.position = dumpPosition.pos
-            shouldUpdate = false
+            shouldUpdateSlides = false
         }
         return RuckusTelemetryConverter.convertToMap(this)
+    }
+
+    fun stop() {
+        dumpServo.position = DumpPosition.UP.pos
+        deliveryLift.power = 0.0
     }
 
     override fun replayData(): List<Any> {

@@ -7,12 +7,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.Subsystem
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.LoggedField
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.RuckusTelemetryConverter
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.telemetry.LoggedField
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.telemetry.RuckusTelemetryConverter
 
 class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : Subsystem(hardware, robot) {
-
-    val linearSlideActivateThreshold = 1300
 
     @LoggedField(description = "is intake locked")
     var intakeLocked = false
@@ -29,8 +27,8 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
     }
 
     enum class IntakeDirection(val speed : Double) {
-        INTAKE(0.8),
-        OUTTAKE(-0.8),
+        INTAKE(-0.8),
+        OUTTAKE(0.8),
         STOPPED(0.0)
     }
 
@@ -78,16 +76,14 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
 
     override fun update(): LinkedHashMap<String, Any> {
 
-        if(linearSlides.currentPosition >= (initialLinearSlidesOrientation + linearSlideActivateThreshold)) {
-            if (!hasBeenPastThreshold) {
-                hasBeenPastThreshold = true
-                intakePosition = IntakePosition.DOWN
-            }
-        } else {
-            if(hasBeenPastThreshold) {
+        if(linearSlides.currentPosition <= initialLinearSlidesOrientation) {
+            if (hasBeenPastThreshold) {
                 hasBeenPastThreshold = false
-                intakePosition = IntakePosition.UP
+                if(intakePosition == IntakePosition.DOWN) intakePosition = IntakePosition.UP
             }
+        } else if(linearSlides.currentPosition >= initialLinearSlidesOrientation + 300){
+            if(!hasBeenPastThreshold)
+                hasBeenPastThreshold = true
         }
 
         if(!intakeLocked && shouldUpdate) {
@@ -137,9 +133,14 @@ class IntakeSystem(hardware : HardwareMap, private val robot : RobotInstance) : 
     }
 
     fun stop() {
+        intakePositionMotor.power = 0.0
+        linearSlides.power = 0.0
+        brushVexMotor.power = 0.0
+        /**
         intakePosition = IntakePosition.UP
         linearSlidesPower = 0.0
         intakeDirection = IntakeDirection.STOPPED
+        **/
     }
 
 }

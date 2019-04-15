@@ -5,15 +5,14 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
-import org.firstinspires.ftc.teamcode.common.util.TelemetryUtil
 import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
 import org.firstinspires.ftc.teamcode.common.util.math.Vector2d
 import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.Subsystem
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.LoggedField
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.telemetry.LoggedField
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.MecanumWheelData
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.RuckusTelemetryConverter
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.telemetry.RuckusTelemetryConverter
 import java.util.*
 
 class MecanumDrivetrain(hardware : HardwareMap, private val robot : RobotInstance) : Subsystem(hardware, robot) {
@@ -78,7 +77,7 @@ class MecanumDrivetrain(hardware : HardwareMap, private val robot : RobotInstanc
     override fun update(): LinkedHashMap<String, Any> {
 
         if(inSlowMode)
-            targetVelocity = targetVelocity.multiply(0.25, 0.005)
+            targetVelocity = targetVelocity.multiply(0.25, 0.05)
 
         updateMotorPowers()
 
@@ -151,7 +150,8 @@ class MecanumDrivetrain(hardware : HardwareMap, private val robot : RobotInstanc
     }
 
     fun stop() {
-        setVelocity(Pose2d(0, 0, 0))
+        for(dat in mecanumWheels) dat.motor().power = 0.0
+        //setVelocity(Pose2d(0, 0, 0))
     }
 
     override fun replayData(): List<Any> {

@@ -48,8 +48,8 @@ class Recorder : TeleOp() {
         val msCurrentTime = System.currentTimeMillis()
         telemetry.addData("Elapsed time", "$elapsed seconds")
 
-        if (msCurrentTime - msLastSaveStateTime < msSaveStateInterval && msLastSaveStateTime != -1L)
-            return
+        //if (msCurrentTime - msLastSaveStateTime < msSaveStateInterval && msLastSaveStateTime != -1L)
+        //    return
 
         msLastSaveStateTime = msCurrentTime
 

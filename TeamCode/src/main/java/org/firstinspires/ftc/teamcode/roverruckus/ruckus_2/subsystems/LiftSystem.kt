@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.Subsystem
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.LoggedField
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.RuckusTelemetryConverter
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.telemetry.LoggedField
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.telemetry.RuckusTelemetryConverter
 
 class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Subsystem(hardware, robot) {
 
@@ -84,8 +84,11 @@ class LiftSystem(hardware : HardwareMap, private val robot : RobotInstance) : Su
     }
 
     fun stop() {
+        /**
         manualLiftPower = 0.0
         liftMode = LiftMode.MANUAL
+        **/
+        liftMotor.power = 0.0
     }
 
     override fun replayData(): List<Any> {

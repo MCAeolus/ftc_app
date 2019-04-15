@@ -29,17 +29,19 @@ class ReplayFile {
         private var pointBuffer: DataPoint? = null
 
         fun load() {
-            val datastream = ObjectInputStream(file.inputStream())
+            try {
+                val datastream = ObjectInputStream(file.inputStream())
 
-            do {
-                try {
-                    data.add(datastream.readObject() as ReplayFile.DataPoint)
-                } catch (e: Exception) {
-                    break
-                }
-            } while (true)
+                do {
+                    try {
+                        data.add(datastream.readObject() as ReplayFile.DataPoint)
+                    } catch (e: Exception) {
+                        break
+                    }
+                } while (true)
 
-            datastream.close()
+                datastream.close()
+            }catch (e : EOFException) { }
         }
 
         fun write() {

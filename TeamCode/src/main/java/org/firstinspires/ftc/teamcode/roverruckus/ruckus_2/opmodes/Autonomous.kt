@@ -10,10 +10,12 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 import org.firstinspires.ftc.teamcode.common.controller.Button
 import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
 import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus.opmodes.autonomous.AutonomousBase
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.RobotInstance
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2.Player
 import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.replay_v2.ReplayFile
 import java.io.File
+import kotlin.math.absoluteValue
 
 
 @Autonomous(name="Autonomous Mode")
@@ -51,6 +53,7 @@ class Autonomous : LinearOpMode() {
         var selectorLoc = 0
 
         var samplePosition = SampleLocation.N_A
+        var lastKnownSample = SampleLocation.N_A
 
         var operationDir: String? = null
 
@@ -65,6 +68,7 @@ class Autonomous : LinearOpMode() {
         while (!isStarted) {
             pad1.handleUpdate()
             samplePosition = findGoldPosition(tensorFlow.updatedRecognitions)
+            if(samplePosition != SampleLocation.N_A) lastKnownSample = samplePosition
 
             val dir = File(baseDir, currentDir)
 
@@ -121,14 +125,15 @@ class Autonomous : LinearOpMode() {
                     send("${if (selectorLoc == i) ">>>" else "   "}${dirList[i]}", if (isOperationDirectory(baseDir, currentDir + "/" + dirList[i])) ": OPERATION MODE" else "->")
             }
             send("")
-            send("Currently detecting sample ${samplePosition.name}")
+            send("Currently detecting sample: ${samplePosition.name}, last known ${lastKnownSample.name}")
             telemetry.update()
         }
 
         tensorFlow.deactivate()
         if (operationDir == null) requestOpModeStop()
         else {
-            val USE_RECORD = ReplayFile.DataStream(operationDir + "/${samplePosition.name}${ReplayFile.REPLAY_FILE_SUFFIX}", hardwareMap)
+            val usePosition = if(lastKnownSample == SampleLocation.N_A) SampleLocation.CENTER else lastKnownSample
+            val USE_RECORD = ReplayFile.DataStream(operationDir + "/${usePosition.name}${ReplayFile.REPLAY_FILE_SUFFIX}", hardwareMap)
             USE_RECORD.load()
             USE_RECORD.prepare()
 
@@ -155,37 +160,39 @@ class Autonomous : LinearOpMode() {
         vuforia = ClassFactory.getInstance().createVuforia(vu_param)
     }
 
-    enum class SampleLocation {
-        LEFT,
-        CENTER,
-        RIGHT,
-        N_A
+    enum class SampleLocation(val screenPos : Int) {
+        LEFT(660),
+        CENTER(320),
+        RIGHT(-2),
+        N_A(0)
     }
 
     private fun findGoldPosition(recognitions: List<Recognition>?): SampleLocation { //TODO assuming can see all locations and is upside down
-        return if (recognitions != null) {
+        if (recognitions != null) {
             var goldRe: Recognition? = null
 
             recognitions.forEach {
                 if (it.label == HNAMES_RUCKUS.GOLD_SAMPLE_TAG)
                     goldRe = it
             }
-
-            if (goldRe == null) SampleLocation.N_A
+            if (goldRe == null) return SampleLocation.N_A
             else {
-
                 val leftPosition = goldRe!!.left
 
-                telemetry.addData("location on screen", leftPosition)
-                telemetry.update()
+                telemetry.log().add("location on screen $leftPosition")
 
-                if(leftPosition <= 0.33) SampleLocation.RIGHT
-                else if(leftPosition <= 0.66 && leftPosition > 0.33) SampleLocation.CENTER
-                else SampleLocation.LEFT
+                val dL = (leftPosition - SampleLocation.LEFT.screenPos).absoluteValue
+                val dM = (leftPosition - SampleLocation.CENTER.screenPos).absoluteValue
+                val dR = (leftPosition - SampleLocation.RIGHT.screenPos).absoluteValue
+                telemetry.log().add("pos's $dL $dM $dR")
+
+                if(dL < dM && dL < dR) return SampleLocation.LEFT
+                else if(dR < dM && dR < dL) return SampleLocation.RIGHT
+                else return SampleLocation.CENTER
             }
 
         }
-        else SampleLocation.N_A
+        else return SampleLocation.N_A
     }
 
     private fun waitingForStart() {

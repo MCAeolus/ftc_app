@@ -1,8 +1,7 @@
 package test.java
 
 import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.LoggedField
-import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.RuckusTelemetryConverter
+import org.firstinspires.ftc.teamcode.roverruckus.ruckus_2.util.telemetry.LoggedField
 import org.junit.Test
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties

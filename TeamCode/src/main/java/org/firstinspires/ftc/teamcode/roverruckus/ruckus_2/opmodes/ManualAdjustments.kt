@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
+import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.common.controller.SmidaGamepad
 import org.firstinspires.ftc.teamcode.common.util.math.Pose2d
 import org.firstinspires.ftc.teamcode.roverruckus.HNAMES_RUCKUS
@@ -25,6 +26,11 @@ open class ManualAdjustments : OpMode() {
     lateinit var wormMotor : DcMotor
     lateinit var linearSlides : DcMotor
     lateinit var outtakeMotor : DcMotor
+    lateinit var outtakeServo : Servo
+
+
+    private val servoDelta = 0.05
+    private var servoPos = OuttakeSystem.DumpPosition.UP.pos
 
     override fun init() {
         //robot = RobotInstance(this)
@@ -41,7 +47,10 @@ open class ManualAdjustments : OpMode() {
         linearSlides.direction = DcMotorSimple.Direction.REVERSE
 
         outtakeMotor = hardwareMap.get(DcMotor::class.java, HNAMES_RUCKUS.OUTTAKE_DELIVERY_SLIDE)
+        outtakeMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
+        outtakeServo = hardwareMap.get(Servo::class.java, HNAMES_RUCKUS.OUTTAKE_SERVO)
+        //outtakeServo.position = OuttakeSystem.DumpPosition.UP.pos
 
         pad1 = SmidaGamepad(gamepad1, this)
         pad2 = SmidaGamepad(gamepad2, this)
@@ -70,11 +79,23 @@ open class ManualAdjustments : OpMode() {
         }
 
         when {
-            button(pad1, SmidaGamepad.GamePadButton.X).isPressed -> outtakeMotor.power = 1.0
-            button(pad1, SmidaGamepad.GamePadButton.B).isPressed -> outtakeMotor.power = -1.0
+            button(pad1, SmidaGamepad.GamePadButton.X).isPressed -> outtakeMotor.power = OuttakeSystem.DeliveryDirection.UP.speed
+            button(pad1, SmidaGamepad.GamePadButton.B).isPressed -> outtakeMotor.power = OuttakeSystem.DeliveryDirection.DOWN.speed
             else -> outtakeMotor.power = 0.0
         }
 
+        when {
+            button(pad1, SmidaGamepad.GamePadButton.PAD_UP).isIndividualActionButtonPress() -> {
+                servoPos = if(servoPos <= (1 - servoDelta)) servoPos + servoDelta else 1.0
+            }
+            button(pad1, SmidaGamepad.GamePadButton.PAD_DOWN).isIndividualActionButtonPress() -> {
+                servoPos = if(servoPos >= servoDelta) servoPos - servoDelta else 0.0
+            }
+        }
+
+        outtakeServo.position = servoPos
+
+        telemetry.addData("servo posiion", outtakeServo.position)
         telemetry.addData("worm position", wormMotor.currentPosition)
         telemetry.addData("slides position", linearSlides.currentPosition)
 

@@ -17,14 +17,10 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
 
     val subsystems = HashMap<String, Subsystem>()
 
-    lateinit var mecanumDrive : MecanumDrivetrain
-        private set
-    lateinit var liftSystem : LiftSystem
-        private set
-    lateinit var outtakeSystem : OuttakeSystem
-        private set
-    lateinit var intakeSystem : IntakeSystem
-        private set
+    val mecanumDrive = addSubsystem<MecanumDrivetrain>()
+    val liftSystem = addSubsystem<LiftSystem>()
+    val outtakeSystem = addSubsystem<OuttakeSystem>()
+    val intakeSystem = addSubsystem<IntakeSystem>()
 
     var isStarted = false
         private set
@@ -33,13 +29,7 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
 
     constructor(opmode : OpMode) : this(opmode, opmode.hardwareMap)
 
-    init { }
-
     fun start() {
-        mecanumDrive = addSubsystem()
-        liftSystem = addSubsystem()
-        outtakeSystem = addSubsystem()
-        intakeSystem = addSubsystem()
 
         if(!isStarted) {
 
@@ -78,10 +68,12 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
     }
 
     fun stop() {
-        isStopped = true
-        for(subsystem in subsystems) {//use reflection to check if the subsystem has a #stop() method.
-            for (func in subsystem.value::class.memberFunctions) if (func.name == "stop") func.call(subsystem.value)
-            subsystem.value.update()
+        if(!isStopped) {
+            isStopped = true
+            for (subsystem in subsystems) {//use reflection to check if the subsystem has a #stop() method.
+                for (func in subsystem.value::class.memberFunctions) if (func.name == "stop") func.call(subsystem.value)
+                //subsystem.value.update()
+            }
         }
         /**
          * Does it make sense to use reflection for this? Not really.
@@ -104,8 +96,9 @@ class RobotInstance(val opmode : OpMode, val hardware : HardwareMap) {
     }
 
     private inline fun <reified T : Subsystem>addSubsystem() : T {
-        val clazz = T::class
-        val newObject = clazz.primaryConstructor!!.call(hardware, this)
+        val clazz = T::class.java
+        val constructor = clazz.getConstructor(HardwareMap::class.java, RobotInstance::class.java)
+        val newObject = constructor.newInstance(hardware, this)
         subsystems[clazz.simpleName!!] = newObject
         return newObject
     }
