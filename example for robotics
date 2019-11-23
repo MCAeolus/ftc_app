@@ -1,0 +1,40 @@
+//inside of #runOpMode()
+... initialization code ...
+FOR AUTONOMOUS
+
+waitForStart()
+... everything should be done sequentially. 
+Do not loop for the whole op mode like in tele-op, autonomous needs to be approached differently. ...
+
+scalar = 0.8
+
+motor powers = calculateMotorPowers(Pi/6, scalar)
+
+... then make a function that is waiting x amount of time or encoder steps, etc. ...
+waitForSensor()
+
+... next instruction ...
+motor powers = calculateMotorPowers(Pi/3, scalar)
+
+
+function calculateMotorPowers(angle robotAngle, double scalar) returns [motor powers]:
+	actualAngle = angle - (Pi/4)
+	
+	//perform your angle calculations in here. You may also want to calculate a rotational value.
+	//(ex. frontLeft = scalar * Math.cos(actualAngle)
+	
+	return [frontleft, frontright, backleft, backright]
+
+	
+
+FOR TELE-OP
+
+//init
+while(opmodeactive):
+	scalar = 1.0
+	if(left_stick_button) scalar = 0.5
+	
+	//calculate motor powers,
+	frontLeft = scalar * math
+	
+	... apply motor powers.
